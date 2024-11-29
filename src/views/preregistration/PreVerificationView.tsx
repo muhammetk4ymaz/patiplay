@@ -50,7 +50,7 @@ const PreVerificationView = (props: Props) => {
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    let intervalId;
+    let intervalId: NodeJS.Timeout;
     if (counter > 0) {
       intervalId = setInterval(() => {
         setCounter(currentCounter => currentCounter - 1);
@@ -284,10 +284,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
-    // paddingVertical: Platform.select({ios: 8, android: 0}),
-    // paddingHorizontal: Platform.select({ios: 16, android: 12}),
-    width: 40,
-    height: 40,
+    paddingHorizontal: Platform.select({ios: 0, android: 12}),
+    width: Platform.OS === 'ios' ? 40 : 'auto',
+    height: Platform.OS === 'ios' ? 40 : 'auto',
+
     fontSize: Theme.fontSizes.lg,
     color: Theme.colors.white,
   },

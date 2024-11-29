@@ -14,7 +14,7 @@ const UnauthenticatedRoute = (props: Props) => {
   const {t} = useTranslation();
   return (
     <Stack.Navigator
-      initialRouteName="Dashboard"
+      initialRouteName="Packages"
       screenOptions={{
         statusBarTranslucent: true,
         statusBarColor: 'transparent',
@@ -89,6 +89,15 @@ const UnauthenticatedRoute = (props: Props) => {
           animation: 'fade',
         }}
       />
+      <Stack.Screen
+        name="Packages"
+        component={Routes.PACKAGES}
+        options={{
+          headerShown: false,
+          animation: 'fade',
+        }}
+      />
+
       <Stack.Screen
         name="Notifications"
         component={Routes.NOTIFICATIONS}

@@ -50,6 +50,7 @@ import AlmostHere from '../views/preregistration/AlmostHereView';
 import AlreadyHaveAnAccountView from '../views/preregistration/AlreadyHaveAnAccountView';
 import CreateProfileView from '../views/preregistration/CreateProfileView';
 import DontHaveAnAccountView from '../views/preregistration/DontHaveAnAccountView';
+import PackagesView from '../views/preregistration/PackagesView';
 import PreRegistrationView from '../views/preregistration/PreRegistrationView';
 import PreVerificationView from '../views/preregistration/PreVerificationView';
 import VerificationView from '../views/verification';
@@ -116,6 +117,7 @@ export const Routes = {
   PREVERIFICATION: PreVerificationView,
   ALMOSTHERE: AlmostHereView,
   CREATEPROFILE: CreateProfileView,
+  PACKAGES: PackagesView,
 };
 
 export type RootStackParamList = {
@@ -174,5 +176,6 @@ export type RootStackParamList = {
   PreVerification: undefined;
   AlmostHere: undefined;
   CreateProfile: undefined;
+  Packages: undefined;
   // other routes...
 };

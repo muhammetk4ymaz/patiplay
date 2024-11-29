@@ -40,8 +40,6 @@ const tabIconSize: number = 28;
 const iconPadding: number = 8;
 
 const DashboardView = (props: Props) => {
-  const dispatch = useAppDispatch();
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated,
   );
@@ -107,6 +105,7 @@ const DashboardView = (props: Props) => {
               <View
                 style={{
                   flexDirection: 'row',
+                  alignItems: 'center',  
                   paddingHorizontal: Theme.paddings.viewHorizontalPadding,
                 }}>
                 {isAuthenticated ? <ShareButton /> : <LanguageButton />}

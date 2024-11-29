@@ -35,34 +35,6 @@ const DontHaveAnAccountView = (props: Props) => {
       keyboardShouldPersistTaps="handled">
       <ContentWithIconCard icon={<AuthIcon size={100} />}>
         <PreRegistrationForm />
-        <View
-          style={
-            {
-              // position: 'absolute',
-              // bottom: -20,
-              // alignSelf: 'center',
-              // backgroundColor: Theme.colors.sambucus,
-              // borderRadius: 100,
-            }
-          }>
-          <TouchableOpacity
-            style={{
-              alignSelf: 'center',
-              padding: 12,
-              bottom: -20,
-            }}
-            onPress={() => {
-              console.log('Learn More');
-            }}>
-            <CustomText
-              text="Terms | Privacy "
-              style={{
-                color: 'white',
-                fontSize: Theme.fontSizes.xs,
-              }}
-            />
-          </TouchableOpacity>
-        </View>
       </ContentWithIconCard>
     </ScrollView>
   );

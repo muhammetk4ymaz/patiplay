@@ -96,6 +96,7 @@ function CustomTextInput({
         }
         keyboardType={keyboardType}
         value={value}
+        secureTextEntry={false}
         onChangeText={onChangeText}
         onFocus={() => setFocus(true)}
         onBlur={() => setFocus(false)}
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     paddingHorizontal: 16,
-    paddingVertical: Platform.select({ios: 10, android: 6}),
+    paddingVertical: Platform.select({ios: 10, android: 2}),
     borderRadius: 30,
     borderColor: Theme.colors.primary,
     gap: 12,
