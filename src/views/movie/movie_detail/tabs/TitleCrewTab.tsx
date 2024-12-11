@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -5,89 +6,96 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import React from 'react';
 import {useSelector} from 'react-redux';
-import {RootState} from '../../../../redux/store';
-import {Theme} from '../../../../constants/Theme';
-import DicussionNew from '../../../../components/shared/DicussionNew';
 import CircularAvatar from '../../../../components/shared/CircularAvatar';
-import {ImageManager} from '../../../../constants/ImageManager';
 import CustomText from '../../../../components/shared/CustomText';
+import {ImageManager} from '../../../../constants/ImageManager';
+import {RootState} from '../../../../redux/store';
+import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
+import {Theme} from '../../../../utils/theme';
+import axios from 'axios';
+import networkService from '../../../../helpers/networkService';
 
-type Props = {};
+type Props = {
+  crewData: any[];
+};
 
 const width = Dimensions.get('window').width;
 
 const TitleCrewTab = (props: Props) => {
-  const crew = useSelector((state: RootState) => state.titleDetail.crew);
-  const crewInitialLoading = useSelector(
-    (state: RootState) => state.titleDetail.crewInitialLoading,
-  );
+  const [loading, setLoading] = React.useState(false);
 
-  return (
-    <FlatList
-      data={crew}
-      scrollEnabled={false}
-      initialNumToRender={5}
-      numColumns={4}
-      columnWrapperStyle={{
-        gap: Theme.spacing.columnGap,
-      }}
-      ListHeaderComponent={() => {
-        return (
-          crewInitialLoading && (
+  React.useEffect(() => {
+    console.log('Rendered CrewTab', props.crewData);
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: width,
+        }}>
+        <ActivityIndicator
+          size="large"
+          color={Theme.colors.primary}
+          animating={loading}
+        />
+      </View>
+    );
+  } else {
+    return (
+      <FlatList
+        data={props.crewData}
+        scrollEnabled={false}
+        numColumns={3}
+        columnWrapperStyle={{
+          columnGap: Theme.spacing.columnGap,
+        }}
+        contentContainerStyle={{
+          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+          rowGap: Theme.spacing.rowGap,
+        }}
+        keyExtractor={index => index.toString()}
+        renderItem={({item}) => {
+          return (
             <View
               style={{
-                paddingVertical: Theme.spacing.columnGap,
+                alignItems: 'center',
+                width: calculateGridItemWidth(3),
               }}>
-              <ActivityIndicator
-                size="large"
-                color={Theme.colors.primary}
-                animating={crewInitialLoading}
+              <CircularAvatar
+                imagePath={
+                  item.image
+                    ? {uri: item.occupationImage}
+                    : ImageManager.IMAGE_NAMES.MANAVATAR
+                }
+              />
+              <CustomText
+                text={item.name}
+                style={{
+                  color: Theme.colors.white,
+                  textAlign: 'center',
+                  fontSize: Theme.fontSizes.xs,
+                }}
+              />
+              <CustomText
+                text={item.occupation.label}
+                style={{
+                  color: Theme.colors.white,
+                  textAlign: 'center',
+                  opacity: 0.5,
+                  fontSize: Theme.fontSizes.xs,
+                }}
               />
             </View>
-          )
-        );
-      }}
-      contentContainerStyle={{
-        paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-        gap: Theme.spacing.rowGap,
-      }}
-      keyExtractor={item => item.id.toString()}
-      renderItem={({item}) => {
-        return (
-          <View
-            style={{
-              alignItems: 'center',
-              width:
-                (Dimensions.get('window').width -
-                  2 * Theme.paddings.viewHorizontalPadding -
-                  3 * Theme.spacing.columnGap) /
-                4,
-            }}>
-            <CircularAvatar imagePath={ImageManager.IMAGE_NAMES.MANAVATAR} />
-            <CustomText
-              text="Emre Güngör"
-              style={{
-                color: Theme.colors.white,
-                textAlign: 'center',
-                fontSize: Theme.fontSizes.xs,
-              }}
-            />
-            <CustomText
-              text="Director"
-              style={{
-                color: Theme.colors.white,
-                textAlign: 'center',
-                opacity: 0.5,
-                fontSize: Theme.fontSizes['2xs'],
-              }}
-            />
-          </View>
-        );
-      }}
-    />
-  );
+          );
+        }}
+      />
+    );
+  }
 };
 
 export default React.memo(TitleCrewTab);

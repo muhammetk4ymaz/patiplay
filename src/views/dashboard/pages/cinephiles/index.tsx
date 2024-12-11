@@ -1,30 +1,40 @@
 import {
+  NavigationProp,
+  RouteProp,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
+import {Avatar} from 'native-base';
+import React from 'react';
+import {
+  ActivityIndicator,
   Dimensions,
   Image,
+  ImageSourcePropType,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
-import CustomPage from '../../../../components/shared/CustomPage';
-import {useHeaderHeight} from '@react-navigation/elements';
-import {Theme} from '../../../../constants/Theme';
-import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {ImageManager} from '../../../../constants/ImageManager';
 import LinearGradient from 'react-native-linear-gradient';
+import StatsCard from '../../../../components/shared/Cards/StatsCard';
+import CustomPage from '../../../../components/shared/CustomPage';
 import CustomText from '../../../../components/shared/CustomText';
-import {Avatar} from 'native-base';
-import BiographyCard from '../../../../components/shared/Cards/BiographyCard';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-
-import NavigableListSection from '../../../../components/shared/NavigableListSection ';
-import nowPlayMovies from '../../../../models/now_play_movies';
-import VerticalPoster from '../../../../components/shared/VerticalPoster';
+import {ImageManager} from '../../../../constants/ImageManager';
+import {Theme} from '../../../../utils/theme';
 import DeviceInfo from 'react-native-device-info';
-import TopMovie from '../../../../models/top_movie';
+import AddToMyNetworkButton from '../../../../components/shared/Buttons/AddToMyNetworkButton';
 import CircularAvatar from '../../../../components/shared/CircularAvatar';
+import NavigableListSection from '../../../../components/shared/NavigableListSection ';
+import VerticalPoster from '../../../../components/shared/VerticalPoster';
+import networkService from '../../../../helpers/networkService';
+import nowPlayMovies from '../../../../models/now_play_movies';
+import TopMovie from '../../../../models/top_movie';
 import {RootStackParamList} from '../../../../navigation/routes';
+import {characterLimited} from '../../profile/favorite_companies';
+import ScrollableRow from '../../../../components/shared/ScrollableRow';
+import ListHeaderText from '../../../../components/shared/Texts/ListHeaderText';
+import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
+import FastImage from 'react-native-fast-image';
 
 const SPACING = 8;
 
@@ -32,73 +42,100 @@ const {height, width} = Dimensions.get('window');
 
 type Props = {};
 
+type RouteParams = {
+  Cinephiles: {
+    username: string;
+  };
+};
+
 const CinephilesDetailView = (props: Props) => {
+  const route = useRoute<RouteProp<RouteParams, 'Cinephiles'>>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  React.useEffect(() => {
+    console.log(route.params.username);
+  }, []);
+
+  const [loading, setLoading] = React.useState(true);
+
+  const [cinephilesData, setCinephilesData] = React.useState<any>({});
+
+  const fetchCinephilesData = async () => {
+    try {
+      const response = await networkService.post('title/api/cinephiles-b2c/', {
+        name: route.params.username,
+      });
+
+      if (response.status === 200) {
+        console.log('Response Cinephiles', response.data);
+
+        if (response.data.status === 'b2b') {
+          navigation.navigate('ProfileRoute');
+        } else {
+          setCinephilesData(response.data);
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchCinephilesData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: width,
+          backgroundColor: 'black',
+        }}>
+        <ActivityIndicator
+          size="large"
+          color={Theme.colors.primary}
+          animating={loading}
+        />
+      </View>
+    );
+  }
+
   return (
     <CustomPage
+      titleCenter={true}
       pageName="Details"
       animationMultiplier={0.25}
       titleInitialOpacity={1}
       isBackButton={true}>
       <View style={{gap: SPACING + 2}}>
-        <ProfileHeader />
-        <ProfileInformation />
-        {/* <View
-          style={{
-            flexDirection: 'row',
-            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-          }}>
-          <View style={{flexDirection: 'row', marginTop: 8}}>
-            <Avatar.Group
-              style={{
-                paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-              }}
-              _avatar={{
-                size: 7,
-              }}
-              max={3}>
-              <Avatar
-                bg="green.500"
-                borderWidth={0}
-                zIndex={1}
-                source={{
-                  uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
-                }}></Avatar>
-              <Avatar
-                bg="cyan.500"
-                borderWidth={0}
-                zIndex={0}
-                left={-8}
-                source={{
-                  uri: 'https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
-                }}></Avatar>
-            </Avatar.Group>
-          </View>
-        </View> */}
-        <BiographySection />
+        <ProfileHeader
+          item={{
+            image: cinephilesData.user.image,
+            nameSurname:
+              cinephilesData.user.name + ' ' + cinephilesData.user.surname,
+            username: cinephilesData.user.username,
+          }}
+        />
+
+        <ProfileInformation
+          followerCount={cinephilesData.follower_count}
+          myNetworkCount={cinephilesData.my_network_count}
+        />
+        <StatsSection items={cinephilesData.user_array} />
         <View style={{paddingHorizontal: Theme.paddings.viewHorizontalPadding}}>
-          <TouchableOpacity onPress={() => {}}>
-            <LinearGradient
-              colors={['#8b5cf6', '#a855f7']} // from violet-500 to purple-500
-              style={{
-                paddingHorizontal: 12,
-                paddingVertical: 12,
-                borderRadius: 36,
-              }}>
-              <CustomText
-                text="Add to My Network"
-                style={{
-                  color: 'white',
-                  fontSize: Theme.fontSizes.sm,
-                  textAlign: 'center',
-                }}
-              />
-            </LinearGradient>
-          </TouchableOpacity>
+          <AddToMyNetworkButton
+            initialValue={cinephilesData.in_network}
+            uuid={route.params.username}
+            endpoint="cinephiles-network"
+          />
         </View>
-        <FavoriteTitles />
-        <FavoriteCompaines />
-        <FavoriteActors />
-        <FavoriteCrewMembers />
+        <FavoriteTitles titles={cinephilesData.favorite_title} />
+        <FavoriteCompaines companies={cinephilesData.companies} />
+        <FavoriteActors actors={cinephilesData.actors} />
+        <FavoriteCrewMembers crewMembers={cinephilesData.crew} />
       </View>
     </CustomPage>
   );
@@ -140,26 +177,77 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: Theme.fontSizes.sm,
     textAlign: 'center',
+    fontWeight: '400',
   },
   descriptionText: {
     color: 'white',
     fontSize: 13,
     paddingHorizontal: Theme.paddings.viewHorizontalPadding,
   },
-  biography: {
+  stats: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Theme.spacing.rowGap,
+    gap: Theme.spacing.columnGap,
+    rowGap: SPACING,
     paddingHorizontal: Theme.paddings.viewHorizontalPadding,
   },
 });
 
-const ProfileHeader = () => {
-  const headerHeight = useHeaderHeight();
+type ProfileHeaderProps = {
+  item: {
+    image: string;
+    nameSurname: string;
+    username: string;
+  };
+};
+
+const ProfileHeader = (props: ProfileHeaderProps) => {
   return (
     <View style={styles.header}>
       <ProfileBackground />
-      <ProfileAvatar />
+      <ProfileAvatar
+        image={
+          props.item.image
+            ? {
+                uri: props.item.image,
+              }
+            : ImageManager.IMAGE_NAMES.MANAVATAR
+        }
+        nameSurname={props.item.nameSurname}
+        username={'@' + props.item.username}
+      />
+      <View
+        style={{
+          flexDirection: 'row',
+          marginTop: 8,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Avatar.Group
+          style={{
+            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+          }}
+          _avatar={{
+            size: 7,
+          }}
+          max={3}>
+          <Avatar
+            bg="green.500"
+            borderWidth={0}
+            zIndex={1}
+            source={{
+              uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
+            }}></Avatar>
+          <Avatar
+            bg="cyan.500"
+            borderWidth={0}
+            zIndex={0}
+            left={-8}
+            source={{
+              uri: 'https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
+            }}></Avatar>
+        </Avatar.Group>
+      </View>
     </View>
   );
 };
@@ -180,32 +268,47 @@ const ProfileBackground = () => {
   );
 };
 
-const ProfileAvatar = () => {
+type ProfileAvatarProps = {
+  image: ImageSourcePropType;
+  nameSurname: string;
+  username: string;
+};
+
+const ProfileAvatar = (props: ProfileAvatarProps) => {
   return (
     <View style={styles.avatarContainer}>
       <Avatar
         size={'2xl'}
-        source={{
-          uri: 'https://static.vecteezy.com/system/resources/previews/009/398/577/non_2x/man-avatar-clipart-illustration-free-png.png',
-        }}
+        source={props.image}
+        backgroundColor={'transparent'}
       />
       <View
         style={{
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <CustomText text="Emre Güngör" weight="bold" style={styles.name} />
-        <CustomText text="@emregungor" style={styles.username} />
+        <CustomText
+          text={props.nameSurname}
+          weight="bold"
+          style={styles.name}
+        />
+        <CustomText text={props.username} style={styles.username} />
       </View>
     </View>
   );
 };
 
-const ProfileInformation = () => {
+type ProfileInformationProps = {
+  followerCount: number;
+  myNetworkCount: number;
+};
+
+const ProfileInformation = (props: ProfileInformationProps) => {
   return (
     <View style={{gap: SPACING}}>
       <CustomText
-        text="113 Followings • 1.4K in My Network"
+        text={`${props.followerCount} Followings • ${props.myNetworkCount} in My Network`}
+        // text="113 Followings • 1.4K in My Network"
         style={styles.followingsText}
       />
       <CustomText
@@ -217,136 +320,249 @@ const ProfileInformation = () => {
   );
 };
 
-const BiographySection = () => {
+type StatsSectionProps = {
+  items: {key: string; value: string}[];
+};
+
+const StatsSection = (props: StatsSectionProps) => {
+  React.useEffect(() => {
+    console.log('Stats', props.items);
+  }, []);
   return (
-    <View style={styles.biography}>
-      <BiographyCard title={'Titles\nEnjoyed'} value="214" />
-      <BiographyCard title={'Titles\nCompleted'} value="52%" />
-      <BiographyCard title={'Missions\nCompleted'} value="467" />
-      <BiographyCard
-        title={`among\n${
-          'Software Engineers'.length > 10
-            ? 'Software Engineers'.substring(0, 10) + '...'
-            : 'Software Engineers'
-        }`}
-        value="21"
-        supText="st"
+    <View style={styles.stats}>
+      <StatsCard
+        title={'Titles\nEnjoyed'}
+        value={props.items[0].value}
+        // value={
+        //   props.items.find(item => item.key === 'Titles Enjoyed')?.value || '0'
+        // }
       />
-      <BiographyCard
-        title={`in\n${
-          'Borussia Mönchengladbach'.length > 10
-            ? 'Borussia Mönchengladbach'.substring(0, 10) + '...'
-            : 'Borussia Mönchengladbach'
-        }`}
-        value="42"
-        supText="nd"
+
+      <StatsCard
+        title={'Titles\nCompleted'}
+        value={props.items[1].value.slice(0, -1).split('.')[0] + '%'}
+        // value={
+        //   props.items.find(item => item.key === 'Completed Enjoyed')?.value ||
+        //   '0'
+        // }
       />
-      <BiographyCard
-        title={`in\n${
-          'Istanbul'.length > 10
-            ? 'Istanbul'.substring(0, 10) + '...'
-            : 'Istanbul'
-        }`}
-        value="143"
-        supText="rd"
+      <StatsCard
+        title={'Missions\nCompleted'}
+        value={props.items[2].value}
+        // value={
+        //   props.items.find(item => item.key === 'Missions Complated')?.value ||
+        //   '0'
+        // }
       />
-      <BiographyCard
-        title={`in\n${
-          'United Kingdom'.length > 10
-            ? 'United Kingdom'.substring(0, 10) + '...'
-            : 'United Kingdom'
-        }`}
-        value="4.1K"
-        supText="th"
+      <StatsCard
+        title={`among\n${characterLimited(
+          props.items
+            .find(item => item.key.includes('among'))
+            ?.key.replace('among ', '') || '',
+          10,
+        )}`}
+        value={props.items[3].value.slice(0, -2)}
+        supText={props.items[3].value.slice(-2)}
+        // value={
+        //   props.items
+        //     .find(item => item.key.includes('among'))
+        //     ?.value.slice(0, -2) || '0'
+        // }
+        // supText={props.items
+        //   .find(item => item.key.includes('among'))
+        //   ?.value.slice(-2)}
       />
-      <BiographyCard title={'in the\nWorld'} value="11.2M" supText="th" />
+      <StatsCard
+        title={`in\n${characterLimited(
+          props.items[4].key.replace('in ', ''),
+          10,
+        )}`}
+        value={props.items[4].value.slice(0, -2)}
+        supText={props.items[4].value.slice(-2)}
+      />
+      <StatsCard
+        title={`in\n${characterLimited(
+          props.items[5].key.replace('in ', ''),
+          10,
+        )}`}
+        value={props.items[5].value.slice(0, -2)}
+        supText={props.items[5].value.slice(-2)}
+      />
+      <StatsCard
+        title={`in\n${characterLimited(
+          props.items[6].key.replace('in ', ''),
+          10,
+        )}`}
+        value={props.items[6].value.slice(0, -2)}
+        supText={props.items[6].value.slice(-2)}
+      />
+      <StatsCard
+        title={'in the\nWorld'}
+        value={props.items[7].value.slice(0, -2)}
+        supText={props.items[7].value.slice(-2)}
+      />
     </View>
   );
 };
 
-const FavoriteTitles = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+type FavoriteTitlesProps = {
+  titles: any[];
+};
+
+const FavoriteTitles = (props: FavoriteTitlesProps) => {
   return (
-    <NavigableListSection
-      title="Favorites"
-      pressHandler={() => {
-        navigation.navigate('MyFavorites');
-      }}
-      data={nowPlayMovies}
-      initialNumToRender={4}
-      renderItem={({item}: {item: TopMovie}) => (
-        <VerticalPoster
-          posterPath={item.poster_path}
-          width={DeviceInfo.isTablet() ? width / 6 : (width - 36) / 3.5}
-        />
-      )}
-      keyExtractor={item => item.id.toString()}
-    />
+    <View style={{gap: 8}}>
+      <CustomText
+        text={'Favorite Titles'}
+        style={{
+          color: 'white',
+          fontSize: Theme.fontSizes.md,
+          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+        }}
+        weight="medium"
+      />
+      <ScrollableRow
+        data={props.titles}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({item}) => {
+          return (
+            <TouchableOpacity
+              style={{
+                width: calculateGridItemWidth(3.5),
+                aspectRatio: Theme.aspectRatios.vertical,
+                borderRadius: Theme.titlePosterRadius,
+                justifyContent: 'flex-end',
+              }}>
+              <FastImage
+                source={{
+                  uri: item.verticalPhotos[0].url,
+                }}
+                style={[
+                  StyleSheet.absoluteFillObject,
+                  {
+                    borderRadius: Theme.titlePosterRadius,
+                  },
+                ]}
+              />
+            </TouchableOpacity>
+          );
+        }}
+        initialNumToRender={4}
+      />
+    </View>
   );
 };
 
-const FavoriteCompaines = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+type FavoriteCompainesProps = {
+  companies: any[];
+};
+
+const FavoriteCompaines = (props: FavoriteCompainesProps) => {
   return (
-    <NavigableListSection
-      title="Favorite Companies"
-      pressHandler={() => {
-        navigation.navigate('FavoriteCompanies');
-      }}
-      data={nowPlayMovies}
-      initialNumToRender={6}
-      renderItem={({item}: {item: TopMovie}) => (
-        <CircularAvatar
-          imagePath={{
-            uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-          }}
-        />
-      )}
-      keyExtractor={item => item.id.toString()}
-    />
+    <View style={{gap: 8}}>
+      <CustomText
+        text={'Favorite Companies'}
+        style={{
+          color: 'white',
+          fontSize: Theme.fontSizes.md,
+          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+        }}
+        weight="medium"
+      />
+      <ScrollableRow
+        data={props.companies}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({item}) => {
+          return (
+            <CircularAvatar
+              imagePath={
+                item.logo
+                  ? {
+                      uri: item.logo,
+                    }
+                  : ImageManager.IMAGE_NAMES.PATIPLAYLOGO
+              }
+            />
+          );
+        }}
+        initialNumToRender={4}
+      />
+    </View>
   );
 };
 
-const FavoriteActors = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+type FavoriteActorsProps = {
+  actors: any[];
+};
+
+const FavoriteActors = (props: FavoriteActorsProps) => {
   return (
-    <NavigableListSection
-      title="Favorite Actors & Actresses"
-      pressHandler={() => {
-        navigation.navigate('FavoriteActors');
-      }}
-      data={nowPlayMovies}
-      initialNumToRender={6}
-      renderItem={({item}: {item: TopMovie}) => (
-        <CircularAvatar
-          imagePath={{
-            uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-          }}
-        />
-      )}
-      keyExtractor={item => item.id.toString()}
-    />
+    <View style={{gap: 8}}>
+      <CustomText
+        text={'Favorite Actors & Actresses'}
+        style={{
+          color: 'white',
+          fontSize: Theme.fontSizes.md,
+          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+        }}
+        weight="medium"
+      />
+      <ScrollableRow
+        data={props.actors}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({item}) => {
+          return (
+            <CircularAvatar
+              imagePath={
+                item.image
+                  ? {
+                      uri: item.image,
+                    }
+                  : ImageManager.IMAGE_NAMES.PATIPLAYLOGO
+              }
+            />
+          );
+        }}
+        initialNumToRender={4}
+      />
+    </View>
   );
 };
 
-const FavoriteCrewMembers = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+type FavoriteCrewMembersProps = {
+  crewMembers: any[];
+};
+
+const FavoriteCrewMembers = (props: FavoriteCrewMembersProps) => {
   return (
-    <NavigableListSection
-      title="Favorite Crew Members"
-      data={nowPlayMovies}
-      pressHandler={() => {
-        navigation.navigate('FavoriteCrew');
-      }}
-      initialNumToRender={6}
-      renderItem={({item}: {item: TopMovie}) => (
-        <CircularAvatar
-          imagePath={{
-            uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-          }}
-        />
-      )}
-      keyExtractor={item => item.id.toString()}
-    />
+    <View style={{gap: 8}}>
+      <CustomText
+        text={'Favorite Crew Members'}
+        style={{
+          color: 'white',
+          fontSize: Theme.fontSizes.md,
+          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+        }}
+        weight="medium"
+      />
+      <ScrollableRow
+        data={props.crewMembers}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({item}) => {
+          return (
+            <CircularAvatar
+              imagePath={
+                item.image
+                  ? {
+                      uri: item.image,
+                    }
+                  : ImageManager.IMAGE_NAMES.PATIPLAYLOGO
+              }
+            />
+          );
+        }}
+        initialNumToRender={4}
+      />
+    </View>
   );
 };

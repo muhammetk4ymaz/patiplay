@@ -1,7 +1,7 @@
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import React, {useRef, useState} from 'react';
 import {Avatar, FlatList} from 'native-base';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import CustomText from '../../../../components/shared/CustomText';
 import {EmojiLaughIcon} from '../../../../../assets/icons';
 import {useAppDispatch, useAppSelector} from '../../../../redux/hooks';

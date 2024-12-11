@@ -7,7 +7,13 @@ type Props = {
 };
 
 const CircularAvatar = (props: Props) => {
-  return <Avatar source={props.imagePath} size={'lg'} />;
+  return (
+    <Avatar
+      source={props.imagePath}
+      size={'lg'}
+      backgroundColor={'transparent'}
+    />
+  );
 };
 
 export default React.memo(CircularAvatar);

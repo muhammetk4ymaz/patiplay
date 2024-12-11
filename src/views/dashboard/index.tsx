@@ -1,25 +1,14 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {Avatar} from 'native-base';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
-import {
-  Image,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import IconFeather from 'react-native-vector-icons/Feather';
-import IconIonicons from 'react-native-vector-icons/Ionicons';
+import {Image, Platform, StyleSheet, View} from 'react-native';
 import {HomeIcon, SearchFilledIcon, SearchIcon} from '../../../assets/icons';
-import HeaderLeftTitle from '../../components/shared/ForIos/HeaderLeftTitle';
+import HeaderLeftTitle from '../../components/shared/ios/HeaderLeftTitle';
 import {ImageManager} from '../../constants/ImageManager';
-import {Theme} from '../../constants/Theme';
+import {Theme} from '../../utils/theme';
 import '../../i18n';
-import {RootStackParamList, Routes} from '../../navigation/routes';
-import {setSearchFilterVisible} from '../../redux/features/search/searchSlice';
-import {useAppDispatch} from '../../redux/hooks';
+import {Routes} from '../../navigation/routes';
 import {
   FilterBotton,
   LanguageButton,
@@ -28,7 +17,7 @@ import {
 } from '../../components/shared/HeaderRight';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../redux/store';
-import ShareButton from '../../components/shared/ShareButton';
+import ShareButton from '../../components/shared/Buttons/ShareButton';
 
 type Props = {};
 
@@ -105,7 +94,7 @@ const DashboardView = (props: Props) => {
               <View
                 style={{
                   flexDirection: 'row',
-                  alignItems: 'center',  
+                  alignItems: 'center',
                   paddingHorizontal: Theme.paddings.viewHorizontalPadding,
                 }}>
                 {isAuthenticated ? <ShareButton /> : <LanguageButton />}

@@ -2,7 +2,7 @@ import {Dimensions, StatusBar, StyleSheet, View} from 'react-native';
 import React, {useCallback} from 'react';
 import nowPlayMovies from '../../../../models/now_play_movies';
 import CustomText from '../../../../components/shared/CustomText';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import LinearGradient from 'react-native-linear-gradient';
 import {useTranslation} from 'react-i18next';
 import '../../../../i18n';
@@ -22,7 +22,8 @@ const itemWidth = width * 0.7;
 const MainTitleCarousel = () => {
   const scrollX = useSharedValue(0);
   const onScroll = useAnimatedScrollHandler(event => {
-    scrollX.value = event.contentOffset.x / (itemWidth + Theme.spacing.rowGap);
+    scrollX.value =
+      event.contentOffset.x / (itemWidth + Theme.spacing.columnGap);
   });
 
   console.log('MainTitleCarousel Rendered');
@@ -60,7 +61,7 @@ const MainTitleCarousel = () => {
         nestedScrollEnabled
         style={{flexGrow: 0}}
         contentContainerStyle={{
-          gap: Theme.spacing.rowGap,
+          gap: Theme.spacing.columnGap,
           paddingHorizontal: (width - itemWidth) / 2,
         }}
         onScroll={onScroll}
@@ -68,7 +69,7 @@ const MainTitleCarousel = () => {
         horizontal
         pagingEnabled
         removeClippedSubviews={true}
-        snapToInterval={itemWidth + Theme.spacing.rowGap}
+        snapToInterval={itemWidth + Theme.spacing.columnGap}
         scrollEventThrottle={1000 / 60}
         decelerationRate="fast"
         initialNumToRender={2}

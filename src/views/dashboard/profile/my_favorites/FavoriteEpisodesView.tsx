@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import popularTitles from '../../../../models/popular';
 import FavoriteItemComponent from './components/FavoriteItemComponent';
 import RemoveFavoriteModal from './components/RemoveFavoriteModal';
@@ -52,10 +52,10 @@ const FavoriteEpisodesView = (props: Props) => {
           numColumns={2}
           contentContainerStyle={{
             paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-            gap: Theme.spacing.columnGap,
+            rowGap: Theme.spacing.rowGap,
           }}
           columnWrapperStyle={{
-            gap: Theme.spacing.rowGap,
+            columnGap: Theme.spacing.columnGap,
           }}
           keyExtractor={item => item.id.toString()}
           renderItem={({item}) => (

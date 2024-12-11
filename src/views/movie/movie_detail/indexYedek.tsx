@@ -1,51 +1,59 @@
 import {
-  ActivityIndicator,
-  FlatList,
-  ListRenderItem,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useEffect} from 'react';
-import CustomText from '../../../components/shared/CustomText';
-import {Theme} from '../../../constants/Theme';
-import {
   NavigationProp,
   RouteProp,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import CustomTextButton from '../../../components/shared/CustomTextButton';
-import Movie from '../../../models/movie';
 import axios from 'axios';
-import TeamTabs from './components/TeamTabs';
-import {Center} from 'native-base';
-import AvatarGroupComponent from '../../../components/shared/AvatarGroupComponent';
-import Reactions from './components/Reactions';
-import {useTranslation} from 'react-i18next';
-import '../../../i18n';
-
-import DeviceInfo from 'react-native-device-info';
-import TrailerEditor from './components/TrailerEditor';
-import CustomTabBar from '../../../components/CustomTabBar';
+import React, {useEffect} from 'react';
 import {
-  NavigationState,
-  SceneMap,
-  SceneRendererProps,
-  TabBar,
-} from 'react-native-tab-view';
-import TitleChartsView from '../../dashboard/patiplay/charts/TitlesChartsView';
-import CompaniesChartsView from '../../dashboard/patiplay/charts/CompaniesChartsView';
-import CastChartsView from '../../dashboard/patiplay/charts/CastChartsView';
-import CrewChartsView from '../../dashboard/patiplay/charts/CrewChartsView';
-import CinephilesChartsView from '../../dashboard/patiplay/charts/CinephilesChartsView';
-import DynamicHeightTab from '../../../components/DynamicHeightTab';
-import {Tabs} from 'react-native-collapsible-tab-view';
-import nowPlayMovies from '../../../models/now_play_movies';
-import {ChartTitleItem} from '../../dashboard/patiplay/charts/components/ChartTitleItem';
-import Comment from '../movie_player/components/Comment';
+  ActivityIndicator,
+  Animated,
+  Dimensions,
+  FlatList,
+  LayoutChangeEvent,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import CustomTextButton from '../../../components/shared/Buttons/CustomTextButton';
+import CustomText from '../../../components/shared/CustomText';
+import Movie from '../../../models/movie';
+import {Theme} from '../../../utils/theme';
+import Reactions from './components/Reactions';
+
+import popularTitles from '../../../models/popular';
+import upComingTitles from '../../../models/upcoming';
 import {RootStackParamList} from '../../../navigation/routes';
+import {
+  setCasts,
+  setClips,
+  setComments,
+  setCrew,
+  setDiscussions,
+  setFans,
+  setLanguages,
+  setList,
+  setRecommmendaions,
+  setRelated,
+  setTrailers,
+} from '../../../redux/features/titledetail/titleDetailSlice';
+import {useAppDispatch} from '../../../redux/hooks';
+import TrailerEditor from './components/TrailerEditor';
+import TitleCastTab from './tabs/TitleCastTab';
+import TitleClipsTab from './tabs/TitleClipsTab';
+import TitleCommentsTab from './tabs/TitleCommentsTab';
+import TitleCrewTab from './tabs/TitleCrewTab';
+import TitleDiscussionsTab from './tabs/TitleDiscussionsTab';
+import TitleEpisodesTab from './tabs/TitleEpisodesTab';
+import TitleFansTab from './tabs/TitleFansTab';
+import TitleLanguagesTab from './tabs/TitleLanguagesTab';
+import TitleListsTab from './tabs/TitleListsTab';
+import TitleRecommendationsTab from './tabs/TitleRecommendationsTab';
+import TitleRelatedTab from './tabs/TitleRelatedTab';
+import TitleTrailersTab from './tabs/TitleTrailersTab';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 type RouteParams = {
   MovieDetail: {
@@ -53,31 +61,15 @@ type RouteParams = {
   };
 };
 
-const renderScene = SceneMap({
-  first: TitleChartsView,
-  second: CompaniesChartsView,
-  third: CastChartsView,
-  fourth: CrewChartsView,
-  fifth: CinephilesChartsView,
-});
-
-const routes = [
-  {key: 'first', title: 'Titles'},
-  {key: 'second', title: 'Companies'},
-  {key: 'third', title: 'Cast'},
-  {key: 'fourth', title: 'Crew'},
-  {key: 'fifth', title: 'Cinephiles'},
-];
-
 const MovieDetailView = () => {
   const route = useRoute<RouteProp<RouteParams, 'MovieDetail'>>();
   const movieId = route.params.movieId;
   const [movie, setMovie] = React.useState<Movie>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
-  const tabBarScrollRef = React.useRef<FlatList>(null);
 
-  const [activeTab, setActiveTab] = React.useState(0);
+  const uuid = 'dd1d40cb-9011-4bdd-9318-4df0efb44cf1';
+
   useEffect(() => {
     axios
       .get(`https://api.themoviedb.org/3/movie/${movieId}?language=en-US`, {
@@ -98,8 +90,6 @@ const MovieDetailView = () => {
         setError('An error occurred');
       });
   }, []);
-
-  const DATA = [0, 1, 2, 3, 4];
 
   if (loading) {
     return (
@@ -129,10 +119,20 @@ const MovieDetailView = () => {
   }
 
   const Header = () => {
+    const [reactionY, setReactionY] = React.useState<number>(0);
+
+    const handleLayout = (event: any) => {
+      // Get the 'y' value from the event
+      const y = event.nativeEvent.layout.y;
+      const x = event.nativeEvent.layout.x;
+      console.log(y); // You can log it to see the value
+
+      setReactionY(y); // Update the state with the 'y' value
+    };
     return (
       <View
         style={{
-          backgroundColor: 'black',
+          backgroundColor: Theme.colors.background,
           paddingBottom: 12,
           width: '100%',
         }}>
@@ -149,11 +149,49 @@ const MovieDetailView = () => {
             style={styles.movieOverview}
             weight="medium"
           />
-          <Reactions />
+        </View>
+        <View
+          style={{
+            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+            marginTop: Theme.spacing.columnGap,
+          }}
+          onLayout={event => {
+            handleLayout(event);
+          }}>
+          <Reactions reactionY={reactionY} />
         </View>
       </View>
     );
   };
+
+  return (
+    <ScrollView
+      style={{flex: 1, backgroundColor: 'black'}}
+      removeClippedSubviews>
+      <Header />
+      <View style={{minHeight: Dimensions.get('window').height * 0.5}}>
+        <TabsView />
+      </View>
+    </ScrollView>
+  );
+};
+
+export default MovieDetailView;
+
+const TabsView = () => {
+  const dispatch = useAppDispatch();
+
+  let clipClicked = false;
+  let trailerClicked = false;
+  let commentClicked = false;
+  let discussionClicked = false;
+  let recommendationClicked = false;
+  let listClicked = false;
+  let fanClicked = false;
+  let castClicked = false;
+  let crewClicked = false;
+  let languageClicked = false;
+  let relatedClicked = false;
 
   const onChangeTab = (index: number) => {
     setActiveTab(index);
@@ -162,126 +200,207 @@ const MovieDetailView = () => {
       animated: true,
       viewPosition: 0.5,
     });
+    switch (index) {
+      case 0:
+        break;
+
+      case 1:
+        if (!clipClicked) {
+          setTimeout(() => {
+            dispatch(setClips(popularTitles));
+          }, 0);
+          clipClicked = true;
+        }
+        break;
+
+      case 2:
+        if (!trailerClicked) {
+          setTimeout(() => {
+            dispatch(setTrailers(upComingTitles));
+          }, 0);
+          trailerClicked = true;
+        }
+        break;
+
+      case 3:
+        if (!commentClicked) {
+          setTimeout(() => {
+            dispatch(setComments(popularTitles));
+          }, 0);
+          commentClicked = true;
+        }
+        break;
+      case 4:
+        if (!discussionClicked) {
+          setTimeout(() => {
+            dispatch(setDiscussions(popularTitles));
+          }, 500);
+          discussionClicked = true;
+        }
+        break;
+
+      case 5:
+        if (!recommendationClicked) {
+          setTimeout(() => {
+            dispatch(setRecommmendaions(popularTitles));
+          }, 0);
+          recommendationClicked = true;
+        }
+        break;
+
+      case 6:
+        if (!listClicked) {
+          setTimeout(() => {
+            dispatch(setList(popularTitles));
+          }, 0);
+          listClicked = true;
+        }
+        break;
+
+      case 7:
+        if (!fanClicked) {
+          setTimeout(() => {
+            dispatch(setFans(popularTitles));
+          }, 0);
+          fanClicked = true;
+        }
+        break;
+
+      case 8:
+        if (!castClicked) {
+          setTimeout(() => {
+            dispatch(setCasts(popularTitles));
+          }, 0);
+          castClicked = true;
+        }
+        break;
+
+      case 9:
+        if (!crewClicked) {
+          setTimeout(() => {
+            dispatch(setCrew(popularTitles));
+          }, 0);
+          crewClicked = true;
+        }
+        break;
+
+      case 10:
+        if (!languageClicked) {
+          setTimeout(() => {
+            dispatch(setLanguages(popularTitles));
+          }, 0);
+          languageClicked = true;
+        }
+        break;
+
+      case 11:
+        if (!relatedClicked) {
+          setTimeout(() => {
+            dispatch(setRelated(popularTitles));
+          }, 500);
+          relatedClicked = true;
+        }
+        break;
+
+      default:
+        break;
+    }
   };
 
+  const components = [
+    <TitleEpisodesTab />,
+    <TitleClipsTab />,
+    <TitleTrailersTab />,
+    <TitleCommentsTab />,
+    <TitleDiscussionsTab />,
+    <TitleRecommendationsTab />,
+    <TitleListsTab />,
+    <TitleFansTab />,
+    <TitleCastTab />,
+    <TitleCrewTab />,
+    <TitleLanguagesTab />,
+    <TitleRelatedTab />,
+  ];
+
+  const tabBarScrollRef = React.useRef<FlatList>(null);
+
+  const [activeTab, setActiveTab] = React.useState(0);
   return (
-    <Tabs.Container
-      onIndexChange={onChangeTab}
-      allowHeaderOverscroll={true}
-      headerContainerStyle={{
-        backgroundColor: Theme.colors.background,
-      }}
-      renderHeader={Header}
-      containerStyle={{
-        backgroundColor: Theme.colors.background,
-      }}
-      renderTabBar={props => (
-        <FlatList
-          ref={tabBarScrollRef}
-          horizontal
-          contentContainerStyle={{
-            backgroundColor: Theme.colors.background,
-            gap: 4,
-          }}
-          data={['Details', 'Episodes', 'Comments']}
-          renderItem={({item, index}) => {
-            return (
-              <TouchableOpacity
+    <Animated.View>
+      <FlatList
+        ref={tabBarScrollRef}
+        horizontal
+        contentContainerStyle={{
+          backgroundColor: Theme.colors.background,
+          gap: 4,
+        }}
+        data={[
+          'Episodes',
+          'Clips',
+          'Trailers',
+          'Comments',
+          'Discussions',
+          'Recommendations',
+          'Lists',
+          'Fans',
+          'Cast',
+          'Crew',
+          'Languages',
+          'Related',
+        ]}
+        renderItem={({item, index}) => {
+          return (
+            <TouchableOpacity
+              style={[
+                {
+                  padding: 4,
+                },
+              ]}
+              onPress={() => {
+                onChangeTab(index);
+              }}>
+              <View
                 style={[
                   {
-                    padding: 4,
+                    paddingHorizontal: 24,
+                    paddingVertical: 4,
+                    borderWidth: 1,
+                    borderRadius: 36,
+                    borderColor:
+                      activeTab === index
+                        ? Theme.colors.primary
+                        : Theme.colors.lightgray,
                   },
-                ]}
-                onPress={() => {
-                  props.onTabPress(item);
-                }}>
-                <View
-                  style={[
-                    {
-                      paddingHorizontal: 24,
-                      paddingVertical: 4,
-                      borderWidth: 1,
-                      borderRadius: 36,
-                      borderColor:
-                        activeTab === index
-                          ? Theme.colors.primary
-                          : Theme.colors.lightgray,
-                    },
-                  ]}>
-                  <CustomText
-                    text={item.toString()}
-                    style={{
-                      color:
-                        activeTab === index
-                          ? Theme.colors.primary
-                          : Theme.colors.lightgray,
-                    }}
-                  />
-                </View>
-              </TouchableOpacity>
-            );
-          }}
-        />
-      )}>
-      <Tabs.Tab name="Details">
-        <Tabs.ScrollView
-          contentContainerStyle={{
-            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-            gap: Theme.spacing.rowGap,
-          }}>
-          <CustomText
-            text={movie?.overview || ''}
-            style={styles.movieOverview}
-            weight="medium"
-          />
-        </Tabs.ScrollView>
-      </Tabs.Tab>
-      <Tabs.Tab name="Episodes">
-        <Tabs.FlatList
-          data={nowPlayMovies}
-          numColumns={3}
-          contentContainerStyle={{
-            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-            gap: Theme.spacing.rowGap,
-          }}
-          columnWrapperStyle={{
-            gap: Theme.spacing.columnGap,
-          }}
-          renderItem={({item}) => (
-            <ChartTitleItem title={item.title} poster_path={item.poster_path} />
-          )}
-          keyExtractor={item => item.id.toString()}
-        />
-      </Tabs.Tab>
-
-      <Tabs.Tab name="Comments">
-        <Tabs.FlatList
-          data={nowPlayMovies}
-          contentContainerStyle={{
-            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-            gap: Theme.spacing.rowGap,
-          }}
-          renderItem={({item}) => <Comment />}
-          keyExtractor={item => item.id.toString()}
-        />
-      </Tabs.Tab>
-    </Tabs.Container>
+                ]}>
+                <CustomText
+                  text={item.toString()}
+                  style={{
+                    color:
+                      activeTab === index
+                        ? Theme.colors.primary
+                        : Theme.colors.lightgray,
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
+          );
+        }}
+      />
+      <Animated.View style={{flex: 1}}>
+        {components.map((scene, index) => (
+          <Animated.View
+            key={index}
+            style={{
+              display: activeTab === index ? 'flex' : 'none',
+              flex: 1,
+            }}>
+            {scene}
+          </Animated.View>
+        ))}
+      </Animated.View>
+    </Animated.View>
   );
 };
-
-export default MovieDetailView;
-
-const AddToWatchlistButton = React.memo((props: any) => {
-  const {t} = useTranslation();
-  return (
-    <CustomTextButton
-      text={t('common:actions.addToWatchlist')}
-      onPress={() => {}}
-      borderRadius={36}
-      backgroundColor="#2E2D2DFF"
-    />
-  );
-});
 
 const PlayButton = React.memo((props: any) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -361,6 +480,7 @@ type MovieInfoProps = {
 };
 
 const MovieInfo = (props: MovieInfoProps) => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const CategoryText = (props: any) => {
     return (
       <CustomText
@@ -383,7 +503,12 @@ const MovieInfo = (props: MovieInfoProps) => {
       <View style={styles.categoryContainer}>
         {props.movie.genres.map((genre, index) => (
           <View key={index} style={styles.categoryContent}>
-            <CategoryText category={genre.name} />
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Genres');
+              }}>
+              <CategoryText category={genre.name} />
+            </TouchableOpacity>
             {index !== props.movie.genres.length - 1 && (
               <View style={styles.categorySeperator}></View>
             )}
@@ -405,57 +530,22 @@ const MovieInfo = (props: MovieInfoProps) => {
             gap: 8,
           }}>
           {tags.map((tag, index) => (
-            <View key={index} style={styles.tag}>
-              <CustomText
-                text={tag}
-                style={{color: Theme.colors.white}}
-                weight="medium"
-              />
-            </View>
+            <TouchableOpacity
+              key={index}
+              onPress={() => {
+                navigation.navigate('ReleaseDates');
+              }}>
+              <View style={styles.tag}>
+                <CustomText
+                  text={tag}
+                  style={{color: Theme.colors.white}}
+                  weight="medium"
+                />
+              </View>
+            </TouchableOpacity>
           ))}
         </View>
       </View>
     </View>
-  );
-};
-
-const DubRequestButton = () => {
-  return (
-    <RequestButton
-      text="Dub Request"
-      onPress={() => {
-        console.log('Dub Request');
-      }}
-    />
-  );
-};
-
-const SubsRequestButton = () => {
-  return (
-    <RequestButton
-      text="Subs Request"
-      onPress={() => {
-        console.log('Dub Request');
-      }}
-    />
-  );
-};
-
-type RequestButtonProps = {
-  text: string;
-  onPress: () => void;
-};
-
-const RequestButton = (props: RequestButtonProps) => {
-  return (
-    <CustomTextButton
-      text={props.text}
-      paddingHorizontal={18}
-      paddingVertical={6}
-      textStyle={{fontSize: Theme.fontSizes.xs}}
-      onPress={props.onPress}
-      borderRadius={36}
-      backgroundColor="#101725FF"
-    />
   );
 };

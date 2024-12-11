@@ -7,21 +7,20 @@ import {
   View,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import {Theme} from '../../constants/Theme';
+import {Theme} from '../../utils/theme';
 import {VerificationIcon} from '../../../assets/icons';
-import CustomTextButton from '../../components/shared/CustomTextButton';
-import InputErrorText from '../../components/shared/InputErrorText';
+import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
+
 import {useNavigation} from '@react-navigation/native';
 import networkService from '../../helpers/networkService';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {setInputEnabledList} from '../../redux/features/verification/verificationSlice';
+import InputErrorText from '../../components/shared/Texts/InputErrorText';
 
 const VerificationView = () => {
   const navigation = useNavigation();
   // const route = useRoute();
   // const uuid = route.params.uuid;
 
-  const {inputEnabledList} = useAppSelector(state => state.verification);
   const dispatch = useAppDispatch();
 
   const inputRefs = Array.from({length: 6}, () => useRef(null));
@@ -33,6 +32,14 @@ const VerificationView = () => {
   const [invalidInputs, setInvalidInputs] = useState(Array(6).fill(false));
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [inputEnabledList, setInputEnabledList] = useState([
+    'false',
+    'false',
+    'false',
+    'false',
+    'false',
+    'false',
+  ]);
 
   // Add state for focused input index
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
@@ -64,14 +71,14 @@ const VerificationView = () => {
     if (numericText.length === 1 && inputRefs[index + 1]) {
       const newEditableInputList = [...inputEnabledList];
       newEditableInputList[index + 1] = true;
-      dispatch(setInputEnabledList(newEditableInputList));
+      setInputEnabledList(newEditableInputList);
       setTimeout(() => {
         inputRefs[index + 1].current.focus();
       }, 1);
     } else if (numericText.length === 0 && inputRefs[index - 1]) {
       const newEditableInputList = [...inputEnabledList];
       newEditableInputList[index] = false;
-      dispatch(setInputEnabledList(newEditableInputList));
+      setInputEnabledList(newEditableInputList);
       inputRefs[index - 1].current.focus();
     }
   };
@@ -169,7 +176,7 @@ const VerificationView = () => {
                     newEditableInputList[i] = false;
                   }
 
-                  dispatch(setInputEnabledList(newEditableInputList));
+                  setInputEnabledList(newEditableInputList);
                 }}
                 style={styles.input}
                 value={code[index]}

@@ -2,7 +2,7 @@ import React from 'react';
 import {Dimensions, Image, StyleSheet, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 
 type Props = {
   item: any;

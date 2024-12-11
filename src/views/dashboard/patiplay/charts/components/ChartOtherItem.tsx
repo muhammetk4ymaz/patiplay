@@ -1,5 +1,6 @@
 import {
   Dimensions,
+  ImageSourcePropType,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -10,11 +11,17 @@ import {Avatar} from 'native-base';
 import {ImageManager} from '../../../../../constants/ImageManager';
 import CustomText from '../../../../../components/shared/CustomText';
 import {characterLimited} from '../../../profile/favorite_companies';
-import {Theme} from '../../../../../constants/Theme';
+import {Theme} from '../../../../../utils/theme';
+import {calculateGridItemWidth} from '../../../../../utils/calculateGridItemWidth';
+import CircularAvatar from '../../../../../components/shared/CircularAvatar';
 
 const {width} = Dimensions.get('window');
 
 type Props = {
+  avatarUrl: ImageSourcePropType;
+  title: string;
+  subtitle: string;
+  rate: number;
   onPress: () => void;
 };
 
@@ -24,15 +31,11 @@ const ChartOtherItem = (props: Props) => {
       style={{
         gap: 12,
         alignItems: 'center',
-        width:
-          (width -
-            2 * Theme.paddings.viewHorizontalPadding -
-            2 * Theme.spacing.rowGap) /
-          3,
+        width: calculateGridItemWidth(3),
       }}
       onPress={props.onPress}>
-      <View style={{}}>
-        <Avatar size="lg" source={ImageManager.IMAGE_NAMES.MANAVATAR} />
+      <View>
+        <CircularAvatar imagePath={props.avatarUrl} />
         <View
           style={{
             position: 'absolute',
@@ -46,7 +49,7 @@ const ChartOtherItem = (props: Props) => {
             right: -8,
           }}>
           <CustomText
-            text="14"
+            text={props.rate.toString()}
             weight="medium"
             style={{
               color: 'white',
@@ -58,7 +61,7 @@ const ChartOtherItem = (props: Props) => {
       <View>
         <CustomText
           numberOfLines={1}
-          text={characterLimited('Beren Saat', 12)}
+          text={characterLimited(props.title, 12)}
           weight="medium"
           style={{
             color: 'white',

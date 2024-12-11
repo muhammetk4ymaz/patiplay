@@ -1,36 +1,18 @@
-import React, {useCallback, useRef} from 'react';
-import {useState} from 'react';
-import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import nowPlayMovies from '../../../../models/now_play_movies';
-import {Theme} from '../../../../constants/Theme';
-import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {BottomSheetModal, BottomSheetView} from '@gorhom/bottom-sheet';
-import CustomBottomSheetModal from '../../../../components/shared/CustomBottomSheetModal';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import CustomText from '../../../../components/shared/CustomText';
+import {BottomSheetModal} from '@gorhom/bottom-sheet';
+import React, {useRef, useState} from 'react';
+import {ActivityIndicator, Dimensions, FlatList, View} from 'react-native';
+import {Theme} from '../../../../utils/theme';
 import FavoriteItemComponent from './components/FavoriteItemComponent';
 import RemoveFavoriteModal from './components/RemoveFavoriteModal';
 
 const {width} = Dimensions.get('window');
 
-const FavoriteTitlesView = React.memo(() => {
-  const [loading, setLoading] = useState(true);
+type Props = {
+  data: any[];
+};
 
-  React.useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 300);
-  }, []);
-
+const FavoriteTitlesView = (props: Props) => {
+  const [loading, setLoading] = useState(false);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   if (loading) {
@@ -51,24 +33,24 @@ const FavoriteTitlesView = React.memo(() => {
     );
   } else {
     return (
-      <View>
+      <View style={{flex: 1}}>
         <FlatList
-          data={nowPlayMovies}
+          data={props.data}
           numColumns={3}
           contentContainerStyle={{
             paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-            gap: 12,
+            rowGap: Theme.spacing.rowGap,
           }}
           columnWrapperStyle={{
-            gap: 12,
+            columnGap: Theme.spacing.columnGap,
           }}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => item.uuid.toString()}
           renderItem={({item}) => (
             <FavoriteItemComponent
               onPressButton={() => {
                 bottomSheetModalRef.current?.present();
               }}
-              poster_path={item.poster_path}
+              source={{uri: item.verticalPhotos__0__url}}
               type="movie"
             />
           )}></FlatList>
@@ -76,6 +58,6 @@ const FavoriteTitlesView = React.memo(() => {
       </View>
     );
   }
-});
+};
 
 export default FavoriteTitlesView;

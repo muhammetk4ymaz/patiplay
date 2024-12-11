@@ -1,10 +1,10 @@
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import EmailTextField from './EmailTextField';
 import PasswordTextField from './PasswordTextField';
 import CustomText from '../../../components/shared/CustomText';
-import CustomTextButton from '../../../components/shared/CustomTextButton';
+import CustomTextButton from '../../../components/shared/Buttons/CustomTextButton';
 import {Controller, useForm} from 'react-hook-form';
 import InputErrorText from '../../../components/shared/InputErrorText';
 import networkService from '../../../helpers/networkService';

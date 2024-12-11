@@ -1,9 +1,8 @@
 import {Dimensions, Image, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import TopMovie from '../../../../models/top_movie';
-import CustomText from '../../../../components/shared/CustomText';
-import {Theme} from '../../../../constants/Theme';
-import DateLabel from '../../../../components/shared/DateLabel';
+import {Theme} from '../../../../utils/theme';
+import DateLabel from '../../../../components/shared/Labels/DateLabel';
 
 type Props = {
   item: TopMovie;
@@ -28,7 +27,7 @@ const CarouselItemForCalendar = (props: Props) => {
         style={[StyleSheet.absoluteFillObject, {borderRadius: 12}]}
       />
       <DateLabel
-        date="18"
+        day="18"
         month="MAR"
         backgroundColor={'rgba(17, 24, 39,0.5)'}
         dateFontWeight="bold"

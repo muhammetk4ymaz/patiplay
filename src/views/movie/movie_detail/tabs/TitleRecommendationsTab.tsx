@@ -1,59 +1,106 @@
-import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  View,
-} from 'react-native';
+import axios from 'axios';
 import React from 'react';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../../../redux/store';
-import {Theme} from '../../../../constants/Theme';
-import DicussionNew from '../../../../components/shared/DicussionNew';
+import {ActivityIndicator, Dimensions, StyleSheet, View} from 'react-native';
+import networkService from '../../../../helpers/networkService';
+import {Theme} from '../../../../utils/theme';
+import CommentsTab from '../../../dashboard/pages/components/CommentsTab';
 
-type Props = {};
+type Props = {
+  uuid: string;
+};
 
 const width = Dimensions.get('window').width;
 
 const TitleRecommendationsTab = (props: Props) => {
-  const recommmendaions = useSelector(
-    (state: RootState) => state.titleDetail.recommmendaions,
-  );
-  const recommmendaionsInitialLoading = useSelector(
-    (state: RootState) => state.titleDetail.recommmendaionsInitialLoading,
-  );
+  const [loading, setLoading] = React.useState(true);
+  const [recommentaions, setRecommentaions] = React.useState<any[]>([]);
 
-  return (
-    <FlatList
-      data={recommmendaions}
-      scrollEnabled={false}
-      initialNumToRender={5}
-      ListHeaderComponent={() => {
-        return (
-          recommmendaionsInitialLoading && (
-            <View
-              style={{
-                paddingVertical: Theme.spacing.columnGap,
-              }}>
-              <ActivityIndicator
-                size="large"
-                color={Theme.colors.primary}
-                animating={recommmendaionsInitialLoading}
-              />
-            </View>
-          )
-        );
-      }}
-      contentContainerStyle={{
-        paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-        gap: Theme.spacing.rowGap,
-      }}
-      keyExtractor={item => item.id.toString()}
-      renderItem={({item}) => {
-        return <DicussionNew replyOnPress={() => {}} />;
-      }}
-    />
-  );
+  const fetchRecommentaionsData = async () => {
+    try {
+      const response = await networkService.post('title/api/title-tab-movie/', {
+        slug: props.uuid,
+        tab: 'Recommendations',
+      });
+      // console.log('CommentTab', response.data);
+      setRecommentaions(response.data.recommentaions);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+
+          switch (error.response.status) {
+            case 400:
+              console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+              break;
+            case 401:
+              console.log(
+                'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+              );
+
+              break;
+            case 500:
+              console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+              break;
+            default:
+              console.log(
+                'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+              );
+          }
+        } else if (error.request) {
+          console.log(error.request);
+          console.log(
+            'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+          );
+        } else {
+          console.log('Error', error.message);
+          console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } else {
+        console.log('Error', error);
+        console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    console.log('Rendered CommentTab');
+
+    fetchRecommentaionsData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: width,
+        }}>
+        <ActivityIndicator
+          size="large"
+          color={Theme.colors.primary}
+          animating={loading}
+        />
+      </View>
+    );
+  } else {
+    return (
+      <CommentsTab
+        data={recommentaions}
+        endpoint="title-recommendation"
+        refreshData={() => {
+          fetchRecommentaionsData();
+        }}
+        uuid={props.uuid}
+      />
+    );
+  }
 };
 
 export default React.memo(TitleRecommendationsTab);

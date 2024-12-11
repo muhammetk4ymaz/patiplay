@@ -1,11 +1,13 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import {characterLimited} from '../../../views/dashboard/profile/favorite_companies';
 import CircularAvatar from '../CircularAvatar';
 import CustomText from '../CustomText';
-import CustomTextButton from '../CustomTextButton';
+import CustomTextButton from '../Buttons/CustomTextButton';
+import {calculateGridItemWidth} from '../../../utils/calculateGridItemWidth';
+import {ImageManager} from '../../../constants/ImageManager';
 
 const SPACE = Theme.spacing.columnGap;
 
@@ -19,8 +21,14 @@ type Props = {
 
 const FavoriteItem = (props: Props) => {
   return (
-    <View style={{gap: SPACE, alignItems: 'center', flex: 1 / 3}}>
+    <View
+      style={{
+        gap: SPACE,
+        alignItems: 'center',
+        width: calculateGridItemWidth(3),
+      }}>
       <TouchableOpacity
+        onPress={props.onPress}
         style={{
           position: 'absolute',
           right: -4,
@@ -30,9 +38,13 @@ const FavoriteItem = (props: Props) => {
         <IconIonicons name="ellipsis-vertical" color={'white'} size={20} />
       </TouchableOpacity>
       <CircularAvatar
-        imagePath={{
-          uri: props.image,
-        }}
+        imagePath={
+          props.image
+            ? {
+                uri: props.image,
+              }
+            : ImageManager.IMAGE_NAMES.PATIPLAYLOGO
+        }
       />
       <View>
         <CustomText
@@ -51,7 +63,7 @@ const FavoriteItem = (props: Props) => {
           numberOfLines={1}
           weight="medium"
           style={{
-            fontSize: Theme.fontSizes.sm,
+            fontSize: Theme.fontSizes.xs,
             textAlign: 'center',
             color: 'white',
             opacity: 0.5,

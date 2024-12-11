@@ -6,10 +6,11 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import {Theme} from '../../constants/Theme';
-import HeaderBackWithTitle from './ForIos/HeaderBackWithTitle';
+import {Theme} from '../../utils/theme';
+import HeaderBackWithTitle from './ios/HeaderBackWithTitle';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../../navigation/routes';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 const {height} = Dimensions.get('window');
 
 type Props = {
@@ -18,6 +19,7 @@ type Props = {
   titleInitialOpacity: number;
   animationMultiplier: number;
   isBackButton?: boolean;
+  titleCenter?: boolean;
 };
 
 const CustomPage = ({
@@ -26,6 +28,7 @@ const CustomPage = ({
   titleInitialOpacity,
   animationMultiplier,
   isBackButton = false,
+  titleCenter = false,
 }: Props) => {
   const handleScroll = (event: any) => {
     Animated.event([{nativeEvent: {contentOffset: {y: scrollY}}}], {
@@ -33,6 +36,7 @@ const CustomPage = ({
     })(event);
   };
 
+  const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -40,9 +44,12 @@ const CustomPage = ({
   React.useEffect(() => {
     if (Platform.OS === 'ios') {
       navigation.setOptions({
-        headerTitle: '',
+        headerTitle: titleCenter ? pageName : '',
         headerLeft: () => {
           if (isBackButton) {
+            if (titleCenter) {
+              return null;
+            }
             return <HeaderBackWithTitle title={pageName} />;
           }
           return (
@@ -108,6 +115,9 @@ const CustomPage = ({
     <ScrollView
       removeClippedSubviews={true}
       style={styles.view}
+      contentContainerStyle={{
+        paddingBottom: insets.bottom,
+      }}
       scrollEventThrottle={16}
       overScrollMode="never"
       onScroll={handleScroll}>

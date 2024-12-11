@@ -1,79 +1,184 @@
+import axios from 'axios';
+import React from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
   StyleSheet,
-  Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../../../redux/store';
-import {Theme} from '../../../../constants/Theme';
-import {useAppDispatch} from '../../../../redux/hooks';
-import {
-  setClips,
-  setEpisodes,
-} from '../../../../redux/features/titledetail/titleDetailSlice';
-import nowPlayMovies from '../../../../models/now_play_movies';
+import networkService from '../../../../helpers/networkService';
+import {Theme} from '../../../../utils/theme';
+import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
 import TitleWithProgress from '../../../../components/shared/CustomComponents/TitleWithProgress';
-
-type Props = {};
+import {ImageManager} from '../../../../constants/ImageManager';
+import CustomText from '../../../../components/shared/CustomText';
+import IconIonicons from 'react-native-vector-icons/Ionicons';
 
 const width = Dimensions.get('window').width;
 
-const TitleTrailersTab = (props: Props) => {
-  const trailers = useSelector(
-    (state: RootState) => state.titleDetail.trailers,
-  );
-  const trailersInitialLoading = useSelector(
-    (state: RootState) => state.titleDetail.trailersInitialLoading,
-  );
-
-  return (
-    <FlatList
-      data={trailers}
-      scrollEnabled={false}
-      ListHeaderComponent={() => {
-        return (
-          trailersInitialLoading && (
-            <View
-              style={{
-                paddingVertical: Theme.spacing.columnGap,
-              }}>
-              <ActivityIndicator
-                size="large"
-                color={Theme.colors.primary}
-                animating={trailersInitialLoading}
-              />
-            </View>
-          )
-        );
-      }}
-      contentContainerStyle={{
-        paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-        gap: Theme.spacing.rowGap,
-      }}
-      keyExtractor={item => item.id.toString()}
-      renderItem={({item}) => {
-        return (
-          <View
-            style={{
-              width: '45%',
-              marginBottom: Theme.spacing.rowGap,
-            }}>
-            <TitleWithProgress
-              backdropPath={item.backdrop_path}
-              percentage={0}
-              runtime={0}
-            />
-          </View>
-        );
-      }}
-    />
-  );
+type Props = {
+  uuid: string;
 };
 
-export default React.memo(TitleTrailersTab);
+const TitleTrailersTab = (props: Props) => {
+  const [loading, setLoading] = React.useState(true);
+  const [trailers, setTrailers] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    console.log('Rendered TrailerTab');
+
+    const fetchClipData = async () => {
+      try {
+        const response = await networkService.post(
+          'title/api/title-tab-movie/',
+          {
+            slug: props.uuid,
+            tab: 'Trailers',
+          },
+        );
+        console.log('Trailer', response.data);
+        setTrailers(response.data);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+
+            switch (error.response.status) {
+              case 400:
+                console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+                break;
+              case 401:
+                console.log(
+                  'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+                );
+
+                break;
+              case 500:
+                console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+                break;
+              default:
+                console.log(
+                  'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+                );
+            }
+          } else if (error.request) {
+            console.log(error.request);
+            console.log(
+              'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+            );
+          } else {
+            console.log('Error', error.message);
+            console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+          }
+        } else {
+          console.log('Error', error);
+          console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClipData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: width,
+        }}>
+        <ActivityIndicator
+          size="large"
+          color={Theme.colors.primary}
+          animating={loading}
+        />
+      </View>
+    );
+  } else {
+    return (
+      <FlatList
+        removeClippedSubviews={true}
+        scrollEnabled={false}
+        data={trailers}
+        numColumns={2}
+        contentContainerStyle={{
+          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+          rowGap: Theme.spacing.rowGap,
+        }}
+        columnWrapperStyle={{
+          columnGap: Theme.spacing.columnGap,
+        }}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({item, index}) => <TrailerItem item={item} />}></FlatList>
+    );
+  }
+};
+
+export default TitleTrailersTab;
 
 const styles = StyleSheet.create({});
+
+type TrailerItemProps = {
+  item: any;
+};
+
+const TrailerItem = (props: TrailerItemProps) => {
+  // React.useEffect(() => {
+  //   console.log('ClipItem', props.item);
+  // }, []);
+
+  return (
+    <View
+      style={{
+        width: calculateGridItemWidth(2),
+      }}>
+      <TitleWithProgress
+        backdropPath={
+          props.item.video?.filmImageUrl[0]?.url
+            ? {uri: props.item.video?.filmImageUrl[0]?.url}
+            : ImageManager.IMAGE_NAMES.PATOHORIZONTALLOGOWHITE
+        }
+        percentage={props.item.completion_rate}
+        runtime={props.item.total_time}
+      />
+      <View style={{flexDirection: 'row', flex: 1, alignItems: 'center'}}>
+        <View style={{flex: 1}}>
+          <CustomText
+            numberOfLines={1}
+            text={props.item.name[0].title}
+            style={{color: 'white', fontSize: Theme.fontSizes.sm}}
+            weight="light"
+          />
+
+          {/* <CustomText
+            numberOfLines={1}
+            text={props.item.title.title[0].title}
+            style={{
+              color: 'white',
+              fontSize: Theme.fontSizes.sm,
+              opacity: 0.5,
+            }}
+            weight="light"
+          /> */}
+        </View>
+        <TouchableOpacity
+          onPress={() => {}}
+          style={{
+            padding: 4,
+            right: -4,
+          }}>
+          <IconIonicons name="ellipsis-vertical" color={'white'} size={18} />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};

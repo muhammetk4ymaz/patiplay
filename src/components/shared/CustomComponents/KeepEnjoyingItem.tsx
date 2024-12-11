@@ -1,9 +1,10 @@
 import React from 'react';
 import {Dimensions, StyleSheet, TouchableOpacity, View} from 'react-native';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import CustomText from '../CustomText';
 import TitleWithProgress from './TitleWithProgress';
+import {calculateGridItemWidth} from '../../../utils/calculateGridItemWidth';
 
 type Props = {
   item: any;
@@ -14,11 +15,7 @@ const KeepEnjoyingItem = (props: Props) => {
   return (
     <View
       style={{
-        width:
-          (Dimensions.get('window').width -
-            2 * Theme.paddings.viewHorizontalPadding -
-            2 * Theme.spacing.rowGap) /
-          2,
+        width: calculateGridItemWidth(2),
         gap: 5,
       }}>
       <TitleWithProgress

@@ -1,15 +1,15 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-import ShareButton from './ShareButton';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../../navigation/routes';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import {Theme} from '../../constants/Theme';
+import {Theme} from '../../utils/theme';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {setSearchFilterVisible} from '../../redux/features/search/searchSlice';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {RootState} from '../../redux/store';
+import ShareButton from './Buttons/ShareButton';
 
 type Props = {};
 

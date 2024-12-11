@@ -1,31 +1,122 @@
-import {Avatar} from 'native-base';
-import React, {useState} from 'react';
+import React from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
-  FlatList,
   Image,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {SceneMap} from 'react-native-tab-view';
 import CustomTabBar from '../../../../components/CustomTabBar';
 import CustomText from '../../../../components/shared/CustomText';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import CommentsTab from '../components/CommentsTab';
 import DiscussionsTab from '../components/DiscussionsTab';
 import FeaturesTab from '../components/FeaturesTab';
 import ShortsTab from '../components/ShortsTab';
 import TvShowsTab from '../components/TvShowsTab';
-import {FlagList} from '../../home';
+
+import {RouteProp, useRoute} from '@react-navigation/native';
+import axios from 'axios';
 import FlagComponent from '../../../../components/shared/FlagComponent';
+import {FlagList} from '../../../../components/shared/FlagList';
+import networkService from '../../../../helpers/networkService';
 
 const {width, height} = Dimensions.get('window');
+
+type RouteParams = {
+  Countries: {
+    lang: string;
+  };
+};
 
 type Props = {};
 
 const CountriesView = (props: Props) => {
+  const route = useRoute<RouteProp<RouteParams, 'Countries'>>();
+
+  const [loading, setLoading] = React.useState(true);
+
+  const [countriesData, setCountriesData] = React.useState<any>();
+
+  const [currentCountriesLang, setCurrentCountriesLang] = React.useState('tr');
+
+  const fetchCountriesData = async () => {
+    try {
+      const response = await networkService.post('title/api/countries/', {
+        lang: currentCountriesLang,
+      });
+      // console.log('Response Countries', response.data);
+      console.log('Response Countries', response.data.countries);
+
+      setCountriesData(response.data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+
+          switch (error.response.status) {
+            case 400:
+              console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+              break;
+            case 401:
+              console.log(
+                'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+              );
+
+              break;
+            case 500:
+              console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+              break;
+            default:
+              console.log(
+                'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+              );
+          }
+        } else if (error.request) {
+          console.log(error.request);
+          console.log(
+            'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+          );
+        } else {
+          console.log('Error', error.message);
+          console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } else {
+        console.log('Error', error);
+        console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchCountriesData();
+  }, [currentCountriesLang]);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: width,
+          backgroundColor: 'black',
+        }}>
+        <ActivityIndicator
+          size="large"
+          color={Theme.colors.primary}
+          animating={loading}
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={{flex: 1, backgroundColor: 'black'}}>
       <View
@@ -39,7 +130,7 @@ const CountriesView = (props: Props) => {
         <View style={{flex: 1}}>
           <Image
             source={{
-              uri: `https://flagpedia.net/data/flags/h80/us.png`,
+              uri: `https://flagpedia.net/data/flags/h80/${countriesData.country.iso2.toLowerCase()}.png`,
             }}
             style={{
               ...StyleSheet.absoluteFillObject,
@@ -53,8 +144,18 @@ const CountriesView = (props: Props) => {
             style={{width: width, height: height * 0.35}}
           />
         </View>
-        <FlagList />
-        <Header />
+        <FlagList
+          flags={
+            countriesData.countries.length > 0
+              ? countriesData.countries.map((country: any) => country.iso2!)
+              : []
+          }
+          onPress={(iso2: string) => {
+            console.log('iso2', iso2.toLocaleLowerCase());
+            setCurrentCountriesLang(iso2.toLocaleLowerCase());
+          }}
+        />
+        <Header country={countriesData.country} counts={countriesData.counts} />
       </View>
       <CustomText
         text="Movie enthusiast with a passion for discovering hidden gems and the latest blockbusters"
@@ -65,7 +166,14 @@ const CountriesView = (props: Props) => {
         }}
         weight="light"
       />
-      <CustomTabBar routes={routes} renderScene={renderScene} />
+      <CustomTabBar
+        routes={routes}
+        renderScene={route =>
+          renderScene(route, countriesData, () => {
+            fetchCountriesData();
+          })
+        }
+      />
     </View>
   );
 };
@@ -88,7 +196,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const Header = () => {
+type HeaderProps = {
+  counts: any;
+  country: any;
+};
+
+const Header = (props: HeaderProps) => {
   return (
     <View style={styles.header}>
       <View style={styles.avatarContainer}>
@@ -103,19 +216,24 @@ const Header = () => {
             shadowOffset: {width: 2, height: 2},
             backgroundColor: 'white',
           }}>
-          <FlagComponent isoCode={'us'} width={45} height={45} />
+          <FlagComponent isoCode={props.country.iso2} width={45} height={45} />
         </View>
         <View
           style={{
             justifyContent: 'center',
           }}>
-          <CustomText text="United States" weight="bold" style={styles.name} />
           <CustomText
-            text="1.4K Film • 13.2K TV Shows"
+            text={props.country.name}
+            weight="bold"
+            style={styles.name}
+          />
+          <CustomText
+            text={`${props.counts.titles} Films • ${props.counts.series} TV Shows`}
+            // text="1.4K Film • 13.2K TV Shows"
             style={{
               color: 'white',
               opacity: 0.7,
-              fontSize: Theme.fontSizes.sm,
+              fontSize: Theme.fontSizes.xs,
             }}
           />
         </View>
@@ -124,14 +242,40 @@ const Header = () => {
   );
 };
 
-const renderScene = SceneMap({
-  first: FeaturesTab,
-  second: ShortsTab,
-  third: TvShowsTab,
-  fourth: CommentsTab,
-  fifth: DiscussionsTab,
-});
+const renderScene = (
+  {route}: {route: {key: string; title: string}},
+  countriesData: any,
+  refreshData: () => void,
+) => {
+  switch (route.key) {
+    case 'first':
+      return <FeaturesTab data={countriesData.titles} />;
+    case 'second':
+      return <ShortsTab data={countriesData.shorts} />;
+    case 'third':
+      return <TvShowsTab data={countriesData.series} />;
+    case 'fourth':
+      return (
+        <CommentsTab
+          data={countriesData.comment}
+          endpoint="countries-comment"
+          uuid={countriesData.country.iso2.toLowerCase()}
+          refreshData={refreshData}
+        />
+      );
+    case 'fifth':
+      return (
+        <DiscussionsTab
+          data={countriesData.discussion}
+          endpoint="countries-discussion"
+          uuid={countriesData.country.iso2.toLowerCase()}
+        />
+      );
 
+    default:
+      return null;
+  }
+};
 const routes = [
   {key: 'first', title: 'Features'},
   {key: 'second', title: 'Shorts'},

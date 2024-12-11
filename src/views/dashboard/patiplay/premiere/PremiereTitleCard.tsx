@@ -9,45 +9,54 @@ import React from 'react';
 import TopMovie from '../../../../models/top_movie';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomText from '../../../../components/shared/CustomText';
-import {Theme} from '../../../../constants/Theme';
-import SoldOutLabel from '../../../../components/shared/SoldOutLabel';
+import {Theme} from '../../../../utils/theme';
 import OverlayView from '../../../../components/shared/OverlayView';
 import FastImage from 'react-native-fast-image';
+import SoldOutLabel from '../../../../components/shared/Labels/SoldOutLabel';
+import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
+import {DigitalGalaModel} from '../../../../models/patiplay/DigitalGalaModel';
 
 const {width, height} = Dimensions.get('window');
 
 type PremiereTitleCardProps = {
-  title: TopMovie;
-  isExpired: boolean;
-  remainingSeatCount: number;
+  item?: DigitalGalaModel;
 };
 
 const PremiereTitleCard = (props: PremiereTitleCardProps) => {
+  console.log('isActive', props.item?.is_active);
+
+  const isExpired = !props.item?.is_active || false;
+  const isJoinable = props.item?.is_joinable || false;
+
   return (
     <TouchableOpacity
-      disabled={props.isExpired}
+      disabled={isExpired}
       style={{
-        width: (width - 2 * Theme.paddings.viewHorizontalPadding - 36) / 4,
-        aspectRatio: 2000 / 3000,
-        borderRadius: 12,
+        width: calculateGridItemWidth(4),
+        aspectRatio: Theme.aspectRatios.vertical,
+        borderRadius: Theme.titlePosterRadius,
         justifyContent: 'flex-end',
       }}>
       <FastImage
         source={{
-          uri: `https://image.tmdb.org/t/p/w500${props.title.poster_path}`,
+          uri: props.item?.title?.verticalPhotos[0].url,
         }}
         style={[
           StyleSheet.absoluteFillObject,
           {
-            borderRadius: 12,
+            borderRadius: Theme.titlePosterRadius,
           },
         ]}
       />
-      {!props.isExpired && (
-        <SeatLabel remainingSeatCount={props.remainingSeatCount} />
+      {!isExpired && (
+        <SeatLabel
+          remainingSeatCount={
+            props.item?.quota! - (props.item?.users?.length || 0)
+          }
+        />
       )}
-      {props.isExpired && <SoldOutLabel />}
-      {props.isExpired && <OverlayView />}
+      {!isJoinable && <SoldOutLabel />}
+      {isExpired && <OverlayView />}
     </TouchableOpacity>
   );
 };

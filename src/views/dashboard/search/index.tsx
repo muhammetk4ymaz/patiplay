@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import React, {useEffect} from 'react';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import SearchField from '../../auth/components/SearchField';
 import topMovies from '../../../models/topMovies';
 import FilterModal from './components/FilterModal';

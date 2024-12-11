@@ -4,6 +4,7 @@ import {
   Image,
   Pressable,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -14,28 +15,54 @@ import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommun
 import CustomBottomSheetModal from '../../../../components/shared/CustomBottomSheetModal';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import CustomText from '../../../../components/shared/CustomText';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import FastImage from 'react-native-fast-image';
 import TopMovie from '../../../../models/top_movie';
+import networkService from '../../../../helpers/networkService';
 
 type Props = {};
 
 const SPACE = 12;
 
 const MyWatchlistView = (props: Props) => {
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const [loading, setLoading] = React.useState(true);
 
-  const renderItem = useCallback(({item}: {item: TopMovie}) => {
-    return (
-      <MyWatchlistItem item={item} bottomSheetModalRef={bottomSheetModalRef} />
-    );
+  const [watchlist, setWatchlist] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    const fetchWatchlist = async () => {
+      try {
+        const response = await networkService.get('title/api/watchlist-view/');
+        setWatchlist(response.data.watchlist);
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWatchlist();
   }, []);
 
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'black',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Text style={{color: 'white'}}>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
-    <View>
+    <View style={{flex: 1, backgroundColor: Theme.colors.background}}>
       <FlatList
         removeClippedSubviews={true}
-        data={popularTitles}
+        data={watchlist}
         keyExtractor={item => item.id.toString()}
         numColumns={3}
         columnWrapperStyle={{
@@ -46,7 +73,12 @@ const MyWatchlistView = (props: Props) => {
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
           gap: SPACE,
         }}
-        renderItem={({item}) => renderItem({item})}
+        renderItem={({item}) => (
+          <MyWatchlistItem
+            item={item}
+            bottomSheetModalRef={bottomSheetModalRef}
+          />
+        )}
       />
       <CustomBottomSheetModal bottomSheetModalRef={bottomSheetModalRef}>
         <View style={{width: '100%'}}>
@@ -115,7 +147,7 @@ export default MyWatchlistView;
 const styles = StyleSheet.create({});
 
 type MyWatchlistItemProps = {
-  item: TopMovie;
+  item: any;
   bottomSheetModalRef: React.RefObject<BottomSheetModal>;
 };
 
@@ -126,14 +158,14 @@ const MyWatchlistItem = React.memo((props: MyWatchlistItemProps) => {
         width:
           (Dimensions.get('window').width -
             2 * Theme.paddings.viewHorizontalPadding -
-            2 * Theme.spacing.rowGap) /
+            2 * Theme.spacing.columnGap) /
           3,
         aspectRatio: Theme.aspectRatios.vertical,
         overflow: 'hidden',
       }}>
       <FastImage
         source={{
-          uri: `https://image.tmdb.org/t/p/w500${props.item.poster_path}`,
+          uri: props.item.verticalPhotos[0].url,
         }}
         style={[
           {

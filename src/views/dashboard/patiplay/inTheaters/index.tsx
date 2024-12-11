@@ -1,52 +1,109 @@
+import React, {useCallback} from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  Image,
   StyleSheet,
   View,
 } from 'react-native';
-import React, {useCallback} from 'react';
-import {Theme} from '../../../../constants/Theme';
-import UnscrollableList from '../../home/components/UnscrollableList';
-import CustomText from '../../../../components/shared/CustomText';
-import nowPlayMovies from '../../../../models/now_play_movies';
-import upComingTitles from '../../../../models/upcoming';
-import popularTitles from '../../../../models/popular';
 import LinearGradient from 'react-native-linear-gradient';
-import topMovies from '../../../../models/topMovies';
 import CustomPage from '../../../../components/shared/CustomPage';
-import {FlagList} from '../../home';
+import nowPlayMovies from '../../../../models/now_play_movies';
+import popularTitles from '../../../../models/popular';
+import topMovies from '../../../../models/topMovies';
+import upComingTitles from '../../../../models/upcoming';
+import {Theme} from '../../../../utils/theme';
+import {DelayedComponent} from '../../home';
+import UnscrollableTitleList from '../../../../components/shared/UnscrollableTitleList';
 
+import KeepEnjoyingItem from '../../../../components/shared/CustomComponents/KeepEnjoyingItem';
+import NewcomersItem from '../../../../components/shared/CustomComponents/NewcomersItem';
+import OnlyHereItem from '../../../../components/shared/CustomComponents/OnlyHereItem';
+import TopChoicesItem from '../../../../components/shared/CustomComponents/TopChoicesItem';
+import {FlagList} from '../../../../components/shared/FlagList';
+import ListHeaderText from '../../../../components/shared/Texts/ListHeaderText';
 import TitleCarousel from '../../../../components/shared/TitleCarousel';
 import VerticalPoster from '../../../../components/shared/VerticalPoster';
 import TopMovie from '../../../../models/top_movie';
-import ListHeaderText from '../../../../components/shared/ListHeaderText';
-import KeepEnjoyingItem from '../../../../components/shared/CustomComponents/KeepEnjoyingItem';
-import NewcomersItem from '../../../../components/shared/CustomComponents/NewcomersItem';
-import TopChoicesItem from '../../../../components/shared/CustomComponents/TopChoicesItem';
-import OnlyHereItem from '../../../../components/shared/CustomComponents/OnlyHereItem';
 import {useAppSelector} from '../../../../redux/hooks';
 import {RootState} from '../../../../redux/store';
 import PreRegistrationView from '../../../preregistration/PreRegistrationView';
-const {width, height} = Dimensions.get('window');
+import networkService from '../../../../helpers/networkService';
+import axios from 'axios';
+import {CountryModel} from '../../../../models/patiplay/CountryModel';
 
 const InTheatersView = () => {
   const [loading, setLoading] = React.useState(true);
+
+  const [inTheatersData, setInTheatersData] = React.useState<any[]>([]);
+  const [countryData, setCountryData] = React.useState<CountryModel[]>([]);
+  const [keepEnjoyinData, setKeepEnjoyingData] = React.useState<any[]>([]);
 
   const isAuthenticated = useAppSelector(
     (state: RootState) => state.auth.isAuthenticated,
   );
 
+  React.useEffect(() => {
+    console.log('Rendered InTheatersView');
+
+    const fetchInTheatersData = async () => {
+      try {
+        const response = await networkService.get(
+          'title/api/in-theaters-view/',
+        );
+        console.log(response.data.title);
+        setInTheatersData(response.data.title);
+        setCountryData(response.data.countries);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+
+            switch (error.response.status) {
+              case 400:
+                console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+                break;
+              case 401:
+                console.log(
+                  'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+                );
+
+                break;
+              case 500:
+                console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+                break;
+              default:
+                console.log(
+                  'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+                );
+            }
+          } else if (error.request) {
+            console.log(error.request);
+            console.log(
+              'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+            );
+          } else {
+            console.log('Error', error.message);
+            console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+          }
+        } else {
+          console.log('Error', error);
+          console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInTheatersData();
+  }, []);
+
   if (!isAuthenticated) {
     return <PreRegistrationView title="Simultaneous Release?" />;
   }
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 100);
-  }, []);
 
   if (isAuthenticated && loading) {
     return (
@@ -76,57 +133,63 @@ const InTheatersView = () => {
             )}
           />
         </View>
-        <FlagList />
-        <TitlesLists />
-        {/* <View style={{gap: 12, paddingVertical: 8}}>
-          <UnscrollableList
-            title="Title-1"
-            titles={popularTitles.slice(4, 20)}
-          />
-          <KeepEnjoying />
-          <UnscrollableList
-            title="Title-2"
-            titles={nowPlayMovies.slice(2, 18)}
-          />
-          <NewComers />
-          <UnscrollableList
-            title="Title-3"
-            titles={popularTitles.concat(popularTitles.slice(0, 12))}
-          />
-          <TopChoices />
-          <UnscrollableList
-            title="Title-4"
-            titles={topMovies.concat(topMovies.slice(0, 12))}
-          />
-          <OnlyHere />
-        </View> */}
+        <FlagList
+          flags={
+            countryData.length > 0
+              ? countryData.map(country => country.iso2!)
+              : []
+          }
+        />
+        <View style={{gap: 12, paddingVertical: 8}}>
+          <DelayedComponent delay={100}>
+            <UnscrollableTitleList
+              title="Title-1"
+              titles={inTheatersData.slice(0, 12)}
+              keyExtractor="intheaters-titles-1"
+            />
+          </DelayedComponent>
+          <DelayedComponent delay={400}>
+            <KeepEnjoying />
+          </DelayedComponent>
+          <DelayedComponent delay={500}>
+            <UnscrollableTitleList
+              title="Title-2"
+              titles={nowPlayMovies.slice(2, 18)}
+              keyExtractor="intheaters-titles-2"
+            />
+          </DelayedComponent>
+          <DelayedComponent delay={600}>
+            <NewComers />
+          </DelayedComponent>
+
+          <DelayedComponent delay={700}>
+            <UnscrollableTitleList
+              title="Title-3"
+              titles={popularTitles.concat(popularTitles.slice(0, 12))}
+              keyExtractor="intheaters-titles-3"
+            />
+          </DelayedComponent>
+          <DelayedComponent delay={800}>
+            <TopChoices />
+          </DelayedComponent>
+
+          <DelayedComponent delay={900}>
+            <UnscrollableTitleList
+              title="Title-4"
+              titles={topMovies.concat(topMovies.slice(0, 12))}
+              keyExtractor="intheaters-titles-4"
+            />
+          </DelayedComponent>
+          <DelayedComponent delay={1000}>
+            <OnlyHere />
+          </DelayedComponent>
+        </View>
       </CustomPage>
     );
   }
 };
 
 export default InTheatersView;
-
-const TitlesLists = React.memo(() => {
-  const renderItem = useCallback(
-    ({item}: {item: React.JSX.Element}) => item,
-    [],
-  );
-  return (
-    <FlatList
-      data={componentList}
-      scrollEnabled={false}
-      removeClippedSubviews={true}
-      keyExtractor={(item, index) => `component-${index}`}
-      renderItem={({item}) => renderItem({item})}
-      initialNumToRender={3}
-      contentContainerStyle={{
-        paddingVertical: 8,
-        gap: Theme.spacing.columnGap,
-      }}
-    />
-  );
-});
 
 const KeepEnjoying = React.memo(() => {
   const renderItem = useCallback(
@@ -151,7 +214,7 @@ const KeepEnjoying = React.memo(() => {
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={{
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-          gap: Theme.spacing.rowGap,
+          gap: Theme.spacing.columnGap,
         }}
         renderItem={({item, index}) => renderItem({item, index})}
       />
@@ -260,20 +323,3 @@ const OnlyHere = React.memo(() => {
     </View>
   );
 });
-
-const componentList = [
-  <UnscrollableList title="Title-1" titles={popularTitles.slice(4, 20)} />,
-  <KeepEnjoying />,
-  <UnscrollableList title="Title-2" titles={nowPlayMovies.slice(2, 18)} />,
-  <NewComers />,
-  <UnscrollableList
-    title="Title-3"
-    titles={popularTitles.concat(popularTitles.slice(0, 12))}
-  />,
-  <TopChoices />,
-  <UnscrollableList
-    title="Title-4"
-    titles={topMovies.concat(topMovies.slice(0, 12))}
-  />,
-  <OnlyHere />,
-];

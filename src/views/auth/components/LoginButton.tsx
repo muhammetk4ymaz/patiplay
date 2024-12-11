@@ -1,8 +1,8 @@
 import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
-import CustomTextButton from '../../../components/shared/CustomTextButton';
+import CustomTextButton from '../../../components/shared/Buttons/CustomTextButton';
 import networkService from '../../../helpers/networkService';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import axios from 'axios';
 import {useAppDispatch} from '../../../redux/hooks';
 import {loginAsync, setUser} from '../../../redux/features/auth/authSlice';
@@ -78,8 +78,9 @@ const LoginButton = (props: Props) => {
         <ActivityIndicator size="large" color={Theme.colors.primary} />
       ) : (
         <CustomTextButton
-          text="Giriş Yap"
+          text="Login"
           paddingHorizontal={48}
+          backgroundColor="black"
           onPress={() => {
             props.handleSubmit(onSubmit)();
           }}

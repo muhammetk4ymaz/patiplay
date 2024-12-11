@@ -1,6 +1,6 @@
 import React from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import AvatarGroupComponent from '../AvatarGroupComponent';
 import CustomText from '../CustomText';
 import VerticalPoster from '../VerticalPoster';

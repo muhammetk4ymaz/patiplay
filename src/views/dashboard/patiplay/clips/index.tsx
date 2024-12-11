@@ -3,18 +3,18 @@ import {
   FlatList,
   Image,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import React from 'react';
 import CustomPage from '../../../../components/shared/CustomPage';
-import {FlagList} from '../../home';
+import {DelayedComponent} from '../../home';
 import popularTitles from '../../../../models/popular';
 import CustomText from '../../../../components/shared/CustomText';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import TopMovie from '../../../../models/top_movie';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import NewLabel from '../../../../components/shared/NewLabel';
 import ProgressIndicator from '../../../../components/shared/ProgressIndicator';
 import TitleCarousel from '../../../../components/shared/TitleCarousel';
 import nowPlayMovies from '../../../../models/now_play_movies';
@@ -22,10 +22,131 @@ import VerticalPoster from '../../../../components/shared/VerticalPoster';
 import {useAppSelector} from '../../../../redux/hooks';
 import {RootState} from '../../../../redux/store';
 import PreRegistrationView from '../../../preregistration/PreRegistrationView';
+import NewLabel from '../../../../components/shared/Labels/NewLabel';
+import {FlagList} from '../../../../components/shared/FlagList';
+import networkService from '../../../../helpers/networkService';
+import axios from 'axios';
+import {ImageManager} from '../../../../constants/ImageManager';
+import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
+import {CountryModel} from '../../../../models/patiplay/CountryModel';
 
 type Props = {};
 
 const ClipsView = (props: Props) => {
+  const [loading, setLoading] = React.useState(true);
+
+  const [clipData, setClipData] = React.useState<any[]>([]);
+  const [countryData, setCountryData] = React.useState<CountryModel[]>([]);
+
+  React.useEffect(() => {
+    console.log('Rendered ClipsView');
+
+    const fetchClipData = async () => {
+      try {
+        const response = await networkService.post('title/api/clip-view/', {
+          type: 'clip',
+        });
+        console.log(response.data.clip);
+        setClipData(response.data.clip);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+
+            switch (error.response.status) {
+              case 400:
+                console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+                break;
+              case 401:
+                console.log(
+                  'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+                );
+
+                break;
+              case 500:
+                console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+                break;
+              default:
+                console.log(
+                  'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+                );
+            }
+          } else if (error.request) {
+            console.log(error.request);
+            console.log(
+              'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+            );
+          } else {
+            console.log('Error', error.message);
+            console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+          }
+        } else {
+          console.log('Error', error);
+          console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchCountry = async () => {
+      try {
+        const response = await networkService.post('title/api/clip-view/', {
+          type: 'country',
+        });
+        console.log(response.data.countries);
+        setCountryData(response.data.countries);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+
+            switch (error.response.status) {
+              case 400:
+                console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+                break;
+              case 401:
+                console.log(
+                  'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+                );
+
+                break;
+              case 500:
+                console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+                break;
+              default:
+                console.log(
+                  'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+                );
+            }
+          } else if (error.request) {
+            console.log(error.request);
+            console.log(
+              'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+            );
+          } else {
+            console.log('Error', error.message);
+            console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+          }
+        } else {
+          console.log('Error', error);
+          console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClipData();
+    fetchCountry();
+  }, []);
+
   const isAuthenticated = useAppSelector(
     (state: RootState) => state.auth.isAuthenticated,
   );
@@ -35,6 +156,20 @@ const ClipsView = (props: Props) => {
       <PreRegistrationView
         title={'Clips from Your Favorite\nFilms & TV Shows?'}
       />
+    );
+  }
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'black',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Text style={{color: 'white'}}>Loading...</Text>
+      </View>
     );
   }
 
@@ -55,80 +190,98 @@ const ClipsView = (props: Props) => {
           )}
         />
       </View>
-      <FlagList />
+      <FlagList
+        flags={
+          countryData.length > 0
+            ? countryData.map(country => country.iso2!)
+            : []
+        }
+      />
       <View style={{marginTop: 12, gap: 24}}>
-        <FlatList
-          scrollEnabled={false}
-          numColumns={2}
-          contentContainerStyle={{
-            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-            gap: 12,
-          }}
-          columnWrapperStyle={{gap: 12}}
-          data={popularTitles.slice(0, 10)}
-          renderItem={({item, index}) => <ClipCard item={item} index={index} />}
-        />
-        <FlatList
-          horizontal
-          data={popularTitles.slice(0, 10)}
-          contentContainerStyle={{
-            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-            gap: 12,
-          }}
-          renderItem={({item}) => (
-            <View
-              style={{
-                aspectRatio: 2 / 3,
-                width: (Dimensions.get('window').width - 60) / 2.5,
-                alignSelf: 'center',
-                borderRadius: 12,
-                overflow: 'hidden',
-              }}>
-              <Image
-                source={{
-                  uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-                }}
-                style={StyleSheet.absoluteFillObject}
-              />
-            </View>
-          )}
-        />
-        <FlatList
-          scrollEnabled={false}
-          numColumns={2}
-          contentContainerStyle={{
-            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-            gap: 12,
-          }}
-          columnWrapperStyle={{gap: 12}}
-          data={popularTitles}
-          renderItem={({item, index}) => <ClipCard item={item} index={index} />}
-        />
-        <FlatList
-          horizontal
-          data={popularTitles.slice(0, 10)}
-          contentContainerStyle={{
-            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-            gap: 12,
-          }}
-          renderItem={({item}) => (
-            <View
-              style={{
-                aspectRatio: 2 / 3,
-                width: (Dimensions.get('window').width - 60) / 2.5,
-                alignSelf: 'center',
-                borderRadius: 12,
-                overflow: 'hidden',
-              }}>
-              <Image
-                source={{
-                  uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-                }}
-                style={StyleSheet.absoluteFillObject}
-              />
-            </View>
-          )}
-        />
+        <DelayedComponent delay={100}>
+          <FlatList
+            scrollEnabled={false}
+            numColumns={2}
+            contentContainerStyle={{
+              paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+              rowGap: Theme.spacing.rowGap,
+            }}
+            columnWrapperStyle={{columnGap: Theme.spacing.columnGap}}
+            data={clipData.slice(0, 10)}
+            renderItem={({item, index}) => (
+              <ClipCard item={item} index={index} />
+            )}
+          />
+        </DelayedComponent>
+        <DelayedComponent delay={300}>
+          <FlatList
+            horizontal
+            data={clipData.slice(0, 10)}
+            contentContainerStyle={{
+              paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+              gap: 12,
+            }}
+            renderItem={({item}) => (
+              <View
+                style={{
+                  aspectRatio: 2 / 3,
+                  width: calculateGridItemWidth(2.5),
+                  alignSelf: 'center',
+                  borderRadius: 12,
+                  overflow: 'hidden',
+                }}>
+                <Image
+                  source={{
+                    uri: item.title.verticalPhotos[0].url,
+                  }}
+                  style={StyleSheet.absoluteFillObject}
+                />
+              </View>
+            )}
+          />
+        </DelayedComponent>
+        <DelayedComponent delay={400}>
+          <FlatList
+            scrollEnabled={false}
+            numColumns={2}
+            contentContainerStyle={{
+              paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+              rowGap: Theme.spacing.rowGap,
+            }}
+            columnWrapperStyle={{columnGap: Theme.spacing.columnGap}}
+            data={clipData.slice(0, 10)}
+            renderItem={({item, index}) => (
+              <ClipCard item={item} index={index} />
+            )}
+          />
+        </DelayedComponent>
+        <DelayedComponent delay={500}>
+          <FlatList
+            horizontal
+            data={clipData.slice(0, 10)}
+            contentContainerStyle={{
+              paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+              gap: 12,
+            }}
+            renderItem={({item}) => (
+              <View
+                style={{
+                  aspectRatio: 2 / 3,
+                  width: calculateGridItemWidth(2.5),
+                  alignSelf: 'center',
+                  borderRadius: 12,
+                  overflow: 'hidden',
+                }}>
+                <Image
+                  source={{
+                    uri: item.title.verticalPhotos[0].url,
+                  }}
+                  style={StyleSheet.absoluteFillObject}
+                />
+              </View>
+            )}
+          />
+        </DelayedComponent>
       </View>
     </CustomPage>
   );
@@ -138,24 +291,40 @@ export default ClipsView;
 
 const styles = StyleSheet.create({});
 
-const ClipCard = ({item, index}: {item: TopMovie; index: number}) => {
+const ClipCard = ({item, index}: {item: any; index: number}) => {
   return (
     <View style={{flex: 1, gap: 5}}>
       <View
         style={{
-          aspectRatio: 500 / 281,
-          width: '100%',
+          aspectRatio: Theme.aspectRatios.horizontal,
+          width: calculateGridItemWidth(2),
           borderRadius: 12,
           overflow: 'hidden',
           justifyContent: 'flex-end',
           gap: 8,
         }}>
-        <Image
-          source={{
-            uri: `https://image.tmdb.org/t/p/w500${item.backdrop_path}`,
-          }}
-          style={StyleSheet.absoluteFillObject}
-        />
+        {item.filmImageUrl.length > 0 ? (
+          <Image
+            source={{
+              uri: item.filmImageUrl[0].url,
+            }}
+            resizeMode="contain"
+            style={[StyleSheet.absoluteFillObject]}
+          />
+        ) : (
+          <Image
+            source={ImageManager.IMAGE_NAMES.PATIHORIZONTALLOGO}
+            resizeMode="contain"
+            style={[
+              StyleSheet.absoluteFillObject,
+              {
+                width: '100%',
+                height: '100%',
+              },
+            ]}
+          />
+        )}
+
         {index % 4 === 3 && <NewLabel />}
         <View
           style={{
@@ -185,7 +354,7 @@ const ClipCard = ({item, index}: {item: TopMovie; index: number}) => {
         <View style={{flex: 1}}>
           <CustomText
             numberOfLines={1}
-            text={"Şehzade Mustafa'nın İntikamı"}
+            text={item.name[0].title}
             style={{
               color: 'white',
               fontSize: Theme.fontSizes.sm,
@@ -194,7 +363,7 @@ const ClipCard = ({item, index}: {item: TopMovie; index: number}) => {
           />
           <CustomText
             numberOfLines={1}
-            text={item.title}
+            text={item.title.title[0].title}
             style={{
               color: 'white',
               fontSize: Theme.fontSizes.sm,

@@ -3,7 +3,7 @@ import React from 'react';
 import {Image} from 'react-native';
 import {useHeaderHeight} from '@react-navigation/elements';
 import LinearGradient from 'react-native-linear-gradient';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import FlagComponent from '../../../../components/shared/FlagComponent';
 import CustomText from '../../../../components/shared/CustomText';
 

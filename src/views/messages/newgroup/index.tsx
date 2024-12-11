@@ -10,7 +10,7 @@ import {
 import React from 'react';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomText from '../../../components/shared/CustomText';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import {WebSocketContext} from '../../../context/WebSocketContext';
 import {Avatar} from 'native-base';
 import {ImageManager} from '../../../constants/ImageManager';
@@ -24,8 +24,9 @@ import {
 
 import SearchField from '../../auth/components/SearchField';
 import {characterLimited} from '../../dashboard/profile/favorite_companies';
-import CustomTextInput from '../../../components/shared/CustomTextInput';
+
 import {RootStackParamList} from '../../../navigation/routes';
+import CustomTextInput from '../../../components/shared/Inputs/CustomTextInput';
 
 type NewGroupViewProps = {};
 
@@ -148,7 +149,7 @@ const NewGroupView = (props: NewGroupViewProps) => {
       <FlatList
         data={filteredUsers}
         contentContainerStyle={{
-          gap: Theme.spacing.rowGap,
+          gap: Theme.spacing.columnGap,
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
         }}
         renderItem={({item}) => (
@@ -185,7 +186,7 @@ const NewGroupView = (props: NewGroupViewProps) => {
               borderRadius: 36,
               alignItems: 'center',
               justifyContent: 'center',
-              margin: Theme.spacing.rowGap,
+              margin: Theme.spacing.columnGap,
             }}>
             <CustomText
               text="Create Group"

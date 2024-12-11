@@ -1,7 +1,7 @@
 import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
-import CustomTextButton from '../../../components/shared/CustomTextButton';
-import {Theme} from '../../../constants/Theme';
+import CustomTextButton from '../../../components/shared/Buttons/CustomTextButton';
+import {Theme} from '../../../utils/theme';
 
 type Props = {
   handleSubmit: () => void;

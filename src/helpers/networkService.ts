@@ -47,6 +47,10 @@ class AxiosService {
     return this.axiosInstance.get(endpoint, config);
   }
 
+  delete(endpoint: string, config?: AxiosRequestConfig): Promise<any> {
+    return this.axiosInstance.delete(endpoint, config);
+  }
+
   setToken(token: string) {
     this.token = token;
   }

@@ -1,7 +1,7 @@
 import {Avatar} from 'native-base';
 import React from 'react';
 import {StyleSheet} from 'react-native';
-import {Theme} from '../../constants/Theme';
+import {Theme} from '../../utils/theme';
 
 type Props = {};
 

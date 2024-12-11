@@ -1,6 +1,6 @@
 import {Dimensions, Image, ScrollView, StyleSheet, View} from 'react-native';
 import React from 'react';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import CustomText from '../../../../components/shared/CustomText';
 import topMovies from '../../../../models/topMovies';
 import {FlatList} from 'native-base';

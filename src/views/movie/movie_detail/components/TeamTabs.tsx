@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import CustomText from '../../../../components/shared/CustomText';
 import React from 'react';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 
 type Props = {};
 

@@ -7,7 +7,7 @@ import {
   setSpeedSettingsVisible,
 } from '../../../redux/features/videoplayer/videoplayerSlice';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
-import CustomButton from '../CustomButton';
+import CustomButton from '../Buttons/CustomButton';
 import CustomText from '../CustomText';
 import {RootStackParamList} from '../../../navigation/routes';
 

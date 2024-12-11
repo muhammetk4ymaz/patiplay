@@ -7,7 +7,7 @@ import {
   FlatList,
 } from 'react-native';
 import React from 'react';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import CustomText from '../../../components/shared/CustomText';
 import topMovies from '../../../models/topMovies';
 import LinearGradient from 'react-native-linear-gradient';
@@ -17,13 +17,13 @@ import FlagComponent from '../../../components/shared/FlagComponent';
 import {useHeaderHeight} from '@react-navigation/elements';
 import CustomPage from '../../../components/shared/CustomPage';
 import VerticalPoster from '../../../components/shared/VerticalPoster';
-import ListHeaderText from '../../../components/shared/ListHeaderText';
-import SectionTitleText from '../../../components/shared/SectionTitleText';
+
 import MissionSection from './components/MissionSection';
 import BestMatches from './components/BestMatches';
 import {useAppSelector} from '../../../redux/hooks';
 import {RootState} from '../../../redux/store';
 import PreRegistrationView from '../../preregistration/PreRegistrationView';
+import SectionTitleText from '../../../components/shared/Texts/SectionTitleText';
 
 type Props = {};
 

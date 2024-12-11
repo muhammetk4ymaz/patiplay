@@ -1,21 +1,26 @@
-import {ActivityIndicator, Dimensions, FlatList, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  View,
+} from 'react-native';
 import React from 'react';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import nowPlayMovies from '../../../../models/now_play_movies';
 import VerticalPoster from '../../../../components/shared/VerticalPoster';
 import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
+import FastImage from 'react-native-fast-image';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 const {width} = Dimensions.get('window');
 
-type Props = {};
+type Props = {
+  data: any;
+};
 
 const TitlesTab = (props: Props) => {
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 300);
-  }, []);
+  const [loading, setLoading] = React.useState(false);
+  const insets = useSafeAreaInsets();
 
   if (loading) {
     return (
@@ -37,19 +42,18 @@ const TitlesTab = (props: Props) => {
     return (
       <FlatList
         removeClippedSubviews={true}
-        data={nowPlayMovies}
+        data={props.data.titles}
         numColumns={4}
         contentContainerStyle={{
+          paddingBottom: insets.bottom,
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-          gap: Theme.spacing.columnGap,
+          rowGap: Theme.spacing.rowGap,
         }}
         columnWrapperStyle={{
-          gap: Theme.spacing.rowGap,
+          columnGap: Theme.spacing.columnGap,
         }}
         keyExtractor={item => item.id.toString()}
-        renderItem={({item}) => (
-          <TitleItem id={item.id} poster_path={item.poster_path} />
-        )}></FlatList>
+        renderItem={({item}) => <TitleItem item={item} />}></FlatList>
     );
   }
 };
@@ -57,8 +61,7 @@ const TitlesTab = (props: Props) => {
 export default TitlesTab;
 
 type TitleItemProps = {
-  id: number;
-  poster_path: string;
+  item: any;
 };
 
 const TitleItem = React.memo((props: TitleItemProps) => {
@@ -68,7 +71,22 @@ const TitleItem = React.memo((props: TitleItemProps) => {
         width: calculateGridItemWidth(4),
         aspectRatio: Theme.aspectRatios.vertical,
       }}>
-      <VerticalPoster posterPath={props.poster_path} width={'100%'} />
+      <View
+        style={[
+          {
+            overflow: 'hidden',
+            width: '100%',
+            aspectRatio: 2000 / 3000,
+            borderRadius: 12,
+          },
+        ]}>
+        <FastImage
+          source={{
+            uri: props.item.verticalPhotos[0].url,
+          }}
+          style={[StyleSheet.absoluteFillObject]}
+        />
+      </View>
     </View>
   );
 });

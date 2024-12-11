@@ -8,7 +8,7 @@ import {
   FlatList,
 } from 'react-native';
 import React from 'react';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import Video from 'react-native-video';
 import CustomText from '../../../../components/shared/CustomText';
 import {Avatar} from 'native-base';
@@ -147,11 +147,11 @@ const PremiereView = (props: Props) => {
         data={nowPlayMovies}
         numColumns={4}
         contentContainerStyle={{
-          gap: 12,
+          rowGap: Theme.spacing.rowGap,
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
           paddingVertical: 12,
         }}
-        columnWrapperStyle={{gap: 12}}
+        columnWrapperStyle={{columnGap: Theme.spacing.columnGap}}
         keyExtractor={item => item.id.toString()}
         renderItem={({item, index}) => (
           <PremireTitleCard

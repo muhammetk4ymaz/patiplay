@@ -2,7 +2,7 @@ import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomText from '../../../components/shared/CustomText';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import {WebSocketContext} from '../../../context/WebSocketContext';
 import {Avatar} from 'native-base';
 import {ImageManager} from '../../../constants/ImageManager';
@@ -86,14 +86,14 @@ const NewChatView = (props: Props) => {
                 style={{
                   height: 1,
                   backgroundColor: 'rgb(40, 40, 40)',
-                  marginTop: Theme.spacing.rowGap,
+                  marginTop: Theme.spacing.columnGap,
                 }}></View>
             </View>
           );
         }}
         contentContainerStyle={{
           marginTop: 12,
-          gap: Theme.spacing.rowGap,
+          gap: Theme.spacing.columnGap,
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
         }}
         renderItem={({item}) => (

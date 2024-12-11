@@ -1,32 +1,29 @@
 import {Dimensions, Image, StyleSheet, View} from 'react-native';
-import {Theme} from '../../../../../constants/Theme';
+import {Theme} from '../../../../../utils/theme';
 import FastImage from 'react-native-fast-image';
 import React from 'react';
 import CustomText from '../../../../../components/shared/CustomText';
+import {calculateGridItemWidth} from '../../../../../utils/calculateGridItemWidth';
 
 const width = Dimensions.get('window').width;
 
 interface ChartTitleItemProps {
-  title: string;
-  poster_path: string;
+  item: any;
+  index: number;
 }
 
 export const ChartTitleItem = React.memo((props: ChartTitleItemProps) => {
   return (
     <View
       style={{
-        width:
-          (width -
-            2 * Theme.paddings.viewHorizontalPadding -
-            2 * Theme.spacing.rowGap) /
-          3,
+        width: calculateGridItemWidth(3),
         borderTopLeftRadius: Theme.titlePosterRadius,
         borderTopRightRadius: Theme.titlePosterRadius,
         aspectRatio: Theme.aspectRatios.vertical,
       }}>
       <FastImage
         source={{
-          uri: 'https://image.tmdb.org/t/p/w500' + props.poster_path,
+          uri: props.item.verticalPhotos[0].url,
         }}
         style={[StyleSheet.absoluteFillObject, {borderRadius: 12}]}
       />
@@ -43,7 +40,7 @@ export const ChartTitleItem = React.memo((props: ChartTitleItemProps) => {
           right: -8,
         }}>
         <CustomText
-          text="14"
+          text={props.index.toString()}
           weight="medium"
           style={{
             color: 'white',

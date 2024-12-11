@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {Theme} from '../../../../../constants/Theme';
+import {Theme} from '../../../../../utils/theme';
 import {useTranslation} from 'react-i18next';
 import '../../../index';
 import CustomText from '../../../../../components/shared/CustomText';

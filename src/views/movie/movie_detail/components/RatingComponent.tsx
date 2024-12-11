@@ -1,6 +1,6 @@
 import {StyleSheet, View} from 'react-native';
 import CustomText from '../../../../components/shared/CustomText';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import {Rating} from 'react-native-ratings';
 import React from 'react';
 

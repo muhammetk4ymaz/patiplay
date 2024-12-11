@@ -6,7 +6,7 @@ import Video, {
   SelectedVideoTrackType,
   VideoRef,
 } from 'react-native-video';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import {
   setBufferedDuration,
   setBuffering,

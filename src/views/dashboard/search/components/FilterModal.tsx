@@ -3,7 +3,7 @@ import React, {useCallback, useMemo, useRef} from 'react';
 import {useAppDispatch, useAppSelector} from '../../../../redux/hooks';
 import {BottomSheetModal, BottomSheetView} from '@gorhom/bottom-sheet';
 import OutsidePressHandler from 'react-native-outside-press';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import {setSearchFilterVisible} from '../../../../redux/features/search/searchSlice';
 import CustomText from '../../../../components/shared/CustomText';
 

@@ -3,7 +3,7 @@ import TitleWithProgress from '../../../../components/shared/CustomComponents/Ti
 import CustomText from '../../../../components/shared/CustomText';
 import DeviceInfo from 'react-native-device-info';
 import React from 'react';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 
 const width = Dimensions.get('window').width;
 
@@ -27,7 +27,7 @@ const WatchHistoryItem = ({
           ? width / 4
           : (width -
               2 * Theme.paddings.viewHorizontalPadding -
-              2 * Theme.spacing.rowGap) /
+              2 * Theme.spacing.columnGap) /
             2,
       }}>
       <TitleWithProgress

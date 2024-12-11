@@ -25,7 +25,7 @@ import {FlatList, NativeViewGestureHandler} from 'react-native-gesture-handler';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import nowPlayMovies from '../../../../../../models/now_play_movies';
 import LinearGradient from 'react-native-linear-gradient';
-import {Theme} from '../../../../../../constants/Theme';
+import {Theme} from '../../../../../../utils/theme';
 import TopMovie from '../../../../../../models/top_movie';
 import {ImageManager} from '../../../../../../constants/ImageManager';
 import CustomText from '../../../../../../components/shared/CustomText';
@@ -171,10 +171,10 @@ const Content = React.memo((props: ContentProps) => {
         scrollEnabled={false}
         numColumns={props.type === 'movie' ? 4 : 2}
         keyExtractor={item => item.id.toString()}
-        columnWrapperStyle={{gap: 12}}
+        columnWrapperStyle={{columnGap: Theme.spacing.columnGap}}
         contentContainerStyle={{
           paddingHorizontal: paddingHorizontal,
-          gap: 12,
+          rowGap: Theme.spacing.rowGap,
           paddingBottom: 12,
           marginTop: 3,
         }}

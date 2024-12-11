@@ -9,59 +9,130 @@ import {
 import React from 'react';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../../../redux/store';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import CircularAvatar from '../../../../components/shared/CircularAvatar';
 import VerticalPoster from '../../../../components/shared/VerticalPoster';
 import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
+import FastImage from 'react-native-fast-image';
+import networkService from '../../../../helpers/networkService';
+import axios from 'axios';
 
-type Props = {};
+type Props = {
+  uuid: string;
+};
 
 const TitleRelatedTab = (props: Props) => {
-  const related = useSelector((state: RootState) => state.titleDetail.related);
-  const relatedInitialLoading = useSelector(
-    (state: RootState) => state.titleDetail.relatedInitialLoading,
-  );
+  const [loading, setLoading] = React.useState(true);
+  const [related, setRelated] = React.useState<any[]>([]);
 
-  return (
-    <FlatList
-      data={related}
-      scrollEnabled={false}
-      initialNumToRender={5}
-      numColumns={3}
-      columnWrapperStyle={{
-        gap: Theme.spacing.columnGap,
-      }}
-      ListHeaderComponent={() => {
-        return (
-          relatedInitialLoading && (
+  const fetchRelatedData = async () => {
+    try {
+      const response = await networkService.post('title/api/title-tab-movie/', {
+        slug: props.uuid,
+        tab: 'Related',
+      });
+      setRelated(response.data.related);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+
+          switch (error.response.status) {
+            case 400:
+              console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+              break;
+            case 401:
+              console.log(
+                'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+              );
+
+              break;
+            case 500:
+              console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+              break;
+            default:
+              console.log(
+                'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+              );
+          }
+        } else if (error.request) {
+          console.log(error.request);
+          console.log(
+            'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+          );
+        } else {
+          console.log('Error', error.message);
+          console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } else {
+        console.log('Error', error);
+        console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    console.log('Rendered RelatedTab');
+
+    fetchRelatedData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: Dimensions.get('window').width,
+        }}>
+        <ActivityIndicator
+          size="large"
+          color={Theme.colors.primary}
+          animating={loading}
+        />
+      </View>
+    );
+  } else {
+    return (
+      <FlatList
+        data={related}
+        scrollEnabled={false}
+        numColumns={3}
+        columnWrapperStyle={{
+          columnGap: Theme.spacing.columnGap,
+        }}
+        contentContainerStyle={{
+          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+          rowGap: Theme.spacing.rowGap,
+        }}
+        keyExtractor={index => index.toString()}
+        renderItem={({item}) => {
+          return (
             <View
               style={{
-                paddingVertical: Theme.spacing.columnGap,
+                overflow: 'hidden',
+                width: calculateGridItemWidth(3),
+                aspectRatio: 2000 / 3000,
+                borderRadius: 12,
               }}>
-              <ActivityIndicator
-                size="large"
-                color={Theme.colors.primary}
-                animating={relatedInitialLoading}
+              <FastImage
+                source={{
+                  uri: item.verticalPhotos__0__url,
+                }}
+                style={[StyleSheet.absoluteFillObject]}
               />
             </View>
-          )
-        );
-      }}
-      contentContainerStyle={{
-        paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-        gap: Theme.spacing.rowGap,
-      }}
-      keyExtractor={item => item.id.toString()}
-      renderItem={({item}) => {
-        return (
-          <VerticalPoster
-            posterPath={item.poster_path}
-            width={calculateGridItemWidth(3)}
-          />
-        );
-      }}
-    />
-  );
+          );
+        }}
+      />
+    );
+  }
 };
 
 export default React.memo(TitleRelatedTab);

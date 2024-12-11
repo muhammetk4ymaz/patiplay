@@ -11,7 +11,7 @@ import {
   setReplyInputVisible,
 } from '../../../../redux/features/interaction/interactionSlice';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import OutsidePressHandler from 'react-native-outside-press';
 import {ImageManager} from '../../../../constants/ImageManager';
 

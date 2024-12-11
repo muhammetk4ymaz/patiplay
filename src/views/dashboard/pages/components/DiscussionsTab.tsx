@@ -6,21 +6,27 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import Dicussion from '../../../../components/shared/Discussion';
-import {Theme} from '../../../../constants/Theme';
-import nowPlayMovies from '../../../../models/now_play_movies';
+
+import {Theme} from '../../../../utils/theme';
+import Discussion from '../../../../components/shared/Discussion/Discussion';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 const {width, height} = Dimensions.get('window');
 
-type Props = {};
+type Props = {
+  data: any;
+  scrollEnabled?: boolean;
+  uuid: string;
+  endpoint: string;
+};
 
 const DiscussionsTab = (props: Props) => {
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 300);
+    console.log('DiscussionsTab', props.data);
   }, []);
+
+  const insets = useSafeAreaInsets();
 
   if (loading) {
     return (
@@ -42,15 +48,16 @@ const DiscussionsTab = (props: Props) => {
     return (
       <FlatList
         removeClippedSubviews={true}
-        data={nowPlayMovies}
+        scrollEnabled={props.scrollEnabled}
+        data={props.data}
         contentContainerStyle={{
+          paddingBottom: insets.bottom,
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
           gap: 12,
-          paddingVertical: 12,
         }}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={index => index.toString()}
         renderItem={({item, index}) => (
-          <Dicussion replyOnPress={() => {}} />
+          <Discussion item={item} endpoint={props.endpoint} uuid={item.id} />
         )}></FlatList>
     );
   }

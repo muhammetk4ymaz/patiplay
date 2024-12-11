@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import React, {useCallback, useEffect, useRef} from 'react';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import Video, {OnProgressData, VideoRef} from 'react-native-video';
 import Slider from '@react-native-community/slider';

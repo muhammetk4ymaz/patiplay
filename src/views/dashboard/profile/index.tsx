@@ -1,49 +1,52 @@
-import {
-  Image,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-  FlatList,
-  Text,
-} from 'react-native';
-import CustomText from '../../../components/shared/CustomText';
-import {Theme} from '../../../constants/Theme';
-import {Avatar} from 'native-base';
-import IconIonicons from 'react-native-vector-icons/Ionicons';
-import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {Avatar} from 'native-base';
+import {
+  Dimensions,
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import CustomText from '../../../components/shared/CustomText';
+import {Theme} from '../../../utils/theme';
 import MenuItemComponent, {MenuItem} from './components/MenuItem';
-
+import {useHeaderHeight} from '@react-navigation/elements';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
-import '../../../i18n';
 import DeviceInfo from 'react-native-device-info';
-import nowPlayMovies from '../../../models/now_play_movies';
-import {ImageManager} from '../../../constants/ImageManager';
 import LinearGradient from 'react-native-linear-gradient';
-import CustomPage from '../../../components/shared/CustomPage';
-import {useHeaderHeight} from '@react-navigation/elements';
-import ProgressIndicator from '../../../components/shared/ProgressIndicator';
-import VerticalPoster from '../../../components/shared/VerticalPoster';
-import BiographyCard from '../../../components/shared/Cards/BiographyCard';
-import ViewingStats from '../../../components/shared/CustomComponents/ViewingStats';
-import ScrollableRow from '../../../components/shared/ScrollableRow';
-import TopMovie from '../../../models/top_movie';
-import NavigableListSection from '../../../components/shared/NavigableListSection ';
-import TitleWithProgress from '../../../components/shared/CustomComponents/TitleWithProgress';
-import WatchHistoryItem from './components/WatchHistoryItem';
+import StatsCard from '../../../components/shared/Cards/StatsCard';
 import CircularAvatar from '../../../components/shared/CircularAvatar';
+import ViewingStats from '../../../components/shared/CustomComponents/ViewingStats';
+import CustomPage from '../../../components/shared/CustomPage';
+import NavigableListSection from '../../../components/shared/NavigableListSection ';
+import VerticalPoster from '../../../components/shared/VerticalPoster';
+import {ImageManager} from '../../../constants/ImageManager';
+import '../../../i18n';
+import nowPlayMovies from '../../../models/now_play_movies';
+import TopMovie from '../../../models/top_movie';
 import {RootStackParamList} from '../../../navigation/routes';
 import {useAppSelector} from '../../../redux/hooks';
 import {RootState} from '../../../redux/store';
 import PreRegistrationView from '../../preregistration/PreRegistrationView';
+import WatchHistoryItem from './components/WatchHistoryItem';
+import networkService from '../../../helpers/networkService';
+import axios from 'axios';
+import FastImage from 'react-native-fast-image';
+import {calculateGridItemWidth} from '../../../utils/calculateGridItemWidth';
 
 const {height, width} = Dimensions.get('window');
 
 const SPACING = 8;
 
 const ProfileView = () => {
+  const [loading, setLoading] = React.useState(true);
+
+  const [userData, setUserData] = React.useState<any>({});
+
   const isAuthenticated = useAppSelector(
     (state: RootState) => state.auth.isAuthenticated,
   );
@@ -52,23 +55,103 @@ const ProfileView = () => {
     return <PreRegistrationView title={'You?'} />;
   }
 
+  React.useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await networkService.get(
+          'title/api/user-profile-view/',
+        );
+        console.log(response.data);
+        setUserData(response.data);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+
+            switch (error.response.status) {
+              case 400:
+                console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+                break;
+              case 401:
+                console.log(
+                  'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+                );
+
+                break;
+              case 500:
+                console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+                break;
+              default:
+                console.log(
+                  'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+                );
+            }
+          } else if (error.request) {
+            console.log(error.request);
+            console.log(
+              'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+            );
+          } else {
+            console.log('Error', error.message);
+            console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+          }
+        } else {
+          console.log('Error', error);
+          console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (isAuthenticated) {
+      fetchUserData();
+    }
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'black',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Text style={{color: 'white'}}>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <CustomPage
       pageName="My Profile"
       animationMultiplier={0.4}
       titleInitialOpacity={1}>
       <View style={{gap: SPACING + 2}}>
-        <ProfileHeader />
-        <ProfileInformation />
-        <BiographySection />
+        <ProfileHeader
+          item={{
+            image: ImageManager.IMAGE_NAMES.MANAVATAR,
+            nameSurname: userData.data.name_surname,
+            username: userData.data.username,
+          }}
+        />
+        <ProfileInformation
+          description="Movie enthusiast with a passion for discovering hidden gems and the latest blockbusters"
+          followings={userData.follower_count}
+          network={userData.network}
+        />
+        <StatsSection />
         <ViewingStats
           info={'I’ve enjoyed\n21 of 243 countries'}
           percentage={8}
         />
-        <MyFavorites />
-        <FavoriteCompaines />
-        <FavoriteActors />
-        <FavoriteCrewMembers />
+        <MyFavorites favorites={userData.title} />
+        <FavoriteCompaines companies={userData.company} />
+        <FavoriteActors actors={userData.actor} />
+        <FavoriteCrewMembers crewMembers={userData.crew} />
         <ProfileMenu />
         <WatchHistories />
       </View>
@@ -88,10 +171,10 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
 
-  biography: {
+  stats: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Theme.spacing.rowGap,
+    gap: Theme.spacing.columnGap,
     paddingHorizontal: Theme.paddings.viewHorizontalPadding,
   },
   header: {
@@ -102,6 +185,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: Theme.fontSizes.sm,
     textAlign: 'center',
+    fontWeight: '400',
   },
   descriptionText: {
     color: 'white',
@@ -141,7 +225,15 @@ const styles = StyleSheet.create({
   profileMenu: {},
 });
 
-const ProfileHeader = () => {
+type ProfileHeaderProps = {
+  item: {
+    image: ImageSourcePropType;
+    nameSurname: string;
+    username: string;
+  };
+};
+
+const ProfileHeader = (props: ProfileHeaderProps) => {
   const headerHeight = useHeaderHeight();
   return (
     <View style={styles.header}>
@@ -160,20 +252,31 @@ const ProfileHeader = () => {
           style={{padding: 12}}
         />
       </TouchableOpacity>
-      <ProfileAvatar />
+      <ProfileAvatar
+        image={props.item.image}
+        nameSurname={props.item.nameSurname}
+        username={props.item.username}
+      />
     </View>
   );
 };
 
-const ProfileInformation = () => {
+type ProfileInformationProps = {
+  followings: number;
+  network: number;
+  description: string;
+};
+
+const ProfileInformation = (props: ProfileInformationProps) => {
   return (
     <View style={{gap: SPACING}}>
       <CustomText
-        text="113 Followings • 1.4K in My Network"
+        text={`${props.followings} Followings • ${props.network} in My Network`}
+        // text="113 Followings • 1.4K in My Network"
         style={styles.followingsText}
       />
       <CustomText
-        text="Movie enthusiast with a passion for discovering hidden gems and the latest blockbusters"
+        text={props.description}
         style={styles.descriptionText}
         weight="light"
       />
@@ -197,34 +300,43 @@ const ProfileBackground = () => {
   );
 };
 
-const ProfileAvatar = () => {
+type ProfileAvatarProps = {
+  image: ImageSourcePropType;
+  nameSurname: string;
+  username: string;
+};
+
+const ProfileAvatar = (props: ProfileAvatarProps) => {
   return (
     <View style={styles.avatarContainer}>
       <Avatar
         size={'2xl'}
-        source={{
-          uri: 'https://static.vecteezy.com/system/resources/previews/009/398/577/non_2x/man-avatar-clipart-illustration-free-png.png',
-        }}
+        source={props.image}
+        backgroundColor={'transparent'}
       />
       <View
         style={{
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <CustomText text="Muhammet Kaymaz" weight="bold" style={styles.name} />
-        <CustomText text="@muhammetk4ymaz" style={styles.username} />
+        <CustomText
+          text={props.nameSurname}
+          weight="bold"
+          style={styles.name}
+        />
+        <CustomText text={'@' + props.username} style={styles.username} />
       </View>
     </View>
   );
 };
 
-const BiographySection = () => {
+const StatsSection = () => {
   return (
-    <View style={styles.biography}>
-      <BiographyCard title={'Titles\nEnjoyed'} value="214" />
-      <BiographyCard title={'Titles\nCompleted'} value="52%" />
-      <BiographyCard title={'Missions\nCompleted'} value="467" />
-      <BiographyCard
+    <View style={styles.stats}>
+      <StatsCard title={'Titles\nEnjoyed'} value="214" />
+      <StatsCard title={'Titles\nCompleted'} value="52%" />
+      <StatsCard title={'Missions\nCompleted'} value="467" />
+      <StatsCard
         title={`among\n${
           'Software Engineers'.length > 10
             ? 'Software Engineers'.substring(0, 10) + '...'
@@ -233,7 +345,7 @@ const BiographySection = () => {
         value="21"
         supText="st"
       />
-      <BiographyCard
+      <StatsCard
         title={`in\n${
           'Borussia Mönchengladbach'.length > 10
             ? 'Borussia Mönchengladbach'.substring(0, 10) + '...'
@@ -242,7 +354,7 @@ const BiographySection = () => {
         value="42"
         supText="nd"
       />
-      <BiographyCard
+      <StatsCard
         title={`in\n${
           'Istanbul'.length > 10
             ? 'Istanbul'.substring(0, 10) + '...'
@@ -251,7 +363,7 @@ const BiographySection = () => {
         value="143"
         supText="rd"
       />
-      <BiographyCard
+      <StatsCard
         title={`in\n${
           'United Kingdom'.length > 10
             ? 'United Kingdom'.substring(0, 10) + '...'
@@ -260,47 +372,69 @@ const BiographySection = () => {
         value="4.1K"
         supText="th"
       />
-      <BiographyCard title={'in the\nWorld'} value="11.2M" supText="th" />
+      <StatsCard title={'in the\nWorld'} value="11.2M" supText="th" />
     </View>
   );
 };
 
-const MyFavorites = () => {
+type MyFavoritesProps = {
+  favorites: any[];
+};
+
+const MyFavorites = (props: MyFavoritesProps) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <NavigableListSection
       title="My Favorites"
       pressHandler={() => {
-        navigation.navigate('MyFavorites');
+        navigation.navigate('MyFavorites', {data: props.favorites});
       }}
-      data={nowPlayMovies}
+      data={props.favorites}
       initialNumToRender={4}
-      renderItem={({item}: {item: TopMovie}) => (
-        <VerticalPoster
-          posterPath={item.poster_path}
-          width={DeviceInfo.isTablet() ? width / 6 : (width - 36) / 3.5}
-        />
+      renderItem={({item}) => (
+        <View
+          style={[
+            {
+              overflow: 'hidden',
+              width: calculateGridItemWidth(3.5),
+              aspectRatio: 2000 / 3000,
+              borderRadius: 12,
+            },
+          ]}>
+          <FastImage
+            source={{uri: item.verticalPhotos__0__url}}
+            style={[StyleSheet.absoluteFillObject]}
+          />
+        </View>
       )}
-      keyExtractor={item => item.id.toString()}
+      keyExtractor={item => item.uuid}
     />
   );
 };
 
-const FavoriteCompaines = () => {
+type FavoriteCompainesProps = {
+  companies: any[];
+};
+
+const FavoriteCompaines = (props: FavoriteCompainesProps) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <NavigableListSection
       title="Favorite Companies"
       pressHandler={() => {
-        navigation.navigate('FavoriteCompanies');
+        navigation.navigate('FavoriteCompanies', {data: props.companies});
       }}
-      data={nowPlayMovies}
+      data={props.companies}
       initialNumToRender={6}
-      renderItem={({item}: {item: TopMovie}) => (
+      renderItem={({item}) => (
         <CircularAvatar
-          imagePath={{
-            uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-          }}
+          imagePath={
+            item.logo
+              ? {
+                  uri: item.logo,
+                }
+              : ImageManager.IMAGE_NAMES.PATIPLAYLOGO
+          }
         />
       )}
       keyExtractor={item => item.id.toString()}
@@ -308,21 +442,29 @@ const FavoriteCompaines = () => {
   );
 };
 
-const FavoriteActors = () => {
+type FavoriteActorsProps = {
+  actors: any[];
+};
+
+const FavoriteActors = (props: FavoriteActorsProps) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <NavigableListSection
       title="Favorite Actors & Actresses"
       pressHandler={() => {
-        navigation.navigate('FavoriteActors');
+        navigation.navigate('FavoriteActors', {data: props.actors});
       }}
-      data={nowPlayMovies}
+      data={props.actors}
       initialNumToRender={6}
-      renderItem={({item}: {item: TopMovie}) => (
+      renderItem={({item}) => (
         <CircularAvatar
-          imagePath={{
-            uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-          }}
+          imagePath={
+            item.image
+              ? {
+                  uri: item.image,
+                }
+              : ImageManager.IMAGE_NAMES.PATIPLAYLOGO
+          }
         />
       )}
       keyExtractor={item => item.id.toString()}
@@ -330,21 +472,29 @@ const FavoriteActors = () => {
   );
 };
 
-const FavoriteCrewMembers = () => {
+type FavoriteCrewMembersProps = {
+  crewMembers: any[];
+};
+
+const FavoriteCrewMembers = (props: FavoriteCrewMembersProps) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <NavigableListSection
       title="Favorite Crew Members"
-      data={nowPlayMovies}
+      data={props.crewMembers}
       pressHandler={() => {
-        navigation.navigate('FavoriteCrew');
+        navigation.navigate('FavoriteCrew', {data: props.crewMembers});
       }}
       initialNumToRender={6}
-      renderItem={({item}: {item: TopMovie}) => (
+      renderItem={({item}) => (
         <CircularAvatar
-          imagePath={{
-            uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-          }}
+          imagePath={
+            item.image
+              ? {
+                  uri: item.image,
+                }
+              : ImageManager.IMAGE_NAMES.PATIPLAYLOGO
+          }
         />
       )}
       keyExtractor={item => item.id.toString()}

@@ -1,34 +1,27 @@
+import {StackActions, useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
 import {
+  ActivityIndicator,
   Keyboard,
-  Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
-import {Theme} from '../../constants/Theme';
 import {AuthIcon} from '../../../assets/icons';
-import CustomText from '../../components/shared/CustomText';
-import CustomTextButton from '../../components/shared/CustomTextButton';
-import {
-  CommonActions,
-  NavigationProp,
-  StackActions,
-  useNavigation,
-} from '@react-navigation/native';
-import {RootStackParamList} from '../../navigation/routes';
-import EmailTextField from '../auth/components/EmailTextField';
-import InputErrorText from '../../components/shared/InputErrorText';
-import PasswordTextField from '../auth/components/PasswordTextField';
-import CheckBox from '@react-native-community/checkbox';
+import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
 import ContentWithIconCard from '../../components/shared/Cards/ContentWithIconCard';
+import CustomText from '../../components/shared/CustomText';
+import InputErrorText from '../../components/shared/Texts/InputErrorText';
+import {Theme} from '../../utils/theme';
+import EmailTextField from '../auth/components/EmailTextField';
+import PasswordTextField from '../auth/components/PasswordTextField';
+import networkService from '../../helpers/networkService';
+import axios from 'axios';
 
 type Props = {};
 
 const DontHaveAnAccountView = (props: Props) => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <ScrollView
       contentContainerStyle={[styles.view]}
@@ -65,9 +58,9 @@ const styles = StyleSheet.create({
 
 const PreRegistrationForm = (props: any) => {
   const navigation = useNavigation();
-  const [email, setEmail] = useState('muhammetk4ymaz@gmail.com');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState('muhammetk4ymaz@hotmail.com');
+  const [password, setPassword] = useState('1122332211Mk.');
+  const [confirmPassword, setConfirmPassword] = useState('1122332211Mk.');
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
   const [emailError, setEmailError] = useState('');
@@ -81,7 +74,72 @@ const PreRegistrationForm = (props: any) => {
     specialChar: false,
   });
 
-  const register = async () => {};
+  const [loading, setLoading] = useState(false);
+
+  const register = async () => {
+    setLoading(true);
+    try {
+      const response = await networkService.post('api/user/register/', {
+        email: email,
+        password: password,
+      });
+
+      console.log(response.data);
+
+      await networkService.post('api/user/send-mail/', {
+        email: email,
+        uuid: response.data.uuid,
+      });
+
+      networkService.setToken(response.data.data);
+
+      navigation.dispatch(
+        StackActions.replace('PreVerification', {
+          uuid: response.data.uuid,
+        }),
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+          setFormError(error.response.data.error);
+
+          switch (error.response.status) {
+            case 400:
+              console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+              break;
+            case 401:
+              console.log(
+                'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+              );
+
+              break;
+            case 500:
+              console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+              break;
+            default:
+              console.log(
+                'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+              );
+          }
+        } else if (error.request) {
+          console.log(error.request);
+          console.log(
+            'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+          );
+        } else {
+          console.log('Error', error.message);
+          console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } else {
+        console.log('Error', error);
+        console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [toggleCheckBox, setToggleCheckBox] = React.useState(false);
 
@@ -195,13 +253,11 @@ const PreRegistrationForm = (props: any) => {
         value={confirmPassword}
       />
 
-      <View>
-        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-          {formError && <InputErrorText errorMessage={formError} />}
-        </View>
+      <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+        {formError && <InputErrorText errorMessage={formError} />}
       </View>
 
-      <Pressable
+      {/* <Pressable
         onPress={() => {
           setToggleCheckBox(!toggleCheckBox);
         }}
@@ -224,18 +280,22 @@ const PreRegistrationForm = (props: any) => {
           onValueChange={newValue => setToggleCheckBox(newValue)}
         />
         <CustomText text="Remember Me" style={styles.dontHaveAccount} />
-      </Pressable>
+      </Pressable> */}
 
       <View style={{alignSelf: 'center', marginTop: 20}}>
-        <CustomTextButton
-          text={'Continue'}
-          onPress={() => {
-            navigation.dispatch(StackActions.replace('PreVerification'));
-          }}
-          textColor="black"
-          paddingHorizontal={36}
-          paddingVertical={8}
-        />
+        {loading ? (
+          <ActivityIndicator size="large" color={Theme.colors.primary} />
+        ) : (
+          <CustomTextButton
+            text={'Continue'}
+            onPress={() => {
+              handleSubmit();
+            }}
+            textColor="black"
+            paddingHorizontal={36}
+            paddingVertical={8}
+          />
+        )}
       </View>
 
       <TouchableOpacity

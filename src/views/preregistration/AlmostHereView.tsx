@@ -6,10 +6,10 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {Theme} from '../../constants/Theme';
+import {Theme} from '../../utils/theme';
 import {AuthIcon} from '../../../assets/icons';
 import CustomText from '../../components/shared/CustomText';
-import CustomTextButton from '../../components/shared/CustomTextButton';
+import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
 import {
   NavigationProp,
   StackActions,
@@ -25,7 +25,13 @@ const AlmostHereView = () => {
     <ScrollView
       contentContainerStyle={[styles.view]}
       keyboardShouldPersistTaps="handled">
-      <ContentWithIconCard icon={<AuthIcon size={100} />}>
+      <ContentWithIconCard
+        icon={
+          <Image
+            source={ImageManager.IMAGE_NAMES.PATILOGOWHIE}
+            style={{height: 100, width: 100}}
+          />
+        }>
         <View style={{gap: 16, alignSelf: 'center'}}>
           <CustomText
             text="You're almost there...."

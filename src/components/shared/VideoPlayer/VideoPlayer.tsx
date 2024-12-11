@@ -21,7 +21,11 @@ const VideoPlayer = () => {
   const videoRef = useRef<VideoRef>(null);
 
   return (
-    <View>
+    <View
+      style={{
+        height: '100%',
+        width: '100%',
+      }}>
       <VideoPlayerEditor videoRef={videoRef} />
       <VideoControllerComponent videoRef={videoRef} />
       {/* <SubtitleComponent /> */}

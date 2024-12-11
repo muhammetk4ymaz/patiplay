@@ -1252,7 +1252,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-pager-view (6.5.0):
+  - react-native-pager-view (6.5.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1296,7 +1296,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-video (6.8.0):
+  - react-native-video (6.8.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1309,7 +1309,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-video/Video (= 6.8.0)
+    - react-native-video/Video (= 6.8.2)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1318,7 +1318,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-video/Video (6.8.0):
+  - react-native-video/Video (6.8.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1606,7 +1606,7 @@ PODS:
     - React-Core
   - RNDateTimePicker (8.2.0):
     - React-Core
-  - RNDeviceInfo (14.0.0):
+  - RNDeviceInfo (14.0.1):
     - React-Core
   - RNFastImage (8.6.3):
     - React-Core
@@ -1633,7 +1633,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNGestureHandler (2.21.0):
+  - RNGestureHandler (2.21.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1677,7 +1677,7 @@ PODS:
     - Yoga
   - RNLocalize (3.3.0):
     - React-Core
-  - RNReanimated (3.16.1):
+  - RNReanimated (3.16.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1697,10 +1697,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.16.1)
-    - RNReanimated/worklets (= 3.16.1)
+    - RNReanimated/reanimated (= 3.16.3)
+    - RNReanimated/worklets (= 3.16.3)
     - Yoga
-  - RNReanimated/reanimated (3.16.1):
+  - RNReanimated/reanimated (3.16.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1720,9 +1720,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 3.16.1)
+    - RNReanimated/reanimated/apple (= 3.16.3)
     - Yoga
-  - RNReanimated/reanimated/apple (3.16.1):
+  - RNReanimated/reanimated/apple (3.16.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1743,7 +1743,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated/worklets (3.16.1):
+  - RNReanimated/worklets (3.16.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2112,10 +2112,10 @@ SPEC CHECKSUMS:
   React-logger: d79b704bf215af194f5213a6b7deec50ba8e6a9b
   React-Mapbuffer: b982d5bba94a8bc073bda48f0d27c9b28417fae3
   React-microtasksnativemodule: 2b73e68f0462f3175f98782db08896f8501afd20
-  react-native-pager-view: bc0577047c5901fc96f6134881172072a909af7b
+  react-native-pager-view: 12284823fff3b85b4dd16456b04def6ba9422677
   react-native-safe-area-context: 4532f1a0c5d34a46b9324ccaaedcb5582a302b7d
   react-native-slider: 4a0f3386a38fc3d2d955efc515aef7096f7d1ee4
-  react-native-video: b687b8d0a8576535185adf78f0eeb27c7dc46b86
+  react-native-video: 83e6de4c53ea2d3674fd85c2079451e99e7e9110
   React-nativeconfig: 8c83d992b9cc7d75b5abe262069eaeea4349f794
   React-NativeModulesApple: 9f7920224a3b0c7d04d77990067ded14cee3c614
   React-perflogger: 59e1a3182dca2cee7b9f1f7aab204018d46d1914
@@ -2145,13 +2145,13 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: cc6479c4acd84cc7004946946c8afe30b018184d
   RNCCheckbox: a3ca9978cb0846b981d28da4e9914bd437403d77
   RNDateTimePicker: 40ffda97d071a98a10fdca4fa97e3977102ccd14
-  RNDeviceInfo: 6192a9c9167e256803e554038b22b3b2b40163dc
+  RNDeviceInfo: 825f0d2f4381327317f12d1522720a8f76e6a19e
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFlashList: d96ba74a4097f2574eae6c9b8e4704d8b3b5c58d
-  RNGestureHandler: ec8a0db73b17ae2943429f2e8bbdd488d2d7cfed
+  RNGestureHandler: aa9690789023c9be8f06aa90e10ce637ea788f4d
   RNKeychain: 4cfd0dc8634c2dd81a4607c8299ed424bfdee1a7
   RNLocalize: 298e85ce16540a11de40c1a588ead39fc5e9a072
-  RNReanimated: f42a5044d121d68e91680caacb0293f4274228eb
+  RNReanimated: 83a2baa5f4dc44ace7b5296ea1f3533d998dfb69
   RNScreens: c7ceced6a8384cb9be5e7a5e88e9e714401fd958
   RNSVG: 3d2bdcaef51c8071880a9c0072fe324f4423a3ba
   RNVectorIcons: 6382277afab3c54658e9d555ee0faa7a37827136

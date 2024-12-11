@@ -1,73 +1,134 @@
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import React from 'react';
 import {
   ActivityIndicator,
-  Dimensions,
   FlatList,
   Image,
+  ImageSourcePropType,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
-import nowPlayMovies from '../../../../models/now_play_movies';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../../../redux/store';
-import {Theme} from '../../../../constants/Theme';
 import popularTitles from '../../../../models/popular';
 import TopMovie from '../../../../models/top_movie';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {Theme} from '../../../../utils/theme';
 
+import axios from 'axios';
 import CustomText from '../../../../components/shared/CustomText';
+import networkService from '../../../../helpers/networkService';
 import {RootStackParamList} from '../../../../navigation/routes';
+import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
+import FastImage from 'react-native-fast-image';
+import {ImageManager} from '../../../../constants/ImageManager';
 
-type Props = {};
+type Props = {
+  uuid: string;
+};
 
 const TitleListsTab = (props: Props) => {
-  const lists = useSelector((state: RootState) => state.titleDetail.lists);
-  const listsInitialLoading = useSelector(
-    (state: RootState) => state.titleDetail.listsInitialLoading,
-  );
-  return (
-    <FlatList
-      data={lists}
-      scrollEnabled={false}
-      numColumns={2}
-      columnWrapperStyle={{
-        gap: Theme.spacing.rowGap,
-      }}
-      ListHeaderComponent={() => {
-        return (
-          listsInitialLoading && (
-            <View
-              style={{
-                paddingVertical: Theme.spacing.columnGap,
-              }}>
-              <ActivityIndicator
-                size="large"
-                color={Theme.colors.primary}
-                animating={listsInitialLoading}
-              />
-            </View>
-          )
-        );
-      }}
-      contentContainerStyle={{
-        paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-        gap: Theme.spacing.columnGap,
-      }}
-      keyExtractor={item => item.id.toString()}
-      renderItem={({item}) => {
-        return <OtherListItem item={popularTitles.slice(0, 3)} />;
-      }}
-    />
-  );
+  const [loading, setLoading] = React.useState(true);
+  const [lists, setLists] = React.useState<any[]>([]);
+
+  const fetchCastData = async () => {
+    try {
+      const response = await networkService.post('title/api/title-tab-movie/', {
+        slug: props.uuid,
+        tab: 'Lists',
+      });
+      setLists(response.data.lists);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+
+          switch (error.response.status) {
+            case 400:
+              console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+              break;
+            case 401:
+              console.log(
+                'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+              );
+
+              break;
+            case 500:
+              console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+              break;
+            default:
+              console.log(
+                'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+              );
+          }
+        } else if (error.request) {
+          console.log(error.request);
+          console.log(
+            'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+          );
+        } else {
+          console.log('Error', error.message);
+          console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } else {
+        console.log('Error', error);
+        console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    console.log('Rendered CastTab');
+
+    fetchCastData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+        }}>
+        <ActivityIndicator
+          size="large"
+          color={Theme.colors.primary}
+          animating={loading}
+        />
+      </View>
+    );
+  } else {
+    return (
+      <FlatList
+        data={lists}
+        scrollEnabled={false}
+        numColumns={2}
+        columnWrapperStyle={{
+          columnGap: Theme.spacing.columnGap,
+        }}
+        contentContainerStyle={{
+          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+          rowGap: Theme.spacing.rowGap,
+        }}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({item}) => {
+          return <OtherListItem item={item} />;
+        }}
+      />
+    );
+  }
 };
 
 export default React.memo(TitleListsTab);
 
 const styles = StyleSheet.create({});
 
-const OtherListItem = ({item, index}: {item: TopMovie[]; index?: number}) => {
+const OtherListItem = ({item, index}: {item: any; index?: number}) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <TouchableOpacity
@@ -75,31 +136,19 @@ const OtherListItem = ({item, index}: {item: TopMovie[]; index?: number}) => {
         navigation.navigate('ListDetail');
       }}
       style={{
-        width:
-          (Dimensions.get('window').width -
-            2 * Theme.paddings.viewHorizontalPadding -
-            1 * Theme.spacing.rowGap) /
-          2,
+        width: calculateGridItemWidth(2),
         gap: 3,
       }}>
       <PosterStack
-        posters={item}
-        posterWidth={
-          (Dimensions.get('window').width -
-            2 * Theme.paddings.viewHorizontalPadding -
-            1 * Theme.spacing.rowGap) /
-          4
-        }
-        posterContainerWidth={
-          (Dimensions.get('window').width -
-            2 * Theme.paddings.viewHorizontalPadding -
-            1 * Theme.spacing.rowGap) /
-          2
-        }
+        postersPaths={item.title.map(
+          (item: any) => item.title.verticalPhotos[0].url,
+        )}
+        posterWidth={calculateGridItemWidth(2) / 2}
+        posterContainerWidth={calculateGridItemWidth(2)}
       />
       <View>
         <CustomText
-          text="List Name"
+          text={item.name}
           style={{color: 'white', fontSize: Theme.fontSizes.sm}}
           numberOfLines={1}
           weight="light"
@@ -111,7 +160,15 @@ const OtherListItem = ({item, index}: {item: TopMovie[]; index?: number}) => {
           numberOfLines={1}
         />
         <CustomText
-          text="17 Titles • Mar 24"
+          text={
+            item.title.length +
+            ' Titles • ' +
+            new Date(item.created_at).toLocaleString('en', {
+              month: 'short',
+              day: 'numeric',
+            })
+          }
+          // text="17 Titles • Mar 24"
           weight="light"
           style={{color: 'white', opacity: 0.5, fontSize: Theme.fontSizes.xs}}
           numberOfLines={1}
@@ -122,11 +179,11 @@ const OtherListItem = ({item, index}: {item: TopMovie[]; index?: number}) => {
 };
 
 const PosterStack = ({
-  posters,
+  postersPaths,
   posterWidth,
   posterContainerWidth,
 }: {
-  posters: any[];
+  postersPaths: string[];
   posterWidth: number;
   posterContainerWidth: number;
 }) => {
@@ -142,7 +199,7 @@ const PosterStack = ({
             aspectRatio: 2 / 3,
             overflow: 'hidden',
           }}>
-          {posters.reverse().map((poster, index) => {
+          {postersPaths.reverse().map((posterPath, index) => {
             return (
               <View
                 style={[
@@ -155,10 +212,10 @@ const PosterStack = ({
                     right: index * posterSpacing,
                   },
                 ]}
-                key={poster.id}>
+                key={index}>
                 <Image
                   source={{
-                    uri: `https://image.tmdb.org/t/p/w500${poster.poster_path}`,
+                    uri: posterPath,
                   }}
                   style={{
                     width: '100%',

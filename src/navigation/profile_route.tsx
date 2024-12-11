@@ -8,8 +8,8 @@ import {
   View,
 } from 'react-native';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import ShareButton from '../components/shared/ShareButton';
-import {Theme} from '../constants/Theme';
+
+import {Theme} from '../utils/theme';
 
 import MyNetworkView from '../views/dashboard/profile/my_network';
 import {RootStackParamList, Routes} from './routes';
@@ -17,13 +17,14 @@ import ProfileView from '../views/dashboard/profile';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {useAppSelector} from '../redux/hooks';
 
-import HeaderLeftTitle from '../components/shared/ForIos/HeaderLeftTitle';
+import HeaderLeftTitle from '../components/shared/ios/HeaderLeftTitle';
 import {
   LanguageButton,
   MessageButton,
   NotificationButton,
   SettingsButton,
 } from '../components/shared/HeaderRight';
+import ShareButton from '../components/shared/Buttons/ShareButton';
 
 type Props = {};
 
@@ -42,7 +43,7 @@ const ProfileRoute = (props: Props) => {
         contentStyle: {
           backgroundColor: Theme.colors.background,
         },
-
+        headerBackTitleVisible: false,
         headerTitleStyle: {
           fontFamily: 'HelveticaNeue-Medium',
           fontSize: Theme.appBarTitleFontSize,
@@ -238,6 +239,19 @@ const ProfileRoute = (props: Props) => {
         component={Routes.MYFOLLOWINGS}
         options={{
           title: 'My Followings',
+          headerStyle: {
+            backgroundColor: 'black',
+          },
+          headerTitleAlign: 'center',
+          headerTintColor: 'white',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen
+        name="EditFollowings"
+        component={Routes.EDITFOLLOWINGS}
+        options={{
+          title: 'Edit Followings',
           headerStyle: {
             backgroundColor: 'black',
           },

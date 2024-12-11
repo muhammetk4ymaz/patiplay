@@ -1,15 +1,16 @@
 import {Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Theme} from '../constants/Theme';
-import ShareButton from '../components/shared/ShareButton';
+import {Theme} from '../utils/theme';
+
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import MyMissionView from '../views/dashboard/mymission';
 import {RootStackParamList} from './routes';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {useAppSelector} from '../redux/hooks';
-import HeaderLeftTitle from '../components/shared/ForIos/HeaderLeftTitle';
+
 import HeaderRight from '../components/shared/HeaderRight';
+import HeaderLeftTitle from '../components/shared/ios/HeaderLeftTitle';
 
 type Props = {};
 

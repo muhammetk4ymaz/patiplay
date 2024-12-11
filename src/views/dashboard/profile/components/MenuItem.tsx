@@ -3,7 +3,7 @@ import React from 'react';
 import CustomText from '../../../../components/shared/CustomText';
 
 import IconEntypo from 'react-native-vector-icons/Entypo';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 
 export type MenuItem = {
   icon?: any;

@@ -2,7 +2,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {WebSocketProvider} from '../context/WebSocketContext';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Theme} from '../constants/Theme';
+import {Theme} from '../utils/theme';
 import {RootStackParamList, Routes} from './routes';
 import {useSelector} from 'react-redux';
 import {RootState} from '../redux/store';
@@ -11,9 +11,10 @@ import '../i18n';
 import {useTranslation} from 'react-i18next';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import HeaderBackWithTitle from '../components/shared/ForIos/HeaderBackWithTitle';
+
 import CustomText from '../components/shared/CustomText';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
+import HeaderBackWithTitle from '../components/shared/ios/HeaderBackWithTitle';
 
 type Props = {};
 

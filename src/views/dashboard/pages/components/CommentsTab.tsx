@@ -1,35 +1,53 @@
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
-import {Avatar, Button, Input} from 'native-base';
 import React from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  Keyboard,
   StyleSheet,
+  TouchableOpacity,
   View,
 } from 'react-native';
-import IconIonicons from 'react-native-vector-icons/Ionicons';
-import DicussionNew from '../../../../components/shared/DicussionNew';
+
+import Comment from '../../../../components/shared/Comment/Comment';
+import {CommentInput} from '../../../../components/shared/Comment/CommentInput';
+import CustomText from '../../../../components/shared/CustomText';
 import {ReplyModal} from '../../../../components/shared/ReplyModal';
-import {ImageManager} from '../../../../constants/ImageManager';
-import {Theme} from '../../../../constants/Theme';
-import nowPlayMovies from '../../../../models/now_play_movies';
+import {Theme} from '../../../../utils/theme';
 
 const width = Dimensions.get('window').width;
 
-type Props = {};
+type Props = {
+  data: any;
+  uuid: string;
+  refreshData: () => void;
+  scrollEnabled?: boolean;
+  endpoint: string;
+  commentInputVisible?: boolean;
+};
 
 const CommentsTab = (props: Props) => {
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
 
   const bottomSheetModalRef = React.useRef<BottomSheetModal>(null);
 
+  const [replyData, setReplyData] = React.useState<any>({});
+  const [replyIndex, setReplyIndex] = React.useState<number>(0);
+
+  const scrollRef = React.useRef<FlatList>(null);
+
   React.useEffect(() => {
+    setReplyData(props.data[replyIndex]);
     setTimeout(() => {
-      setLoading(false);
-    }, 300);
-  }, []);
+      if (replyData?.length > 0) {
+        scrollRef.current?.scrollToIndex({
+          index: 0,
+          animated: true,
+          viewOffset: 12,
+        });
+      }
+    }, 500);
+  }, [props.refreshData]);
 
   if (loading) {
     return (
@@ -48,26 +66,86 @@ const CommentsTab = (props: Props) => {
       </View>
     );
   } else {
+    if (props.data.length === 0) {
+      return (
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: width,
+          }}>
+          <CustomText text="No comments yet" style={{color: 'white'}} />
+        </View>
+      );
+    }
+
     return (
       <View style={{flex: 1}}>
         <FlatList
           removeClippedSubviews={true}
-          data={nowPlayMovies}
+          ref={scrollRef}
+          scrollEnabled={props.scrollEnabled}
+          data={props.data}
           contentContainerStyle={{
             paddingHorizontal: Theme.paddings.viewHorizontalPadding,
             gap: 12,
-            paddingVertical: 12,
           }}
           keyExtractor={item => item.id.toString()}
           renderItem={({item, index}) => (
-            <DicussionNew
-              replyOnPress={() => {
-                bottomSheetModalRef.current?.present();
-              }}
-            />
+            <View style={{gap: 5}}>
+              <Comment
+                endpoint={props.endpoint}
+                item={item}
+                replyOnPress={() => {
+                  setReplyData(item);
+                  setReplyIndex(index);
+                  bottomSheetModalRef.current?.present();
+                }}
+              />
+
+              {item.replies.length > 0 && (
+                <TouchableOpacity
+                  style={{
+                    marginLeft: 30,
+                    paddingHorizontal: 12,
+                    paddingVertical: 4,
+                  }}
+                  onPress={() => {
+                    setReplyData(item);
+                    setReplyIndex(index);
+                    bottomSheetModalRef.current?.present();
+                  }}>
+                  <CustomText
+                    text={`${item.replies.reduce(
+                      (total: any, reply: any) => total + reply.replies.length,
+                      item.replies.length,
+                    )} reply`}
+                    style={{
+                      color: '#3ea6ff',
+                    }}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
           )}></FlatList>
-        <CommentInput />
-        <ReplyModal bottomSheetRef={bottomSheetModalRef} />
+
+        <CommentInput
+          endpoint={props.endpoint}
+          onSend={() => {
+            props.refreshData();
+          }}
+          uuid={props.uuid}
+        />
+
+        <ReplyModal
+          endpoint={props.endpoint}
+          bottomSheetRef={bottomSheetModalRef}
+          data={replyData}
+          onSend={() => {
+            props.refreshData();
+          }}
+        />
       </View>
     );
   }
@@ -76,74 +154,3 @@ const CommentsTab = (props: Props) => {
 export default CommentsTab;
 
 const styles = StyleSheet.create({});
-
-const CommentInput = () => {
-  const [value, onChangeText] = React.useState('');
-
-  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
-  const [keyboardHeight, setKeyboardHeight] = React.useState(0);
-
-  React.useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      e => {
-        setKeyboardVisible(true); // Klavye açıldığında durumu güncelle
-        setKeyboardHeight(e.endCoordinates.height);
-      },
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setKeyboardVisible(false); // Klavye kapandığında durumu güncelle
-        setKeyboardHeight(0);
-      },
-    );
-
-    // Event listener'ları temizle
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
-
-  return (
-    <View style={{bottom: keyboardHeight}}>
-      <Input
-        borderRadius={0}
-        value={value}
-        onChangeText={text => onChangeText(text)}
-        placeholder={'Your Reply'}
-        variant="filled"
-        bg="black"
-        color="white"
-        borderColor="transparent"
-        _focus={{
-          cursorColor: Theme.colors.primary,
-          borderColor: 'transparent',
-          backgroundColor: 'black',
-        }}
-        InputLeftElement={
-          <Avatar
-            borderColor={Theme.colors.gray}
-            borderWidth={1}
-            marginLeft={2}
-            source={ImageManager.IMAGE_NAMES.ANGRYEMOJI}
-            size="xs"
-          />
-        }
-        InputRightElement={
-          <Button
-            variant="unstyled"
-            onPress={() => {
-              console.log('onSend');
-            }}
-            _pressed={{
-              backgroundColor: 'transparent',
-            }}>
-            <IconIonicons name="send" size={24} color={Theme.colors.primary} />
-          </Button>
-        }
-      />
-    </View>
-  );
-};

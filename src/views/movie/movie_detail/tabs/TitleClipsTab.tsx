@@ -1,3 +1,5 @@
+import axios from 'axios';
+import React from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -5,65 +7,103 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import React from 'react';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../../../redux/store';
-import {Theme} from '../../../../constants/Theme';
-import TitleWithProgress from '../../../../components/shared/CustomComponents/TitleWithProgress';
+import ClipItem from '../../../../components/shared/CustomComponents/ClipItem';
+import networkService from '../../../../helpers/networkService';
+import {Theme} from '../../../../utils/theme';
+import ClipsTab from '../../../dashboard/pages/components/ClipsTab';
 
-type Props = {};
+const width = Dimensions.get('window').width;
 
-const TitleClipsTab = (props: Props) => {
-  console.log('TitleClipsTab');
-  const clips = useSelector((state: RootState) => state.titleDetail.clips);
-  const clipsInitialLoading = useSelector(
-    (state: RootState) => state.titleDetail.clipsInitialLoading,
-  );
-
-  return (
-    <FlatList
-      data={clips}
-      scrollEnabled={false}
-      ListHeaderComponent={() => {
-        return (
-          clipsInitialLoading && (
-            <View
-              style={{
-                paddingVertical: Theme.spacing.columnGap,
-              }}>
-              <ActivityIndicator
-                size="large"
-                color={Theme.colors.primary}
-                animating={clipsInitialLoading}
-              />
-            </View>
-          )
-        );
-      }}
-      contentContainerStyle={{
-        paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-        gap: Theme.spacing.rowGap,
-      }}
-      keyExtractor={item => item.id.toString()}
-      renderItem={({item}) => {
-        return (
-          <View
-            style={{
-              width: '45%',
-              marginBottom: Theme.spacing.rowGap,
-            }}>
-            <TitleWithProgress
-              backdropPath={item.backdrop_path}
-              percentage={0}
-              runtime={0}
-            />
-          </View>
-        );
-      }}
-    />
-  );
+type Props = {
+  uuid: string;
 };
 
-export default React.memo(TitleClipsTab);
+const TitleClipsTab = (props: Props) => {
+  const [loading, setLoading] = React.useState(true);
+  const [clips, setClips] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    console.log('Rendered ClipTab');
+
+    const fetchClipData = async () => {
+      try {
+        const response = await networkService.post(
+          'title/api/title-tab-movie/',
+          {
+            slug: props.uuid,
+            tab: 'Clips',
+          },
+        );
+        console.log('ClipTab', response.data);
+        setClips(response.data);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+
+            switch (error.response.status) {
+              case 400:
+                console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+                break;
+              case 401:
+                console.log(
+                  'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+                );
+
+                break;
+              case 500:
+                console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+                break;
+              default:
+                console.log(
+                  'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+                );
+            }
+          } else if (error.request) {
+            console.log(error.request);
+            console.log(
+              'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+            );
+          } else {
+            console.log('Error', error.message);
+            console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+          }
+        } else {
+          console.log('Error', error);
+          console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClipData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: width,
+        }}>
+        <ActivityIndicator
+          size="large"
+          color={Theme.colors.primary}
+          animating={loading}
+        />
+      </View>
+    );
+  } else {
+    return <ClipsTab data={{clips}} scrollEnabled={false} />;
+  }
+};
+
+export default TitleClipsTab;
 
 const styles = StyleSheet.create({});

@@ -1,33 +1,46 @@
-import {
-  Dimensions,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ScrollView,
-} from 'react-native';
 import React from 'react';
-import {Theme} from '../../../constants/Theme';
-import CustomText from '../../../components/shared/CustomText';
-import IconEntypo from 'react-native-vector-icons/Entypo';
-import IconIonicons from 'react-native-vector-icons/Ionicons';
+import {Dimensions, FlatList, TouchableOpacity} from 'react-native';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {useHeaderHeight} from '@react-navigation/elements';
+import CustomText from '../../../components/shared/CustomText';
+import {Theme} from '../../../utils/theme';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useHeaderHeight} from '@react-navigation/elements';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../../../navigation/routes';
-
-type Props = {};
 
 const {width, height} = Dimensions.get('window');
 
-const SPACE = 12;
-
 const fontSize = Theme.fontSizes.md;
 const backgroundColor: string = Theme.colors.sambucus;
+const SPACE = Theme.spacing.rowGap;
+
+const PatiplayView = () => {
+  console.log('PatiplayView Rendered');
+  return (
+    <FlatList
+      data={menuItems}
+      contentContainerStyle={{
+        paddingVertical: SPACE,
+        paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+        gap: SPACE,
+      }}
+      columnWrapperStyle={{justifyContent: 'space-between'}}
+      renderItem={({item, index}) => {
+        return (
+          <CardItem
+            icon={item.icon}
+            text={item.text}
+            page={item.page}
+            backgroundColor={menuColors[index]}
+          />
+        );
+      }}
+      numColumns={2}
+    />
+  );
+};
+
+export default PatiplayView;
 
 type CardItemProps = {
   icon: string;
@@ -46,6 +59,45 @@ type CardItemProps = {
     | 'Movements';
   backgroundColor?: string;
 };
+
+const CardItem = React.memo((props: CardItemProps) => {
+  const headerHeight = useHeaderHeight();
+  const bottomTabBarHeight = useBottomTabBarHeight();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate(props.page);
+      }}
+      style={{
+        height: (height - 7 * SPACE - headerHeight - bottomTabBarHeight) / 6,
+        width: (width - 2 * Theme.paddings.viewHorizontalPadding - SPACE) / 2,
+        backgroundColor: props.backgroundColor || backgroundColor,
+        borderRadius: 12,
+        padding: SPACE,
+      }}>
+      <CustomText
+        text={props.text}
+        style={{
+          color: 'white',
+          fontSize: fontSize,
+          fontWeight: 'bold',
+        }}
+      />
+      <IconMaterialCommunityIcons
+        name={props.icon}
+        size={
+          Math.min(
+            (height - 7 * SPACE - headerHeight - bottomTabBarHeight) / 6,
+          ) / 2
+        }
+        style={{position: 'absolute', bottom: 0, right: 12}}
+        color={'white'}
+      />
+    </TouchableOpacity>
+  );
+});
 
 const menuColors = [
   '#ff6f61', // Premiere - vibrant red-orange
@@ -124,76 +176,3 @@ const menuItems: CardItemProps[] = [
     page: 'Calendar',
   },
 ];
-
-const CardItem3 = React.memo((props: CardItemProps) => {
-  const headerHeight = useHeaderHeight();
-  const bottomTabBarHeight = useBottomTabBarHeight();
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-
-  return (
-    <TouchableOpacity
-      onPress={() => {
-        navigation.navigate(props.page);
-      }}
-      style={{
-        height: (height - 7 * SPACE - headerHeight - bottomTabBarHeight) / 6,
-        width: (width - 2 * Theme.paddings.viewHorizontalPadding - 12) / 2,
-        backgroundColor: props.backgroundColor || backgroundColor,
-        borderRadius: 12,
-        padding: SPACE,
-      }}>
-      <CustomText
-        text={props.text}
-        style={{
-          color: 'white',
-          fontSize: fontSize,
-          fontWeight: 'bold',
-        }}
-      />
-      <IconMaterialCommunityIcons
-        name={props.icon}
-        size={
-          Math.min(
-            (height - 7 * SPACE - headerHeight - bottomTabBarHeight) / 6,
-          ) / 2
-        }
-        style={{position: 'absolute', bottom: 0, right: 12}}
-        color={'white'}
-      />
-    </TouchableOpacity>
-  );
-});
-
-const PatiplayView = (props: Props) => {
-  console.log('PatiplayView Rendered');
-  return (
-    <View style={styles.view}>
-      {menuItems.map((item, index) => {
-        return (
-          <CardItem3
-            icon={item.icon}
-            text={item.text}
-            page={item.page}
-            key={index}
-            backgroundColor={menuColors[index]}
-          />
-        );
-      })}
-    </View>
-  );
-};
-
-export default PatiplayView;
-
-const styles = StyleSheet.create({
-  view: {
-    flex: 1,
-    flexDirection: 'row',
-    width: '100%',
-    gap: SPACE,
-    flexWrap: 'wrap',
-    backgroundColor: Theme.colors.background,
-    paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-    paddingVertical: 12,
-  },
-});

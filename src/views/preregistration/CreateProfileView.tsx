@@ -8,10 +8,10 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {Theme} from '../../constants/Theme';
+import {Theme} from '../../utils/theme';
 import {AuthIcon, UserIcon} from '../../../assets/icons';
 import CustomText from '../../components/shared/CustomText';
-import CustomTextButton from '../../components/shared/CustomTextButton';
+import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
 import {
   NavigationProp,
   StackActions,
@@ -20,13 +20,14 @@ import {
 import {RootStackParamList} from '../../navigation/routes';
 import {ImageManager} from '../../constants/ImageManager';
 import ContentWithIconCard from '../../components/shared/Cards/ContentWithIconCard';
-import CustomTextInput from '../../components/shared/CustomTextInput';
-import InputErrorText from '../../components/shared/InputErrorText';
-import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import DateTimeInputIos from '../../components/shared/ForIos/DateTimeInput';
+import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import {Dropdown} from 'react-native-element-dropdown';
+import DateTimeInputIos from '../../components/shared/ios/DateTimeInput';
+import CustomTextInput from '../../components/shared/Inputs/CustomTextInput';
+import InputErrorText from '../../components/shared/Texts/InputErrorText';
+import networkService from '../../helpers/networkService';
 
 const CreateProfileView = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -34,7 +35,13 @@ const CreateProfileView = () => {
     <ScrollView
       contentContainerStyle={[styles.view]}
       keyboardShouldPersistTaps="handled">
-      <ContentWithIconCard icon={<AuthIcon size={100} />}>
+      <ContentWithIconCard
+        icon={
+          <Image
+            source={ImageManager.IMAGE_NAMES.PATILOGOWHIE}
+            style={{height: 100, width: 100}}
+          />
+        }>
         <CreateProfileForm />
       </ContentWithIconCard>
     </ScrollView>
@@ -59,20 +66,76 @@ const styles = StyleSheet.create({
 });
 
 const CreateProfileForm = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [username, setUsername] = React.useState('');
-  // const [usernameError, setUsernameError] = React.useState(
-  //   "Oops, that's not unique!. Please try another one.",
-  // );
   const [usernameError, setUsernameError] = React.useState('');
-  const [date, setDate] = React.useState(new Date(Date.now()));
+  const [dateError, setDateError] = React.useState('');
+  const [genderError, setGenderError] = React.useState('');
+
+  const [date, setDate] = React.useState(
+    new Date(Date.now() - 13 * 365 * 24 * 60 * 60 * 1000),
+  );
+
+  let gender = '';
+
+  const controlUsernameValid = async (value: string) => {
+    const apiUrl = 'title/api/check-username/';
+    const data = {username: value};
+    const response = await networkService.post(apiUrl, data);
+    console.log(response.data);
+    return await response.data;
+  };
+
+  const handleContinue = async () => {
+    if (!username || username.length < 3) {
+      setUsernameError(
+        'The username you entered cannot be less than 3 characters.',
+      );
+      return;
+    } else if (username.length > 20) {
+      setUsernameError(
+        'The username you entered cannot be more than 20 characters.',
+      );
+      return;
+    } else if (!/^[a-zA-Z0-9_\-.]+$/.test(username)) {
+      setUsernameError(
+        'The username you entered cannot contain spaces or special characters.',
+      );
+      return;
+    }
+    const response = await controlUsernameValid(username.toLowerCase());
+    if (response.exists == true) {
+      setUsernameError("Oops, that's not unique!. Please try another one.");
+      return;
+    } else {
+      setUsernameError('');
+    }
+    if (!date) {
+      setDateError('Please enter a valid date of birth.');
+      return;
+    }
+    if (gender === '') {
+      setGenderError('Please select your gender.');
+      return;
+    } else {
+      setGenderError('');
+    }
+
+    console.log(username, date, gender);
+
+    navigation.navigate('Packages');
+  };
 
   return (
     <View style={{gap: 12}}>
       <View style={{gap: 5}}>
         <CustomTextInput
-          onChangeText={setUsername}
+          onChangeText={text => {
+            setUsername(text.toLowerCase());
+          }}
+          value={username}
           placeholder={'Username'}
-          error={usernameError ? true : false}
+          // error={usernameError ? true : false}
           icon={<UserIcon size={Theme.iconSize} fiil={Theme.colors.white} />}
         />
         {usernameError && <InputErrorText errorMessage={usernameError} />}
@@ -92,17 +155,20 @@ const CreateProfileForm = () => {
                     onChange(event, selectedDate) {
                       setDate(selectedDate || date);
                     },
+                    maximumDate: new Date(
+                      Date.now() - 13 * 365 * 24 * 60 * 60 * 1000,
+                    ),
                   });
                 }}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   borderWidth: 2,
-                  paddingHorizontal: 16,
-                  paddingVertical: Platform.select({ios: 6, android: 9}),
+                  paddingHorizontal: 12,
+                  paddingVertical: 4,
                   borderRadius: 30,
                   borderColor: Theme.colors.primary,
-                  gap: 12,
+                  gap: 10,
                 }}>
                 <IconMaterialIcons name="date-range" size={32} color="white" />
                 <CustomText
@@ -119,13 +185,24 @@ const CreateProfileForm = () => {
           })}
         </View>
         <View style={{flex: 1}}>
-          <DropdownComponent />
+          <DropdownComponent
+            onChanged={item => {
+              gender = item.label;
+            }}
+          />
         </View>
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+        }}>
+        {genderError && <InputErrorText errorMessage={genderError} />}
       </View>
       <View style={{alignSelf: 'center', marginTop: 20}}>
         <CustomTextButton
           text={'Continue'}
-          onPress={() => {}}
+          onPress={handleContinue}
           textColor="black"
           paddingHorizontal={36}
           paddingVertical={8}
@@ -143,8 +220,12 @@ const data = [
   {label: 'Other', value: '5'},
 ];
 
-const DropdownComponent = () => {
-  const [value, setValue] = React.useState<string>('Male');
+type DropdownComponentProps = {
+  onChanged: (item: {label: string; value: string}) => void;
+};
+
+const DropdownComponent = (props: DropdownComponentProps) => {
+  const [value, setValue] = React.useState<any>();
   const [isFocus, setIsFocus] = React.useState(false);
 
   return (
@@ -179,7 +260,7 @@ const DropdownComponent = () => {
       value={value}
       onFocus={() => setIsFocus(true)}
       onBlur={() => setIsFocus(false)}
-      onChange={item => {}}
+      onChange={item => props.onChanged(item)}
       containerStyle={{
         borderWidth: 0,
         borderRadius: 8,
@@ -193,7 +274,7 @@ const DropdownComponent = () => {
 
 const stylesDropdown = StyleSheet.create({
   dropdown: {
-    paddingVertical: Platform.select({ios: 12, android: 15}),
+    paddingVertical: Platform.select({ios: 10, android: 10}),
     borderColor: Theme.colors.primary,
     borderWidth: 2,
     borderRadius: 36,

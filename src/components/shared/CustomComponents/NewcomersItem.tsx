@@ -1,10 +1,9 @@
 import React from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
-
 import FastImage from 'react-native-fast-image';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import CustomText from '../CustomText';
-import NewLabel from '../NewLabel';
+import NewLabel from '../Labels/NewLabel';
 
 type Props = {
   item: any;
@@ -18,7 +17,7 @@ const NewcomersItem = (props: Props) => {
         width:
           (Dimensions.get('window').width -
             2 * Theme.paddings.viewHorizontalPadding -
-            2 * Theme.spacing.rowGap) /
+            2 * Theme.spacing.columnGap) /
           2,
         gap: 5,
       }}>

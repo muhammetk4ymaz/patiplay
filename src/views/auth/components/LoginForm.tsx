@@ -1,13 +1,13 @@
 import {Pressable, StyleSheet, TouchableOpacity, View} from 'react-native';
 import React, {useState} from 'react';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import EmailTextField from './EmailTextField';
 import PasswordTextField from './PasswordTextField';
 import CheckBox from '@react-native-community/checkbox';
 import CustomText from '../../../components/shared/CustomText';
 import {Controller, useForm} from 'react-hook-form';
-import InputErrorText from '../../../components/shared/InputErrorText';
 import LoginButton from './LoginButton';
+import InputErrorText from '../../../components/shared/Texts/InputErrorText';
 
 const LoginForm = (props: any) => {
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
@@ -19,8 +19,8 @@ const LoginForm = (props: any) => {
     formState: {errors},
   } = useForm({
     defaultValues: {
-      email: 'muhammetk4ymaz@hotmail.com',
-      password: '1122332211Mk.',
+      email: 'emre.gungor@eytsoft.com',
+      password: 'Emre.1234',
     },
   });
 

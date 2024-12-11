@@ -1,6 +1,6 @@
 import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 
 import IconIonicons from 'react-native-vector-icons/Ionicons';

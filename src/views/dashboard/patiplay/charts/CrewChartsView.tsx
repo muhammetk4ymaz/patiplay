@@ -1,38 +1,76 @@
-import React, {useCallback, useRef} from 'react';
-import {useState} from 'react';
-import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import nowPlayMovies from '../../../../models/now_play_movies';
-import {Theme} from '../../../../constants/Theme';
-import CustomText from '../../../../components/shared/CustomText';
-import {Avatar} from 'native-base';
-import {characterLimited} from '../../profile/favorite_companies';
-import {ImageManager} from '../../../../constants/ImageManager';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-
-import ChartOtherItem from './components/ChartOtherItem';
+import axios from 'axios';
+import React, {useState} from 'react';
+import {ActivityIndicator, Dimensions, FlatList, View} from 'react-native';
+import networkService from '../../../../helpers/networkService';
 import {RootStackParamList} from '../../../../navigation/routes';
+import {Theme} from '../../../../utils/theme';
+import ChartOtherItem from './components/ChartOtherItem';
+import {ImageManager} from '../../../../constants/ImageManager';
 
 const {width} = Dimensions.get('window');
 
 const CrewChartsView = React.memo(() => {
   const [loading, setLoading] = useState(true);
+  const [crew, setCrew] = useState<any[]>([]);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   React.useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 300);
-  }, []);
+    console.log('Rendered CrewChartsView');
 
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+    const fetchCrewData = async () => {
+      try {
+        const response = await networkService.post('title/api/charts-view/', {
+          tab: 'Crew',
+        });
+        console.log('Response', response.data.crew);
+        setCrew(response.data.crew);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+
+            switch (error.response.status) {
+              case 400:
+                console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+                break;
+              case 401:
+                console.log(
+                  'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+                );
+
+                break;
+              case 500:
+                console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+                break;
+              default:
+                console.log(
+                  'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+                );
+            }
+          } else if (error.request) {
+            console.log(error.request);
+            console.log(
+              'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+            );
+          } else {
+            console.log('Error', error.message);
+            console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+          }
+        } else {
+          console.log('Error', error);
+          console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCrewData();
+  }, []);
 
   if (loading) {
     return (
@@ -54,20 +92,28 @@ const CrewChartsView = React.memo(() => {
     return (
       <FlatList
         removeClippedSubviews={true}
-        data={nowPlayMovies}
+        data={crew.sort((a, b) => b.watched_video - a.watched_video)}
         numColumns={3}
         contentContainerStyle={{
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-          rowGap: 12,
+          rowGap: Theme.spacing.rowGap,
         }}
         columnWrapperStyle={{
-          columnGap: 12,
+          columnGap: Theme.spacing.columnGap,
         }}
         keyExtractor={item => item.id.toString()}
-        renderItem={({item}) => (
+        renderItem={({item, index}) => (
           <ChartOtherItem
+            title={item.name}
+            avatarUrl={
+              item.image
+                ? {uri: item.image}
+                : ImageManager.IMAGE_NAMES.PATIPLAYLOGO
+            }
+            rate={index + 1}
+            subtitle={'13 in My Network'}
             onPress={() => {
-              navigation.navigate('CrewDetail');
+              navigation.navigate('CrewDetail', {slug: item.slug});
             }}
           />
         )}></FlatList>

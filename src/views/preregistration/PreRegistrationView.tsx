@@ -1,15 +1,15 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {useHeaderHeight} from '@react-navigation/elements';
-import {Theme} from '../../constants/Theme';
+import {Theme} from '../../utils/theme';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomText from '../../components/shared/CustomText';
-import CustomTextButton from '../../components/shared/CustomTextButton';
+import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
 import IconFontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import SocialButton from '../../components/shared/SocialButton';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../../navigation/routes';
+import SocialButton from '../../components/shared/Buttons/SocialButton';
 
 type Props = {
   title: string;
@@ -67,7 +67,7 @@ const PreRegistrationView = (props: Props) => {
           text="Sign Up"
           borderRadius={12}
           onPress={() => {
-            console.log('Sign Up');
+            navigation.navigate('DontHaveAnAccount');
           }}
           backgroundColor="white"
           textColor={'#a855f7'}

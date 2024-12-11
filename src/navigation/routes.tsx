@@ -31,6 +31,7 @@ import FavoriteCompaniesView from '../views/dashboard/profile/favorite_companies
 import FavoriteCrewView from '../views/dashboard/profile/favorite_crew';
 import MyFavoritesView from '../views/dashboard/profile/my_favorites';
 import MyFollowingsView from '../views/dashboard/profile/my_followings';
+import EditFollowingsView from '../views/dashboard/profile/my_followings/EditFollowings';
 import MyNetworkView from '../views/dashboard/profile/my_network';
 import MyWatchlistView from '../views/dashboard/profile/my_watchlist';
 import SettingsView from '../views/dashboard/profile/settings';
@@ -51,6 +52,7 @@ import AlreadyHaveAnAccountView from '../views/preregistration/AlreadyHaveAnAcco
 import CreateProfileView from '../views/preregistration/CreateProfileView';
 import DontHaveAnAccountView from '../views/preregistration/DontHaveAnAccountView';
 import PackagesView from '../views/preregistration/PackagesView';
+import PaymentView from '../views/preregistration/PaymentView';
 import PreRegistrationView from '../views/preregistration/PreRegistrationView';
 import PreVerificationView from '../views/preregistration/PreVerificationView';
 import VerificationView from '../views/verification';
@@ -112,18 +114,21 @@ export const Routes = {
   FAVORITECREW: FavoriteCrewView,
   MYNETWORK: MyNetworkView,
   MYFOLLOWINGS: MyFollowingsView,
+  EDITFOLLOWINGS: EditFollowingsView,
   ALLREADYHAVEANACCOUNT: AlreadyHaveAnAccountView,
   DONTHAVEANDACCOUNT: DontHaveAnAccountView,
   PREVERIFICATION: PreVerificationView,
   ALMOSTHERE: AlmostHereView,
   CREATEPROFILE: CreateProfileView,
   PACKAGES: PackagesView,
+  PAYMENT: PaymentView,
 };
 
 export type RootStackParamList = {
   Auth: undefined;
   Verification: undefined;
   Dashboard: undefined;
+  Home: undefined;
   Movie: undefined;
   Settings: undefined;
   SubtitlesVoiceoverSettings: undefined;
@@ -135,15 +140,17 @@ export type RootStackParamList = {
   NewChat: undefined;
   NewGroup: undefined;
   AccountProfile: undefined;
+  ProfileRoute: undefined;
   Profile: undefined;
   WatchHistory: undefined;
-  MyFavorites: undefined;
+  MyFavorites: {data: any[]};
   MyWatchlist: undefined;
-  FavoriteCompanies: undefined;
-  FavoriteActors: undefined;
-  FavoriteCrew: undefined;
+  FavoriteCompanies: {data: any[]};
+  FavoriteActors: {data: any[]};
+  FavoriteCrew: {data: any[]};
   MyNetwork: undefined;
   MyFollowings: undefined;
+  EditFollowings: {data: any[]; type: 'Companies' | 'Crew' | 'Cast'};
   MyMission: undefined;
   PatiPlay: undefined;
   Premiere: undefined;
@@ -160,22 +167,26 @@ export type RootStackParamList = {
   Movements: undefined;
   Campaigns: undefined;
   Calendar: undefined;
-  CompaniesDetail: undefined;
-  CastDetail: undefined;
-  CrewDetail: undefined;
-  CinephilesDetail: undefined;
-  Discussion: undefined;
+  CompaniesDetail: {slug: string};
+  CastDetail: {slug: string};
+  CrewDetail: {slug: string};
+  CinephilesDetail: {username: string};
+  Discussion: {
+    discussionId: number;
+  };
   Communities: undefined;
   LanguagesAudio: undefined;
   LanguagesSubtitles: undefined;
   Countries: undefined;
-  ReleaseDates: undefined;
-  Genres: undefined;
+  ReleaseDates: {year: string};
+  Genres: {slug: string};
   AllReadyHaveAnAccount: undefined;
   DontHaveAnAccount: undefined;
-  PreVerification: undefined;
+  PreVerification: {uuid: string};
   AlmostHere: undefined;
   CreateProfile: undefined;
   Packages: undefined;
+  Payment: undefined;
+
   // other routes...
 };

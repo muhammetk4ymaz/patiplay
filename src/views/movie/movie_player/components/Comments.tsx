@@ -7,7 +7,7 @@ import {
   setReplySectionVisible,
 } from '../../../../redux/features/interaction/interactionSlice';
 import CustomText from '../../../../components/shared/CustomText';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import Comment from './Comment';
 import {Avatar, Button} from 'native-base';
 import {ImageManager} from '../../../../constants/ImageManager';

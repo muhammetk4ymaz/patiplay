@@ -4,7 +4,7 @@ import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import CustomText from '../CustomText';
 
 import Slider from '@react-native-community/slider';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import {
   setPreviewPosition,
   setPreviewTime,

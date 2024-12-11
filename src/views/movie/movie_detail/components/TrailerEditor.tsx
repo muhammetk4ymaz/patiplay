@@ -1,6 +1,7 @@
 import {
   Dimensions,
   GestureResponderEvent,
+  ImageSourcePropType,
   Platform,
   Pressable,
   StyleSheet,
@@ -9,17 +10,21 @@ import {
   View,
 } from 'react-native';
 import React, {useCallback, useEffect, useRef} from 'react';
-import Video, {OnProgressData, VideoRef} from 'react-native-video';
+import Video, {
+  OnProgressData,
+  ReactVideoPosterSource,
+  VideoRef,
+} from 'react-native-video';
 import DeviceInfo from 'react-native-device-info';
 import Slider from '@react-native-community/slider';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import CustomText from '../../../../components/shared/CustomText';
 
 const {width, height} = Dimensions.get('window');
 
 type TrailerEditorProps = {
-  backdropPath: string;
+  backdropPath: ReactVideoPosterSource;
 };
 
 const TrailerEditor = (props: TrailerEditorProps) => {
@@ -35,10 +40,6 @@ const TrailerEditor = (props: TrailerEditorProps) => {
       }
     });
   }, []);
-
-  const backdrop = {
-    uri: `https://image.tmdb.org/t/p/w500${props.backdropPath}`,
-  };
 
   const formatTime = useCallback((durationSeconds: number) => {
     const hours = Math.floor(durationSeconds / 3600);
@@ -72,9 +73,10 @@ const TrailerEditor = (props: TrailerEditorProps) => {
       <Video
         paused={paused}
         poster={{
-          source: {uri: backdrop.uri},
+          source: props.backdropPath,
           resizeMode: 'cover',
         }}
+        volume={0}
         onProgress={e => setProgress(e)}
         source={require('../../../../../assets/CivilWar.mp4')}
         ref={videoRef}
@@ -93,7 +95,7 @@ const TrailerEditor = (props: TrailerEditorProps) => {
           minimumTrackTintColor={Theme.colors.primary}
           maximumTrackTintColor="rgba(255, 255, 255, 0.5)"
           style={{
-            bottom: Platform.select({ios:-18,android:0}),
+            bottom: Platform.select({ios: -18, android: 0}),
             height: 10,
             marginLeft: Platform.select({ios: -3, android: -15}),
             marginRight: Platform.select({ios: -3, android: -15}),
@@ -152,12 +154,11 @@ const TrailerEditor = (props: TrailerEditorProps) => {
               onSlidingComplete={(value: number) => {
                 videoRef.current?.seek(value);
               }}
-              
               tapToSeek={true}
               minimumTrackTintColor={Theme.colors.primary}
-              maximumTrackTintColor='rgba(255, 255, 255, 0.5)'
+              maximumTrackTintColor="rgba(255, 255, 255, 0.5)"
               style={{
-                marginLeft: Platform.select({ios: -3 }),
+                marginLeft: Platform.select({ios: -3}),
                 height: 40,
                 flex: 1,
               }}

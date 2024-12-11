@@ -1,12 +1,10 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import CustomText from '../../components/shared/CustomText';
-import {Theme} from '../../constants/Theme';
+import {Theme} from '../../utils/theme';
 import AppNavigation from '../../navigation';
 import storageService, {StorageKeys} from '../../helpers/storageService';
 import {useAppDispatch} from '../../redux/hooks';
-import {loginAsync, setUser} from '../../redux/features/auth/authSlice';
-import networkService from '../../helpers/networkService';
 
 type Props = {};
 
@@ -21,16 +19,16 @@ const SplashView = (props: Props) => {
       try {
         storageService.getItem(StorageKeys.ACCESS_TOKEN).then(token => {
           if (token) {
-            // storageService.removeItem(StorageKeys.ACCESS_TOKEN);
-            networkService.setToken(token);
-            console.log('token', token);
-            networkService.get('api/user/info/').then(async res => {
-              if (res.data) {
-                dispatch(setUser(res.data.data.email, res.data.data.uuid));
-                await delay(200);
-                dispatch(loginAsync());
-              }
-            });
+            storageService.removeItem(StorageKeys.ACCESS_TOKEN);
+            // networkService.setToken(token);
+            // console.log('token', token);
+            // networkService.get('api/user/info/').then(async res => {
+            //   if (res.data) {
+            //     dispatch(setUser(res.data.data.email, res.data.data.uuid));
+            //     await delay(200);
+            //     dispatch(loginAsync());
+            //   }
+            // });
           }
         });
       } catch (error) {

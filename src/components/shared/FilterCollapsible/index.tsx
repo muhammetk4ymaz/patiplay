@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
 import Collapsible from 'react-native-collapsible';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import SearchField from '../../../views/auth/components/SearchField';
 import CustomText from '../CustomText';
 

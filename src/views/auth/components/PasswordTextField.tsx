@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import {PasswordIcon} from '../../../../assets/icons';
-import IconEntypo from 'react-native-vector-icons/Entypo';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type PasswordTextFieldProps = PropsWithChildren<{
   keyboardType?: KeyboardTypeOptions;
@@ -41,8 +41,7 @@ function PasswordTextField({
   const [focus, setFocus] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   return (
-    <View
-      style={[styles.inputStyle, error && {borderColor: Theme.colors.error}]}>
+    <View style={[styles.inputBox, error && {borderColor: Theme.colors.error}]}>
       <PasswordIcon size={Theme.iconSize} />
       <TextInput
         onChange={onChange}
@@ -51,7 +50,7 @@ function PasswordTextField({
         multiline={false}
         placeholder={placeholder}
         returnKeyType={returnKeyType ?? 'next'}
-        placeholderTextColor={Theme.colors.lightgray}
+        placeholderTextColor={'rgba(255, 255, 255, 0.6)'}
         keyboardType={keyboardType}
         value={value}
         secureTextEntry={!showPassword}
@@ -60,13 +59,13 @@ function PasswordTextField({
         onBlur={() => setFocus(false)}
         onSubmitEditing={onSubmitEditing}
         cursorColor={Theme.colors.white}
-        style={{color: Theme.colors.white, flex: 1}}
+        style={[styles.inputStyle, {color: Theme.colors.white, flex: 1}]}
       />
       <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-        <IconEntypo
-          name={showPassword ? 'eye' : 'eye-with-line'}
+        <Ionicons
+          name={showPassword ? 'eye-outline' : 'eye-off-outline'}
           size={Theme.iconSize}
-          color={Theme.colors.white}
+          color={'#b1b1b1'}
         />
       </TouchableOpacity>
     </View>
@@ -76,15 +75,17 @@ function PasswordTextField({
 export default PasswordTextField;
 
 const styles = StyleSheet.create({
-  inputStyle: {
-    flexDirection: 'row',
+  inputBox: {
     alignItems: 'center',
-    borderWidth: 2,
     paddingHorizontal: 16,
-    paddingVertical: Platform.select({ios: 10, android: 6}),
+    gap: 12,
     borderRadius: 30,
     borderColor: Theme.colors.primary,
-    gap: 12,
+    borderWidth: 2,
+    flexDirection: 'row',
+  },
+  inputStyle: {
+    paddingVertical: Platform.select({ios: 10, android: 6}),
   },
   label: {
     position: 'absolute',

@@ -1,13 +1,13 @@
 import {Keyboard, StyleSheet, TouchableOpacity, View} from 'react-native';
 import React, {useState} from 'react';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import EmailTextField from './EmailTextField';
 import PasswordTextField from './PasswordTextField';
 import CustomText from '../../../components/shared/CustomText';
-import InputErrorText from '../../../components/shared/InputErrorText';
 import networkService from '../../../helpers/networkService';
 import {useNavigation} from '@react-navigation/native';
 import RegisterButton from './RegisterButton';
+import InputErrorText from '../../../components/shared/Texts/InputErrorText';
 
 type Props = {};
 

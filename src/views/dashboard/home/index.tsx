@@ -1,47 +1,30 @@
-import {
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
 import React, {useCallback} from 'react';
-import {Theme} from '../../../constants/Theme';
-import MainTitleCarousel from './components/MainTitleCarousel';
-import {GlobeIcon} from '../../../../assets/icons';
-import FlagComponent from '../../../components/shared/FlagComponent';
-import nowPlayMovies from '../../../models/now_play_movies';
-import upComingTitles from '../../../models/upcoming';
-import popularTitles from '../../../models/popular';
-import UnscrollableList from './components/UnscrollableList';
-import CustomPage from '../../../components/shared/CustomPage';
+import {Dimensions, FlatList, StyleSheet, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import ListHeaderText from '../../../components/shared/ListHeaderText';
-import TopMovie from '../../../models/top_movie';
+import {useSelector} from 'react-redux';
 import KeepEnjoyingItem from '../../../components/shared/CustomComponents/KeepEnjoyingItem';
 import NewcomersItem from '../../../components/shared/CustomComponents/NewcomersItem';
-import TopChoicesItem from '../../../components/shared/CustomComponents/TopChoicesItem';
 import OnlyHereItem from '../../../components/shared/CustomComponents/OnlyHereItem';
+import TopChoicesItem from '../../../components/shared/CustomComponents/TopChoicesItem';
+import CustomPage from '../../../components/shared/CustomPage';
+import {FlagList} from '../../../components/shared/FlagList';
+import ListHeaderText from '../../../components/shared/Texts/ListHeaderText';
 import TitleCarousel from '../../../components/shared/TitleCarousel';
 import VerticalPoster from '../../../components/shared/VerticalPoster';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootStackParamList} from '../../../navigation/routes';
-import {useSelector} from 'react-redux';
+import nowPlayMovies from '../../../models/now_play_movies';
+import popularTitles from '../../../models/popular';
+import TopMovie from '../../../models/top_movie';
+import topMovies from '../../../models/topMovies';
+import upComingTitles from '../../../models/upcoming';
 import {RootState} from '../../../redux/store';
-import CustomText from '../../../components/shared/CustomText';
-import {useHeaderHeight} from '@react-navigation/elements';
-import CustomTextButton from '../../../components/shared/CustomTextButton';
-import SocialButton from '../../../components/shared/SocialButton';
-import IconIonicons from 'react-native-vector-icons/MaterialIcons';
-import IconFontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+import {Theme} from '../../../utils/theme';
 import PreRegistrationView from '../../preregistration/PreRegistrationView';
+import UnscrollableTitleList from '../../../components/shared/UnscrollableTitleList';
 
 const HomeView = () => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated,
   );
-
-  const headerHeight = useHeaderHeight();
 
   if (!isAuthenticated) {
     return <PreRegistrationView title="World Cinema?" />;
@@ -64,97 +47,51 @@ const HomeView = () => {
         />
       </View>
       <FlagList />
-      <TitlesLists />
+      <View style={{gap: 12, paddingVertical: 8}}>
+        <DelayedComponent delay={100}>
+          <UnscrollableTitleList
+            title="Title-1"
+            titles={popularTitles.slice(4, 20)}
+          />
+        </DelayedComponent>
+        <DelayedComponent delay={400}>
+          <KeepEnjoying />
+        </DelayedComponent>
+        <DelayedComponent delay={500}>
+          <UnscrollableTitleList
+            title="Title-2"
+            titles={nowPlayMovies.slice(2, 18)}
+          />
+        </DelayedComponent>
+        <DelayedComponent delay={600}>
+          <NewComers />
+        </DelayedComponent>
 
-      {/* <View style={{gap: 12, paddingVertical: 8}}>
-        <UnscrollableList title="Title-1" titles={popularTitles.slice(4, 20)} />
-        <KeepEnjoying />
-        <UnscrollableList title="Title-2" titles={nowPlayMovies.slice(2, 18)} />
-        <NewComers />
-        <UnscrollableList
-          title="Title-3"
-          titles={popularTitles.concat(popularTitles.slice(0, 12))}
-        />
-        <TopChoices />
-        <UnscrollableList
-          title="Title-4"
-          titles={topMovies.concat(topMovies.slice(0, 12))}
-        />
-        <OnlyHere />
-      </View> */}
+        <DelayedComponent delay={700}>
+          <UnscrollableTitleList
+            title="Title-3"
+            titles={popularTitles.concat(popularTitles.slice(0, 12))}
+          />
+        </DelayedComponent>
+        <DelayedComponent delay={800}>
+          <TopChoices />
+        </DelayedComponent>
+
+        <DelayedComponent delay={900}>
+          <UnscrollableTitleList
+            title="Title-4"
+            titles={topMovies.concat(topMovies.slice(0, 12))}
+          />
+        </DelayedComponent>
+        <DelayedComponent delay={1000}>
+          <OnlyHere />
+        </DelayedComponent>
+      </View>
     </CustomPage>
   );
 };
 
 export default HomeView;
-
-const TitlesLists = React.memo(() => {
-  const renderItem = useCallback(
-    ({item}: {item: React.JSX.Element}) => item,
-    [],
-  );
-  return (
-    <FlatList
-      data={componentList}
-      scrollEnabled={false}
-      removeClippedSubviews={true}
-      keyExtractor={(item, index) => `component-${index}`}
-      renderItem={({item}) => renderItem({item})}
-      initialNumToRender={3}
-      contentContainerStyle={{
-        paddingVertical: 8,
-        gap: Theme.spacing.columnGap,
-      }}
-    />
-  );
-});
-
-export const FlagList = React.memo(() => {
-  const flags = ['Us', 'Tr', 'Br', 'De', 'Cn', 'Gb', 'Tr', 'Br', 'De'];
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        paddingLeft: Theme.paddings.viewHorizontalPadding,
-      }}>
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate('Countries');
-        }}
-        style={{
-          alignSelf: 'center',
-        }}>
-        <GlobeIcon size={45} />
-      </TouchableOpacity>
-      <View
-        style={{
-          marginVertical: 12,
-          width: 1.5,
-          height: 'auto',
-          backgroundColor: 'gray',
-          marginLeft: 5,
-        }}
-      />
-      <FlatList
-        horizontal
-        nestedScrollEnabled
-        keyExtractor={(item, index) => `flagitem-${index}`}
-        contentContainerStyle={{
-          gap: 5,
-          paddingRight: 18,
-          paddingLeft: 5,
-          paddingVertical: 12,
-        }}
-        data={flags}
-        showsHorizontalScrollIndicator={false}
-        renderItem={({item}) => (
-          <FlagComponent isoCode={item} width={45} height={45} />
-        )}
-      />
-    </View>
-  );
-});
 
 const KeepEnjoying = React.memo(() => {
   const renderItem = useCallback(
@@ -179,7 +116,7 @@ const KeepEnjoying = React.memo(() => {
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={{
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-          gap: Theme.spacing.rowGap,
+          gap: Theme.spacing.columnGap,
         }}
         renderItem={({item, index}) => renderItem({item, index})}
       />
@@ -289,19 +226,18 @@ const OnlyHere = React.memo(() => {
   );
 });
 
-const componentList = [
-  <UnscrollableList title="Title-1" titles={popularTitles.slice(4, 20)} />,
-  <KeepEnjoying />,
-  // <UnscrollableList title="Title-2" titles={nowPlayMovies.slice(2, 18)} />,
-  <NewComers />,
-  // <UnscrollableList
-  //   title="Title-3"
-  //   titles={popularTitles.concat(popularTitles.slice(0, 12))}
-  // />,
-  <TopChoices />,
-  // <UnscrollableList
-  //   title="Title-4"
-  //   titles={topMovies.concat(topMovies.slice(0, 12))}
-  // />,
-  <OnlyHere />,
-];
+type DelayedComponentProps = {
+  delay: number;
+  children: React.ReactNode;
+};
+
+export const DelayedComponent = (props: DelayedComponentProps) => {
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, props.delay);
+  }, []);
+  return <>{loading ? null : props.children}</>;
+};

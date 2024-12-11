@@ -1,10 +1,11 @@
 import {Dimensions, StyleSheet, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-import {Theme} from '../../../../../constants/Theme';
+import {Theme} from '../../../../../utils/theme';
 import TitleWithProgress from '../../../../../components/shared/CustomComponents/TitleWithProgress';
 import CustomText from '../../../../../components/shared/CustomText';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import FastImage from 'react-native-fast-image';
+import FastImage, {Source} from 'react-native-fast-image';
+import {calculateGridItemWidth} from '../../../../../utils/calculateGridItemWidth';
 
 type Props = {
   type: 'movie' | 'clips' | 'episodes' | 'trailers';
@@ -13,6 +14,7 @@ type Props = {
   runtime?: number;
   percentage?: number;
   onPressButton: () => void;
+  source?: Source;
   poster_path?: string;
 };
 
@@ -37,21 +39,14 @@ const FavoriteItemComponent = (props: Props) => {
     return (
       <View
         style={{
-          width:
-            (Dimensions.get('window').width -
-              2 * Theme.paddings.viewHorizontalPadding -
-              2 -
-              Theme.spacing.rowGap) /
-            3,
+          width: calculateGridItemWidth(3),
           borderTopLeftRadius: Theme.titlePosterRadius,
           borderTopRightRadius: Theme.titlePosterRadius,
           aspectRatio: Theme.aspectRatios.vertical,
           justifyContent: 'flex-end',
         }}>
         <FastImage
-          source={{
-            uri: 'https://image.tmdb.org/t/p/w500' + props.poster_path,
-          }}
+          source={props.source!}
           style={[StyleSheet.absoluteFillObject, {borderRadius: 12}]}
         />
         <HeartButtonForVerticalPoster
@@ -68,7 +63,7 @@ const FavoriteItemComponent = (props: Props) => {
           width:
             (Dimensions.get('window').width -
               2 * Theme.paddings.viewHorizontalPadding -
-              Theme.spacing.rowGap) /
+              Theme.spacing.columnGap) /
             2,
           gap: 5,
         }}>

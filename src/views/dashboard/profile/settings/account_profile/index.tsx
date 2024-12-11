@@ -1,10 +1,10 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import {Theme} from '../../../../../constants/Theme';
+import {Theme} from '../../../../../utils/theme';
 import CustomText from '../../../../../components/shared/CustomText';
 import IconEntypo from 'react-native-vector-icons/Entypo';
-import CustomTextInput from '../../../../../components/shared/CustomTextInput';
-import PhoneTextInput from '../../../../../components/shared/PhoneTextInput';
+import CustomTextInput from '../../../../../components/shared/Inputs/CustomTextInput';
+import PhoneTextInput from '../../../../../components/shared/Inputs/PhoneTextInput';
 
 const AccountProfileView = () => {
   return (

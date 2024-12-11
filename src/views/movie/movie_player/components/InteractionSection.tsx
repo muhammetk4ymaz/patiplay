@@ -8,7 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Comments from './Comments';
 import {Button} from 'native-base';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import Replies from './Replies';
 import Live from './Live';
 

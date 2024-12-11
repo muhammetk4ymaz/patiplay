@@ -1,17 +1,16 @@
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import CustomText from '../components/shared/CustomText';
-import HeaderBackWithTitle from '../components/shared/ForIos/HeaderBackWithTitle';
-import HeaderLeftTitle from '../components/shared/ForIos/HeaderLeftTitle';
-import ShareButton from '../components/shared/ShareButton';
-import {Theme} from '../constants/Theme';
-import {RootStackParamList, Routes} from './routes';
-import PatiplayView from '../views/dashboard/patiplay';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
 import HeaderRight from '../components/shared/HeaderRight';
+import HeaderBackWithTitle from '../components/shared/ios/HeaderBackWithTitle';
+import HeaderLeftTitle from '../components/shared/ios/HeaderLeftTitle';
+import {Theme} from '../utils/theme';
+import PatiplayView from '../views/dashboard/patiplay';
+import {RootStackParamList, Routes} from './routes';
 
 type Props = {};
 
@@ -26,6 +25,7 @@ const PatiPlayRoute = (props: Props) => {
     <Stack.Navigator
       initialRouteName="PatiPlay"
       screenOptions={{
+        headerBackVisible: Platform.select({ios: false, android: true}),
         headerBackTitleVisible: false,
         headerTitleAlign: 'left',
         contentStyle: {

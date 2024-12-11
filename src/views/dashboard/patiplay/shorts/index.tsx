@@ -1,7 +1,14 @@
-import {Dimensions, FlatList, Image, StyleSheet, View} from 'react-native';
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import React from 'react';
-import {Theme} from '../../../../constants/Theme';
-import UnscrollableList from '../../home/components/UnscrollableList';
+import {Theme} from '../../../../utils/theme';
+import UnscrollableTitleList from '../../../../components/shared/UnscrollableTitleList';
 import CustomText from '../../../../components/shared/CustomText';
 import nowPlayMovies from '../../../../models/now_play_movies';
 import upComingTitles from '../../../../models/upcoming';
@@ -9,7 +16,7 @@ import popularTitles from '../../../../models/popular';
 import LinearGradient from 'react-native-linear-gradient';
 import topMovies from '../../../../models/topMovies';
 import CustomPage from '../../../../components/shared/CustomPage';
-import {FlagList} from '../../home';
+import {DelayedComponent} from '../../home';
 import TitleCarousel from '../../../../components/shared/TitleCarousel';
 import VerticalPoster from '../../../../components/shared/VerticalPoster';
 import KeepEnjoyingItem from '../../../../components/shared/CustomComponents/KeepEnjoyingItem';
@@ -20,14 +27,92 @@ import {useAppSelector} from '../../../../redux/hooks';
 
 import PreRegistrationView from '../../../preregistration/PreRegistrationView';
 import {RootState} from '../../../../redux/store';
+import {FlagList} from '../../../../components/shared/FlagList';
+import networkService from '../../../../helpers/networkService';
+import axios from 'axios';
+import {CountryModel} from '../../../../models/patiplay/CountryModel';
 
 const ShortsView = () => {
+  const [shortsData, setShortsData] = React.useState<any>([]);
+  const [countryData, setCountryData] = React.useState<CountryModel[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
   const isAuthenticated = useAppSelector(
     (state: RootState) => state.auth.isAuthenticated,
   );
 
   if (!isAuthenticated) {
     return <PreRegistrationView title="Short Films?" />;
+  }
+
+  React.useEffect(() => {
+    console.log('Rendered ShortsView');
+
+    const fetchShortsData = async () => {
+      try {
+        const response = await networkService.get('title/api/shorts-view/');
+        console.log(response.data.title);
+        setShortsData(response.data.title);
+        setCountryData(response.data.countries);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+
+            switch (error.response.status) {
+              case 400:
+                console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+                break;
+              case 401:
+                console.log(
+                  'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+                );
+
+                break;
+              case 500:
+                console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+                break;
+              default:
+                console.log(
+                  'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+                );
+            }
+          } else if (error.request) {
+            console.log(error.request);
+            console.log(
+              'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+            );
+          } else {
+            console.log('Error', error.message);
+            console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+          }
+        } else {
+          console.log('Error', error);
+          console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchShortsData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'black',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Text style={{color: 'white'}}>Loading...</Text>
+      </View>
+    );
   }
 
   return (
@@ -47,22 +132,56 @@ const ShortsView = () => {
           )}
         />
       </View>
-      <FlagList />
+      <FlagList
+        flags={
+          countryData.length > 0
+            ? countryData.map(country => country.iso2!)
+            : []
+        }
+      />
       <View style={{gap: 12, paddingVertical: 8}}>
-        <UnscrollableList title="Title-1" titles={popularTitles.slice(4, 20)} />
-        <KeepEnjoying />
-        <UnscrollableList title="Title-2" titles={nowPlayMovies.slice(2, 18)} />
-        <NewComers />
-        <UnscrollableList
-          title="Title-3"
-          titles={popularTitles.concat(popularTitles.slice(0, 12))}
-        />
-        <TopChoices />
-        <UnscrollableList
-          title="Title-4"
-          titles={topMovies.concat(topMovies.slice(0, 12))}
-        />
-        <OnlyHere />
+        <DelayedComponent delay={100}>
+          <UnscrollableTitleList
+            title="Title-1"
+            titles={shortsData.slice(0, 16)}
+            keyExtractor="shorts-title-1"
+          />
+        </DelayedComponent>
+        <DelayedComponent delay={400}>
+          <KeepEnjoying />
+        </DelayedComponent>
+        <DelayedComponent delay={500}>
+          <UnscrollableTitleList
+            title="Title-2"
+            titles={nowPlayMovies.slice(2, 18)}
+            keyExtractor="shorts-title-2"
+          />
+        </DelayedComponent>
+        <DelayedComponent delay={600}>
+          <NewComers />
+        </DelayedComponent>
+
+        <DelayedComponent delay={700}>
+          <UnscrollableTitleList
+            title="Title-3"
+            titles={popularTitles.concat(popularTitles.slice(0, 12))}
+            keyExtractor="shorts-title-3"
+          />
+        </DelayedComponent>
+        <DelayedComponent delay={800}>
+          <TopChoices />
+        </DelayedComponent>
+
+        <DelayedComponent delay={900}>
+          <UnscrollableTitleList
+            title="Title-4"
+            titles={topMovies.concat(topMovies.slice(0, 12))}
+            keyExtractor="shorts-title-4"
+          />
+        </DelayedComponent>
+        <DelayedComponent delay={1000}>
+          <OnlyHere />
+        </DelayedComponent>
       </View>
     </CustomPage>
   );

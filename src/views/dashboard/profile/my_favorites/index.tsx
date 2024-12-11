@@ -1,34 +1,34 @@
-import {
-  Button,
-  Dimensions,
-  FlatList,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import React, {useCallback, useRef, useState} from 'react';
-import {Theme} from '../../../../constants/Theme';
-import {MotiView} from 'moti';
-import Animated, {
-  FadeInDown,
-  FadeInUp,
-  LayoutAnimationConfig,
-} from 'react-native-reanimated';
-import FavoriteTitlesView from './FavoriteTitlesView';
-import FavoriteEpisodesView from './FavoriteEpisodesView';
-import FavoriteClipsView from './FavoriteClipsView';
-import FavoriteTrailersView from './FavoriteTrailersView';
+import React from 'react';
+import {StyleSheet} from 'react-native';
 import CustomTabBar from '../../../../components/CustomTabBar';
-import {SceneMap} from 'react-native-tab-view';
+import {Theme} from '../../../../utils/theme';
+import FavoriteClipsView from './FavoriteClipsView';
+import FavoriteEpisodesView from './FavoriteEpisodesView';
+import FavoriteTitlesView from './FavoriteTitlesView';
+import FavoriteTrailersView from './FavoriteTrailersView';
+import {RouteProp, useRoute} from '@react-navigation/native';
 
-const renderScene = SceneMap({
-  first: FavoriteTitlesView,
-  second: FavoriteEpisodesView,
-  third: FavoriteClipsView,
-  fourth: FavoriteTrailersView,
-});
+const renderScene = (
+  {route}: {route: {key: string; title: string}},
+  data: any[],
+) => {
+  switch (route.key) {
+    case 'first':
+      return (
+        <FavoriteTitlesView
+          data={data.filter(data => data.filmType.value === 'Film')}
+        />
+      );
+    case 'second':
+      return <FavoriteEpisodesView />;
+    case 'third':
+      return <FavoriteClipsView />;
+    case 'fourth':
+      return <FavoriteTrailersView />;
+    default:
+      return null;
+  }
+};
 
 const routes = [
   {key: 'first', title: 'Titles'},
@@ -37,8 +37,21 @@ const routes = [
   {key: 'fourth', title: 'Trailers'},
 ];
 
+type RouteParams = {
+  MyFavorites: {
+    data: any[];
+  };
+};
+
 const MyFavoritesView = () => {
-  return <CustomTabBar routes={routes} renderScene={renderScene} />;
+  const routeParams = useRoute<RouteProp<RouteParams, 'MyFavorites'>>();
+
+  return (
+    <CustomTabBar
+      routes={routes}
+      renderScene={route => renderScene(route, routeParams.params.data)}
+    />
+  );
 };
 
 export default MyFavoritesView;

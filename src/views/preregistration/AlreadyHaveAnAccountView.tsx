@@ -1,9 +1,9 @@
 import {ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-import {Theme} from '../../constants/Theme';
+import {Theme} from '../../utils/theme';
 import {AuthIcon} from '../../../assets/icons';
 import CustomText from '../../components/shared/CustomText';
-import CustomTextButton from '../../components/shared/CustomTextButton';
+import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
 import {
   NavigationProp,
   StackActions,

@@ -8,9 +8,8 @@ import {
 } from 'react-native';
 import React from 'react';
 
-import {Theme} from '../../../../../../constants/Theme';
-import CustomTextInput from '../../../../../../components/shared/CustomTextInput';
-import CustomTextAreaInput from '../../../../../../components/shared/CustomTextAreaInput';
+import {Theme} from '../../../../../../utils/theme';
+
 import nowPlayMovies from '../../../../../../models/now_play_movies';
 import HorizontalPoster from '../../../../../../components/shared/HorizontalPoster';
 import ProgressIndicator from '../../../../../../components/shared/ProgressIndicator';
@@ -19,11 +18,13 @@ import TopMovie from '../../../../../../models/top_movie';
 import DraggableFlatList, {
   ScaleDecorator,
 } from 'react-native-draggable-flatlist';
-import CustomTextButton from '../../../../../../components/shared/CustomTextButton';
+import CustomTextButton from '../../../../../../components/shared/Buttons/CustomTextButton';
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import CustomBottomSheetModal from '../../../../../../components/shared/CustomBottomSheetModal';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import CustomTextInput from '../../../../../../components/shared/Inputs/CustomTextInput';
+import CustomTextAreaInput from '../../../../../../components/shared/Inputs/CustomTextAreaInput';
 
 const paddingHorizontal = Theme.paddings.viewHorizontalPadding;
 

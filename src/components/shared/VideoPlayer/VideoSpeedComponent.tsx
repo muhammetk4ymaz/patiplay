@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import {setSpeed} from '../../../redux/features/videoplayer/videoplayerSlice';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import CustomText from '../CustomText';

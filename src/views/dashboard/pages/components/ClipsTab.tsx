@@ -7,21 +7,24 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import nowPlayMovies from '../../../../models/now_play_movies';
 import ClipItem from '../../../../components/shared/CustomComponents/ClipItem';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const width = Dimensions.get('window').width;
 
-type Props = {};
+type Props = {
+  data: any;
+  scrollEnabled?: boolean;
+};
 
 const ClipsTab = (props: Props) => {
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
+  const insets = useSafeAreaInsets();
 
   React.useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 300);
+    console.log('ClipsTab', props.data);
   }, []);
 
   if (loading) {
@@ -44,14 +47,16 @@ const ClipsTab = (props: Props) => {
     return (
       <FlatList
         removeClippedSubviews={true}
-        data={nowPlayMovies}
+        data={props.data.clips}
+        scrollEnabled={props.scrollEnabled}
         numColumns={2}
         contentContainerStyle={{
+          paddingBottom: insets.bottom,
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-          gap: Theme.spacing.columnGap,
+          rowGap: Theme.spacing.rowGap,
         }}
         columnWrapperStyle={{
-          gap: Theme.spacing.rowGap,
+          columnGap: Theme.spacing.columnGap,
         }}
         keyExtractor={item => item.id.toString()}
         renderItem={({item, index}) => <ClipItem item={item} />}></FlatList>

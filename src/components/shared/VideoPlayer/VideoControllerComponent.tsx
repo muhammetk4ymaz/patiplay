@@ -3,18 +3,23 @@ import React from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  SafeAreaView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
+import IconFeather from 'react-native-vector-icons/Feather';
 import IconFontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-import {Theme} from '../../../constants/Theme';
-import {clearInteractionState} from '../../../redux/features/interaction/interactionSlice';
+import {
+  clearInteractionState,
+  setInteractionSectionVisible,
+} from '../../../redux/features/interaction/interactionSlice';
 import {
   clearVideoPlayerState,
   setPressed,
 } from '../../../redux/features/videoplayer/videoplayerSlice';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
+import {Theme} from '../../../utils/theme';
 import PlaybackComponent from './PlaybackComponent';
 import ProgressComponent from './ProgressComponent';
 import VideoOptionsComponent from './VideoOptionsComponent';
@@ -23,62 +28,74 @@ const VideoControllerComponent = (props: any) => {
   const navigation = useNavigation();
   const pressed = useAppSelector(state => state.videoplayer.pressed);
   const buffering = useAppSelector(state => state.videoplayer.buffering);
+  const interactionSectionVisible = useAppSelector(
+    state => state.interaction.interactionSectionVisible,
+  );
 
   const dispatch = useAppDispatch();
 
   console.log(VideoControllerComponent.name, 'rendered');
   return (
-    <Pressable
-      onPress={() => {
-        dispatch(setPressed(!pressed));
-      }}
-      style={[
-        styles.controlContainer,
-        {
-          backgroundColor: pressed ? 'rgba(0,0,0,0.5)' : 'transparent',
-        },
-      ]}>
-      {pressed && (
-        <View
-          style={{
-            position: 'absolute',
-            top: 16,
-            left: 16,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
-          <TouchableOpacity
-            onPress={() => {
-              dispatch(clearVideoPlayerState());
-              dispatch(clearInteractionState());
-
-              navigation.goBack();
-            }}
+    <SafeAreaView
+      style={{
+        width: '100%',
+        height: '100%',
+        backgroundColor: pressed ? 'rgba(0,0,0,0.5)' : 'transparent',
+      }}>
+      <Pressable
+        onPress={() => {
+          dispatch(setPressed(!pressed));
+        }}
+        style={{flex: 1}}>
+        {pressed && (
+          <View
             style={{
-              padding: 16,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
             }}>
-            <IconFontAwesome6 name="arrow-left" size={24} color={'white'} />
-          </TouchableOpacity>
-        </View>
-      )}
+            <TouchableOpacity
+              onPress={() => {
+                dispatch(clearVideoPlayerState());
+                dispatch(clearInteractionState());
 
-      {!buffering ? (
-        pressed && <PlaybackComponent videoRef={props.videoRef} />
-      ) : (
-        <ActivityIndicator color={Theme.colors.primary} size={'large'} />
-      )}
+                navigation.goBack();
+              }}
+              style={{
+                padding: 16,
+              }}>
+              <IconFontAwesome6 name="arrow-left" size={24} color={'white'} />
+            </TouchableOpacity>
+            <InteractionButton
+              onPress={() => {
+                console.log('pressed');
+                dispatch(
+                  setInteractionSectionVisible(!interactionSectionVisible),
+                );
+              }}
+            />
+          </View>
+        )}
 
-      {pressed && (
-        <Pressable onPress={() => {}} style={styles.progressContanier}>
-          <ProgressComponent
-            onSeek={(value: number) => {
-              props.videoRef.current?.seek(value);
-            }}
-          />
-          <VideoOptionsComponent />
-        </Pressable>
-      )}
-    </Pressable>
+        {!buffering ? (
+          pressed && <PlaybackComponent videoRef={props.videoRef} />
+        ) : (
+          <View style={{flex: 1, justifyContent: 'center'}}>
+            <ActivityIndicator color={Theme.colors.primary} size={'large'} />
+          </View>
+        )}
+
+        {pressed && (
+          <Pressable onPress={() => {}} style={styles.progressContanier}>
+            <ProgressComponent
+              onSeek={(value: number) => {
+                props.videoRef.current?.seek(value);
+              }}
+            />
+            <VideoOptionsComponent />
+          </Pressable>
+        )}
+      </Pressable>
+    </SafeAreaView>
   );
 };
 
@@ -86,14 +103,26 @@ export default React.memo(VideoControllerComponent);
 
 const styles = StyleSheet.create({
   controlContainer: {
-    position: 'absolute',
     height: '100%',
     width: '100%',
-    justifyContent: 'center',
   },
   progressContanier: {
-    position: 'absolute',
     bottom: 0,
     width: '100%',
   },
 });
+
+const InteractionButton = ({onPress}: {onPress: () => void}) => {
+  const pressed = useAppSelector(state => state.videoplayer.pressed);
+  return (
+    pressed && (
+      <TouchableOpacity
+        onPress={onPress}
+        style={{
+          padding: 16,
+        }}>
+        <IconFeather name="message-circle" size={24} color={'white'} />
+      </TouchableOpacity>
+    )
+  );
+};

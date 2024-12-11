@@ -1,8 +1,8 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import CustomTextInput from '../../../components/shared/CustomTextInput';
-import {Theme} from '../../../constants/Theme';
-import {UserIcon} from '../../../../assets/icons';
+import {Theme} from '../../../utils/theme';
+import {EmailIcon} from '../../../../assets/icons';
+import CustomTextInput from '../../../components/shared/Inputs/CustomTextInput';
 
 type Props = {
   onChangeText: (text: string) => void;
@@ -19,7 +19,7 @@ const EmailTextField = (props: Props) => {
       onChange={props.onChange}
       value={props.value}
       placeholder={'E-mail address'}
-      icon={<UserIcon size={Theme.iconSize} fiil={Theme.colors.white} />}
+      icon={<EmailIcon size={Theme.iconSize} fiil={Theme.colors.white} />}
       keyboardType="email-address"
     />
   );

@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import React, {useState} from 'react';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import popularTitles from '../../../../models/popular';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomText from '../../../../components/shared/CustomText';
@@ -57,10 +57,10 @@ const FavoriteClipsView = (props: Props) => {
           numColumns={2}
           contentContainerStyle={{
             paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-            gap: Theme.spacing.columnGap,
+            rowGap: Theme.spacing.rowGap,
           }}
           columnWrapperStyle={{
-            gap: Theme.spacing.rowGap,
+            columnGap: Theme.spacing.columnGap,
           }}
           keyExtractor={item => item.id.toString()}
           renderItem={({item}) => (

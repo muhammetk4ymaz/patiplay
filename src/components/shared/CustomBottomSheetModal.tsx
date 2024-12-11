@@ -1,6 +1,7 @@
 import {BottomSheetModal, BottomSheetView} from '@gorhom/bottom-sheet';
 import React, {useCallback} from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 type Props = {
   bottomSheetModalRef: React.RefObject<BottomSheetModal>;
@@ -11,6 +12,8 @@ const CustomBottomSheetModal = (props: Props) => {
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
   }, []);
+
+  const insets = useSafeAreaInsets();
 
   return (
     <BottomSheetModal
@@ -28,7 +31,13 @@ const CustomBottomSheetModal = (props: Props) => {
           justifyContent: 'center',
           top: -12,
         }}>
-        {props.children}
+        <View
+          style={{
+            width: '100%',
+            paddingBottom: insets.bottom,
+          }}>
+          {props.children}
+        </View>
       </BottomSheetView>
     </BottomSheetModal>
   );

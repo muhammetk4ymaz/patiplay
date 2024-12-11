@@ -2,14 +2,14 @@ import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import {
   setAudioTrack,
   setSubtitleIndex,
 } from '../../../redux/features/videoplayer/videoplayerSlice';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import CustomText from '../CustomText';
-import CustomTextButton from '../CustomTextButton';
+import CustomTextButton from '../Buttons/CustomTextButton';
 
 type Props = {};
 

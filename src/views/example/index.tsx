@@ -3,7 +3,7 @@ import React from 'react';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 
 import {decrement, increment} from '../../redux/features/counter/counterSlice';
-import CustomTextButton from '../../components/shared/CustomTextButton';
+import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
 
 type Props = {};
 

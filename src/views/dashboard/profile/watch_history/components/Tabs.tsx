@@ -2,7 +2,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {act} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomText from '../../../../../components/shared/CustomText';
-import {Theme} from '../../../../../constants/Theme';
+import {Theme} from '../../../../../utils/theme';
 import Animated, {
   FadeInRight,
   FadeOutRight,

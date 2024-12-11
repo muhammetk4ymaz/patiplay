@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import CustomText from '../../../../components/shared/CustomText';
 import popularTitles from '../../../../models/popular';
 import IconIonicons from 'react-native-vector-icons/Ionicons';

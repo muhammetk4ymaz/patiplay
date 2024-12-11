@@ -11,6 +11,8 @@ export class ImageManager {
     PROFİLEBACKGROUND: require('../../assets/profile-background2.jpg'),
     PROFİLEBACKGROUND2: require('../../assets/profile-background.jpg'),
     DETAILBACKGROUND: require('../../assets/detail-background.jpg'),
-    FLAG: require('../../assets/Flag_of_Brazil.svg.png'),
+    PATIHORIZONTALLOGO: require('../../assets/pati-logo-horizontal.png'),
+    PATOHORIZONTALLOGOWHITE: require('../../assets/pati-logo-beyaz-full.png'),
+    PATILOGOWHIE: require('../../assets/pati-brand-icon.png'),
   };
 }

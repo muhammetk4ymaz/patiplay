@@ -92,16 +92,11 @@ const VideoPlayerEditor = (props: any) => {
         dispatch(setProgress(prog));
         dispatch(setBufferedDuration(prog.playableDuration));
       }}
-      style={styles.video}
+      style={StyleSheet.absoluteFillObject}
     />
   );
 };
 
 export default VideoPlayerEditor;
 
-const styles = StyleSheet.create({
-  video: {
-    height: '100%',
-    width: '100%',
-  },
-});
+const styles = StyleSheet.create({});

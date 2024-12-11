@@ -14,7 +14,7 @@ import React, {useCallback, useState} from 'react';
 import {Avatar, Button, Input} from 'native-base';
 import {ImageManager} from '../../../../../constants/ImageManager';
 import CustomText from '../../../../../components/shared/CustomText';
-import {Theme} from '../../../../../constants/Theme';
+import {Theme} from '../../../../../utils/theme';
 import LinearGradient from 'react-native-linear-gradient';
 import nowPlayMovies from '../../../../../models/now_play_movies';
 import VerticalPoster from '../../../../../components/shared/VerticalPoster';
@@ -170,10 +170,10 @@ const Content = React.memo((props: ContentProps) => {
         scrollEnabled={false}
         numColumns={props.type === 'movie' ? 4 : 2}
         keyExtractor={item => item.id.toString()}
-        columnWrapperStyle={{gap: 12}}
+        columnWrapperStyle={{gap: Theme.spacing.columnGap}}
         contentContainerStyle={{
           paddingHorizontal: paddingHorizontal,
-          gap: 12,
+          rowGap: Theme.spacing.rowGap,
           paddingBottom: 12,
           marginTop: 3,
         }}

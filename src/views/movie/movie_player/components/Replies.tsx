@@ -1,7 +1,7 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import CustomText from '../../../../components/shared/CustomText';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import {useAppDispatch, useAppSelector} from '../../../../redux/hooks';
 import {
   setReplySectionVisible,

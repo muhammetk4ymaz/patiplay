@@ -7,12 +7,12 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {Theme} from '../../../../constants/Theme';
-import SectionTitleText from '../../../../components/shared/SectionTitleText';
+import {Theme} from '../../../../utils/theme';
 import topMovies from '../../../../models/topMovies';
 import VerticalPoster from '../../../../components/shared/VerticalPoster';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomText from '../../../../components/shared/CustomText';
+import SectionTitleText from '../../../../components/shared/Texts/SectionTitleText';
 
 const SPACING = 10;
 

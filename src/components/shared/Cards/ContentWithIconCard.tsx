@@ -1,29 +1,29 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import CustomText from '../CustomText';
+import CustomTextButton from '../Buttons/CustomTextButton';
 
 type Props = {
   children: React.ReactNode;
   icon: React.ReactNode;
+  button: React.ReactNode;
 };
 
 const ContentWithIconCard = (props: Props) => {
+  const [buttonHeight, setButtonHeight] = React.useState(0);
   return (
     <View style={styles.card}>
       <View style={styles.icon}>{props.icon}</View>
       {props.children}
-
       <View
-        style={
-          {
-            // position: 'absolute',
-            // bottom: -20,
-            // alignSelf: 'center',
-            // backgroundColor: Theme.colors.sambucus,
-            // borderRadius: 100,
-          }
-        }>
+        style={[styles.button, {bottom: -(buttonHeight / 2)}]}
+        onLayout={event => {
+          setButtonHeight(event.nativeEvent.layout.height);
+        }}>
+        {props.button}
+      </View>
+      {/* <View>
         <TouchableOpacity
           style={{
             alignSelf: 'center',
@@ -41,7 +41,7 @@ const ContentWithIconCard = (props: Props) => {
             }}
           />
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -50,7 +50,7 @@ export default ContentWithIconCard;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Theme.colors.sambucus,
+    backgroundColor: 'black',
     paddingHorizontal: 16,
     borderRadius: 72,
     borderWidth: 2,
@@ -60,12 +60,13 @@ const styles = StyleSheet.create({
   },
   icon: {
     position: 'absolute',
-    top: -64,
+    top: -52,
     alignSelf: 'center',
-    backgroundColor: Theme.colors.sambucus,
-    borderColor: '#7F838D',
-    borderWidth: 2,
-    padding: 12,
-    borderRadius: 100,
+    backgroundColor: 'black',
+    padding: 8,
+  },
+  button: {
+    position: 'absolute',
+    alignSelf: 'center',
   },
 });

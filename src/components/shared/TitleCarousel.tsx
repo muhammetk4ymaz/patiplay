@@ -3,7 +3,7 @@ import React, {useCallback} from 'react';
 import {useHeaderHeight} from '@react-navigation/elements';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomText from './CustomText';
-import {Theme} from '../../constants/Theme';
+import {Theme} from '../../utils/theme';
 import TopMovie from '../../models/top_movie';
 import Animated, {
   interpolate,
@@ -28,7 +28,8 @@ const TitleCarousel = (props: Props) => {
   const itemWidth = props.itemWidth || width * 0.7;
 
   const onScroll = useAnimatedScrollHandler(event => {
-    scrollX.value = event.contentOffset.x / (itemWidth + Theme.spacing.rowGap);
+    scrollX.value =
+      event.contentOffset.x / (itemWidth + Theme.spacing.columnGap);
   });
 
   const renderItem = useCallback((item: TopMovie, index: number) => {
@@ -83,10 +84,10 @@ const TitleCarousel = (props: Props) => {
         initialNumToRender={2}
         contentContainerStyle={{
           paddingTop: headerHeight + 12,
-          gap: Theme.spacing.rowGap,
+          gap: Theme.spacing.columnGap,
           paddingHorizontal: (width - itemWidth) / 2,
         }}
-        snapToInterval={itemWidth + Theme.spacing.rowGap}
+        snapToInterval={itemWidth + Theme.spacing.columnGap}
         scrollEventThrottle={1000 / 60}
         decelerationRate="fast"
         onScroll={onScroll}

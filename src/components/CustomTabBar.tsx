@@ -15,7 +15,7 @@ import {
   NavigationState,
 } from 'react-native-tab-view';
 import CustomText from './shared/CustomText';
-import {Theme} from '../constants/Theme';
+import {Theme} from '../utils/theme';
 
 type CustomTabBarProps = {
   renderScene: (

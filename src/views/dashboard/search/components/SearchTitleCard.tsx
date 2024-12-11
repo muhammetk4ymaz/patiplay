@@ -1,8 +1,8 @@
 import {DimensionValue, Image, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import CustomText from '../../../../components/shared/CustomText';
-import CustomTextButton from '../../../../components/shared/CustomTextButton';
-import {Theme} from '../../../../constants/Theme';
+import CustomTextButton from '../../../../components/shared/Buttons/CustomTextButton';
+import {Theme} from '../../../../utils/theme';
 
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import genres from '../../../../models/genres';

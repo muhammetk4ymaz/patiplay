@@ -1,36 +1,126 @@
+import {RouteProp, useRoute} from '@react-navigation/native';
+import axios from 'axios';
 import {Avatar} from 'native-base';
 import React, {useState} from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
-  FlatList,
   Image,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {SceneMap} from 'react-native-tab-view';
 import CustomTabBar from '../../../../components/CustomTabBar';
-import BiographyCard from '../../../../components/shared/Cards/BiographyCard';
+import StatsCard from '../../../../components/shared/Cards/StatsCard';
 import CustomText from '../../../../components/shared/CustomText';
 import {ImageManager} from '../../../../constants/ImageManager';
-import {Theme} from '../../../../constants/Theme';
+import networkService from '../../../../helpers/networkService';
+import {Theme} from '../../../../utils/theme';
 import ClipsTab from '../components/ClipsTab';
 import CommentsTab from '../components/CommentsTab';
 import DiscussionsTab from '../components/DiscussionsTab';
+import FansTab from '../components/FansTab';
 import TitlesTab from '../components/TitlesTab';
+import {LikeInteractionButton} from '../../../../components/shared/InteractionButtons/LikeInteractionButton';
+import {AddFavoriteInteractionButton} from '../../../../components/shared/InteractionButtons/AddFavoriteInteractionButton';
 
 const {width, height} = Dimensions.get('window');
+
+type RouteParams = {
+  Crew: {
+    slug: string;
+  };
+};
 
 type Props = {};
 
 const CrewDetailView = (props: Props) => {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const horizontalFlatListRef = React.useRef<FlatList>(null);
-  const verticalFlatListRef = React.useRef<FlatList>(null);
+  const route = useRoute<RouteProp<RouteParams, 'Crew'>>();
+
+  console.log(route.params.slug);
+
+  const [crewData, setCrewData] = useState<any>({});
+
+  const [loading, setLoading] = useState(true);
+
+  const fetchCrewData = async () => {
+    try {
+      const response = await networkService.post('title/api/crew/', {
+        name: route.params.slug,
+      });
+      console.log('Response Crew', response.data);
+      console.log('Response', response.data);
+      setCrewData(response.data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+
+          switch (error.response.status) {
+            case 400:
+              console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+              break;
+            case 401:
+              console.log(
+                'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+              );
+
+              break;
+            case 500:
+              console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+              break;
+            default:
+              console.log(
+                'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+              );
+          }
+        } else if (error.request) {
+          console.log(error.request);
+          console.log(
+            'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+          );
+        } else {
+          console.log('Error', error.message);
+          console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } else {
+        console.log('Error', error);
+        console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    console.log('Rendered CastDetailView');
+
+    fetchCrewData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: width,
+        }}>
+        <ActivityIndicator
+          size="large"
+          color={Theme.colors.primary}
+          animating={loading}
+        />
+      </View>
+    );
+  }
 
   return (
-    <View style={{flex: 1,backgroundColor:'black'}}>
+    <View style={{flex: 1, backgroundColor: 'black'}}>
       <View
         style={{
           height: height * 0.45,
@@ -44,63 +134,40 @@ const CrewDetailView = (props: Props) => {
             style={{
               ...StyleSheet.absoluteFillObject,
               width: width,
-              height: height * 0.3,
+              height: height * 0.45,
             }}
           />
           <LinearGradient
             colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
-            style={{width: width, height: height * 0.3}}
+            style={{width: width, height: height * 0.45}}
           />
         </View>
-        <Header />
-        {/* <View
-          style={{
-            flexDirection: 'row',
-            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-            gap: 8,
-            justifyContent: 'flex-end',
-          }}>
-          <InteractionButton
-            icon={<LikeIcon size={24} />}
-            initialActive={false}
-          />
-          <EmojiesToggleComponent />
-          <InteractionButton
-            icon={<PlayListAddIcon size={24} />}
-            initialActive={false}
-          />
-          <InteractionButton
-            icon={
-              <IconIonicons name={'share-social'} color="white" size={24} />
-            }
-            initialActive={false}
-          />
-        </View> */}
-        <Biography />
 
-        <View style={{paddingHorizontal: Theme.paddings.viewHorizontalPadding}}>
-          <TouchableOpacity onPress={() => {}}>
-            <LinearGradient
-              colors={['#8b5cf6', '#a855f7']} // from violet-500 to purple-500
-              style={{
-                paddingHorizontal: 12,
-                paddingVertical: 12,
-                borderRadius: 36,
-              }}>
-              <CustomText
-                text="Follow"
-                style={{
-                  color: 'white',
-                  fontSize: Theme.fontSizes.sm,
-                  textAlign: 'center',
-                }}
-              />
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+        <Header
+          name={crewData.crew.name}
+          titlesLength={crewData.titles.len}
+          clipsLength={crewData.clips.len}
+          avatarUrl={crewData.crew.image}
+          button_active={crewData.button_active}
+          uuid={crewData.crew.slug}
+        />
+
+        <StatsSection />
+
+        <View
+          style={{
+            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+          }}></View>
       </View>
 
-      <CustomTabBar routes={routes} renderScene={renderScene} />
+      <CustomTabBar
+        routes={routes}
+        renderScene={route =>
+          renderScene(route, crewData, () => {
+            fetchCrewData();
+          })
+        }
+      />
     </View>
   );
 };
@@ -121,65 +188,58 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: Theme.fontSizes.lg,
   },
-  biography: {
+  stats: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: Theme.spacing.columnGap,
     paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-  },
-  biographyCard: {
-    backgroundColor: Theme.colors.sambucus,
-    paddingHorizontal: 4,
-    paddingVertical: 8,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderRadius: 12,
-    width:
-      (Dimensions.get('window').width -
-        24 -
-        2 * Theme.paddings.viewHorizontalPadding) /
-      4,
-  },
-  biographyValue: {
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 14,
-  },
-  biographyTitle: {
-    color: Theme.colors.primary,
-    textAlign: 'center',
-    fontSize: 10,
-  },
-  biographySupText: {
-    color: 'white',
-    fontSize: 6,
-    textAlignVertical: 'top',
   },
 });
 
-const Header = () => {
+type HeaderProps = {
+  name: string;
+  titlesLength: number;
+  clipsLength: number;
+  avatarUrl: string;
+  button_active: any;
+  uuid: string;
+};
+
+const Header = (props: HeaderProps) => {
   return (
     <View style={styles.header}>
       <View style={styles.avatarContainer}>
         <Avatar
           size={'xl'}
-          source={{
-            uri: 'https://static.vecteezy.com/system/resources/previews/009/398/577/non_2x/man-avatar-clipart-illustration-free-png.png',
-          }}
+          background={'transparent'}
+          source={
+            props.avatarUrl
+              ? {uri: props.avatarUrl}
+              : ImageManager.IMAGE_NAMES.PATIPLAYLOGO
+          }
         />
         <View
           style={{
             justifyContent: 'center',
+            flex: 1,
           }}>
-          <CustomText text="Crew Name" weight="bold" style={styles.name} />
+          <CustomText text={props.name} weight="bold" style={styles.name} />
           <CustomText
-            text="82 Titles • 1.7K Clips"
+            text={`${props.titlesLength} Titles • ${props.clipsLength} Clips`}
+            // text="82 Titles • 1.7K Clips"
             style={{
               color: 'white',
-              fontSize: Theme.fontSizes.sm,
+              fontSize: Theme.fontSizes.xs,
+              opacity: 0.7,
             }}
           />
-          <View style={{flexDirection: 'row', marginTop: 8}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginTop: 8,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
             <Avatar.Group
               style={{
                 paddingHorizontal: Theme.paddings.viewHorizontalPadding,
@@ -204,6 +264,40 @@ const Header = () => {
                   uri: 'https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
                 }}></Avatar>
             </Avatar.Group>
+            <View
+              style={{
+                flexDirection: 'row',
+                gap: 5,
+                justifyContent: 'flex-end',
+              }}>
+              <LikeInteractionButton
+                endpoint="crew-b2c"
+                initialValue={props.button_active.like}
+                uuid={props.uuid}
+              />
+              {/* <ReactionToggleComponent
+                endpoint="crew-b2c"
+                uuid={props.uuid}
+                initialValue={props.button_active.react}
+                iconSize={Theme.iconSizes.interactionIcon}
+              /> */}
+
+              <AddFavoriteInteractionButton
+                endpoint="crew-b2c"
+                initialValue={props.button_active.favorite}
+                uuid={props.uuid}
+              />
+              {/* <InteractionButton
+                icon={
+                  <IconIonicons
+                    name={'share-social'}
+                    color="white"
+                    size={iconSize}
+                  />
+                }
+                initialActive={false}
+              /> */}
+            </View>
           </View>
         </View>
       </View>
@@ -211,28 +305,52 @@ const Header = () => {
   );
 };
 
-const Biography = () => {
+const StatsSection = () => {
   return (
-    <View style={styles.biography}>
-      <BiographyCard title={'Director'} value="43" />
-      <BiographyCard title={'Screenwriter'} value="21" />
-      <BiographyCard title={'Producer'} value="12" />
-      <BiographyCard title={'Actor / Actress'} value="8" />
+    <View style={styles.stats}>
+      <StatsCard title={'Director'} value="43" />
+      <StatsCard title={'Screenwriter'} value="21" />
+      <StatsCard title={'Producer'} value="12" />
+      <StatsCard title={'Actor / Actress'} value="8" />
     </View>
   );
 };
 
-const CrewDiscussions = () => {};
-
-const renderScene = SceneMap({
-  first: TitlesTab,
-  second: ClipsTab,
-  third: CommentsTab,
-  fourth: DiscussionsTab,
-  fifth: TitlesTab,
-  sixth: TitlesTab,
-});
-
+const renderScene = (
+  {route}: {route: {key: string; title: string}},
+  crewData: any,
+  refreshData: () => void,
+) => {
+  switch (route.key) {
+    case 'first':
+      return <TitlesTab data={crewData.titles} />;
+    case 'second':
+      return <ClipsTab data={crewData.clips} />;
+    case 'third':
+      return (
+        <CommentsTab
+          data={crewData.comment}
+          refreshData={refreshData}
+          uuid={crewData.crew.slug}
+          endpoint="crew-comment"
+        />
+      );
+    case 'fourth':
+      return (
+        <DiscussionsTab
+          data={crewData.discussion}
+          uuid={crewData.crew.slug}
+          endpoint="crew-discussion"
+        />
+      );
+    case 'fifth':
+      return null;
+    case 'sixth':
+      return null;
+    default:
+      return null;
+  }
+};
 const routes = [
   {key: 'first', title: 'Titles'},
   {key: 'second', title: 'Clips'},

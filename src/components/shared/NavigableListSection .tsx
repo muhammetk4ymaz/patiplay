@@ -1,7 +1,7 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useCallback} from 'react';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {Theme} from '../../constants/Theme';
+import {Theme} from '../../utils/theme';
 import CustomText from './CustomText';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import ScrollableRow from './ScrollableRow';

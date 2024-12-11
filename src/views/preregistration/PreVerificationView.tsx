@@ -1,4 +1,13 @@
 import {
+  NavigationProp,
+  RouteProp,
+  StackActions,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
+import axios from 'axios';
+import React, {useEffect, useState} from 'react';
+import {
   Keyboard,
   Platform,
   ScrollView,
@@ -8,43 +17,48 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {Theme} from '../../constants/Theme';
-import {AuthIcon, VerificationIcon} from '../../../assets/icons';
-import CustomText from '../../components/shared/CustomText';
-import CustomTextButton from '../../components/shared/CustomTextButton';
-import {
-  CommonActions,
-  NavigationProp,
-  StackActions,
-  useNavigation,
-} from '@react-navigation/native';
-import {RootStackParamList} from '../../navigation/routes';
-import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {setInputEnabledList} from '../../redux/features/verification/verificationSlice';
-import InputErrorText from '../../components/shared/InputErrorText';
+import {VerificationIcon} from '../../../assets/icons';
+import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
 import ContentWithIconCard from '../../components/shared/Cards/ContentWithIconCard';
+import CustomText from '../../components/shared/CustomText';
+import InputErrorText from '../../components/shared/Texts/InputErrorText';
+import networkService from '../../helpers/networkService';
+import {RootStackParamList} from '../../navigation/routes';
+import {Theme} from '../../utils/theme';
 
 type Props = {};
+
+type RouteParams = {
+  PreVerification: {
+    uuid: string;
+  };
+};
 
 const PreVerificationView = (props: Props) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  // const route = useRoute();
-  // const uuid = route.params.uuid;
+  const route = useRoute<RouteProp<RouteParams, 'PreVerification'>>();
 
-  const {inputEnabledList} = useAppSelector(state => state.verification);
-  const dispatch = useAppDispatch();
+  const [inputEnabledList, setInputEnabledList] = React.useState<boolean[]>([
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
 
   const inputRefs = Array.from({length: 6}, () => React.useRef(null));
 
-  const getTimer = 10;
+  const getTimer = 60;
   const [counter, setCounter] = useState(getTimer);
   const [code, setCode] = useState(Array(6).fill(''));
   const [isButtonVisible, setIsButtonVisible] = useState(true);
   const [invalidInputs, setInvalidInputs] = useState(Array(6).fill(false));
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  let numericText = '';
 
   // Add state for focused input index
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
@@ -64,27 +78,24 @@ const PreVerificationView = (props: Props) => {
   }, [counter]);
 
   const handleTextChange = (text: string, index: number) => {
-    const numericText = text.replace(/[^0-9]/g, '');
+    numericText = text.replace(/[^0-9]/g, '');
     const newCode = [...code];
     newCode[index] = numericText;
     setCode(newCode);
 
-    const newInvalidInputs = [...invalidInputs];
-    newInvalidInputs[index] = numericText === '';
+    const newInvalidInputs = [false, false, false, false, false, false];
     setInvalidInputs(newInvalidInputs);
+    // const newInvalidInputs = [...invalidInputs];
+    // newInvalidInputs[index] = numericText === '';
+    // setInvalidInputs(newInvalidInputs);
 
     if (numericText.length === 1 && inputRefs[index + 1]) {
       const newEditableInputList = [...inputEnabledList];
       newEditableInputList[index + 1] = true;
-      dispatch(setInputEnabledList(newEditableInputList));
+      setInputEnabledList(newEditableInputList);
       setTimeout(() => {
         inputRefs[index + 1].current.focus();
       }, 1);
-    } else if (numericText.length === 0 && inputRefs[index - 1]) {
-      const newEditableInputList = [...inputEnabledList];
-      newEditableInputList[index] = false;
-      dispatch(setInputEnabledList(newEditableInputList));
-      inputRefs[index - 1].current.focus();
     }
   };
 
@@ -97,37 +108,41 @@ const PreVerificationView = (props: Props) => {
       // Add your verification logic here
       console.log('Verification code:', verificationCode);
 
-      navigation.dispatch(StackActions.replace('AlmostHere'));
-      /*  try {
-        const response = await networkService.post('verification/', {
+      try {
+        setLoading(true);
+        const response = await networkService.post('api/user/verification/', {
           code: verificationCode,
-          uuid: uuid,
+          uuid: route.params.uuid,
         });
         console.log(response.data);
 
-        navigation.navigate('Home');
+        navigation.dispatch(StackActions.replace('AlmostHere'));
       } catch (error) {
         setErrorMessage('An error occurred. Please try again later.');
-        if (!error.response) {
-          setErrorMessage(
-            'Network error. Please check your internet connection.',
-          );
-        } else if (
-          error.response.status >= 400 &&
-          error.response.status < 500
-        ) {
-          setErrorMessage('Invalid verification code');
-        } else if (error.response.status >= 500) {
-          setErrorMessage('Server error. Please try again later.');
+        if (axios.isAxiosError(error)) {
+          if (!error.response) {
+            setErrorMessage(
+              'Network error. Please check your internet connection.',
+            );
+          } else if (
+            error.response.status >= 400 &&
+            error.response.status < 500
+          ) {
+            setErrorMessage('Invalid verification code');
+          } else if (error.response.status >= 500) {
+            setErrorMessage('Server error. Please try again later.');
+          }
         }
 
         setError(true);
-      } */
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const sendCode = () => {
-    // networkService.post(`send-mail/`, {uuid: uuid});
+    networkService.post(`api/user/send-mail/`, {uuid: route.params.uuid});
   };
 
   const handleResend = () => {
@@ -168,17 +183,34 @@ const PreVerificationView = (props: Props) => {
                   maxLength={1}
                   keyboardType="numeric"
                   cursorColor={Theme.colors.white}
+                  onKeyPress={({nativeEvent}) => {
+                    if (code[index] === '' && inputRefs[index - 1]) {
+                      if (nativeEvent.key === 'Backspace') {
+                        inputRefs[index - 1].current.focus();
+                        setCode(prev => {
+                          const newCode = [...prev];
+                          newCode[index - 1] = '';
+                          return newCode;
+                        });
+                        // setInvalidInputs(prev => {
+                        //   const newInvalidInputs = [...prev];
+                        //   newInvalidInputs[index - 1] = true;
+                        //   return newInvalidInputs;
+                        // });
+                      }
+                    }
+                  }}
                   onChangeText={text => handleTextChange(text, index)}
                   onFocus={() => setFocusedIndex(index)} // Set focused index
                   onBlur={() => setFocusedIndex(null)} // Reset focused index
                   onPress={() => {
                     const empty = '';
+
                     const newCode = [...code];
                     for (let i = index; i < newCode.length; i++) {
                       newCode[i] = empty;
                     }
                     setCode(newCode);
-
                     setInvalidInputs(new Array(6).fill(false));
 
                     const newEditableInputList = [...inputEnabledList];
@@ -190,7 +222,7 @@ const PreVerificationView = (props: Props) => {
                       newEditableInputList[i] = false;
                     }
 
-                    dispatch(setInputEnabledList(newEditableInputList));
+                    setInputEnabledList(newEditableInputList);
                   }}
                   style={styles.input}
                   value={code[index]}

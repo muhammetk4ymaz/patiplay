@@ -1,10 +1,17 @@
-import {DimensionValue, Image, StyleSheet, View, ViewStyle} from 'react-native';
+import {
+  DimensionValue,
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 
 type Props = {
   width: DimensionValue;
-  posterPath: string;
+  posterPath: ImageSourcePropType;
   style?: ViewStyle;
 };
 

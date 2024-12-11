@@ -8,7 +8,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import TopMovie from '../../../../../models/top_movie';
 import topMovies from '../../../../../models/topMovies';
 import CustomText from '../../../../../components/shared/CustomText';
-import {Theme} from '../../../../../constants/Theme';
+import {Theme} from '../../../../../utils/theme';
 
 type WatchHistoryItemProps = {
   item: TopMovie;

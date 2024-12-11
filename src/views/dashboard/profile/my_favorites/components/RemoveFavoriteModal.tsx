@@ -2,7 +2,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import CustomBottomSheetModal from '../../../../../components/shared/CustomBottomSheetModal';
 import CustomText from '../../../../../components/shared/CustomText';
-import {Theme} from '../../../../../constants/Theme';
+import {Theme} from '../../../../../utils/theme';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 

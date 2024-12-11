@@ -1,25 +1,122 @@
-import React, {useState} from 'react';
-import {Dimensions, FlatList, Image, StyleSheet, View} from 'react-native';
+import axios from 'axios';
+import React from 'react';
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {SceneMap} from 'react-native-tab-view';
 import CustomTabBar from '../../../../components/CustomTabBar';
-import BiographyCard from '../../../../components/shared/Cards/BiographyCard';
 import CustomText from '../../../../components/shared/CustomText';
 import {ImageManager} from '../../../../constants/ImageManager';
-import {Theme} from '../../../../constants/Theme';
-import ClipsTab from '../components/ClipsTab';
-import CommentsTab from '../components/CommentsTab';
-import DiscussionsTab from '../components/DiscussionsTab';
-import TitlesTab from '../components/TitlesTab';
+import networkService from '../../../../helpers/networkService';
+import {Theme} from '../../../../utils/theme';
 import FeaturesTab from '../components/FeaturesTab';
 import ShortsTab from '../components/ShortsTab';
 import TvShowsTab from '../components/TvShowsTab';
+import {RouteProp, useRoute} from '@react-navigation/native';
+import CommentsTab from '../components/CommentsTab';
+import DiscussionsTab from '../components/DiscussionsTab';
 
 const {width, height} = Dimensions.get('window');
 
 type Props = {};
 
+type RouteParams = {
+  Genre: {
+    slug: string;
+  };
+};
+
 const GenresView = (props: Props) => {
+  const route = useRoute<RouteProp<RouteParams, 'Genre'>>();
+
+  const [loading, setLoading] = React.useState(true);
+
+  const [genreData, setGenreData] = React.useState<any>();
+
+  const [currentGenreSlug, setCurrentGenreSlug] = React.useState(
+    route.params.slug,
+  );
+
+  const fetchGenreData = async () => {
+    try {
+      const response = await networkService.post('title/api/genre/', {
+        slug: currentGenreSlug,
+      });
+      console.log('Response Genre', response.data);
+
+      setGenreData(response.data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+
+          switch (error.response.status) {
+            case 400:
+              console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+              break;
+            case 401:
+              console.log(
+                'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+              );
+
+              break;
+            case 500:
+              console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+              break;
+            default:
+              console.log(
+                'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+              );
+          }
+        } else if (error.request) {
+          console.log(error.request);
+          console.log(
+            'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+          );
+        } else {
+          console.log('Error', error.message);
+          console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } else {
+        console.log('Error', error);
+        console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchGenreData();
+  }, [currentGenreSlug]);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: width,
+        }}>
+        <ActivityIndicator
+          size="large"
+          color={Theme.colors.primary}
+          animating={loading}
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={{flex: 1, backgroundColor: 'black'}}>
       <View
@@ -46,15 +143,18 @@ const GenresView = (props: Props) => {
         </View>
         <View>
           <FlatList
-            data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+            data={genreData.genres}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{
               paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-              gap: Theme.spacing.rowGap,
+              gap: Theme.spacing.columnGap,
             }}
             renderItem={({item}) => (
-              <View
+              <TouchableOpacity
+                onPress={() => {
+                  setCurrentGenreSlug(item.slug);
+                }}
                 style={{
                   height: 50,
                   width: 50,
@@ -64,7 +164,7 @@ const GenresView = (props: Props) => {
                   justifyContent: 'center',
                 }}>
                 <CustomText
-                  text="B"
+                  text={item.name[0].toUpperCase()}
                   weight="bold"
                   style={{
                     color: Theme.colors.white,
@@ -72,11 +172,11 @@ const GenresView = (props: Props) => {
                     textAlign: 'center',
                   }}
                 />
-              </View>
+              </TouchableOpacity>
             )}
           />
         </View>
-        <Header />
+        <Header counts={genreData.counts} genre={genreData.genre} />
       </View>
       <CustomText
         text="Movie enthusiast with a passion for discovering hidden gems and the latest blockbusters"
@@ -87,7 +187,14 @@ const GenresView = (props: Props) => {
         }}
         weight="light"
       />
-      <CustomTabBar routes={routes} renderScene={renderScene} />
+      <CustomTabBar
+        routes={routes}
+        renderScene={route =>
+          renderScene(route, genreData, () => {
+            fetchGenreData();
+          })
+        }
+      />
     </View>
   );
 };
@@ -110,7 +217,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const Header = () => {
+type HeaderProps = {
+  counts: any;
+  genre: any;
+};
+
+const Header = (props: HeaderProps) => {
   return (
     <View style={styles.header}>
       <View style={styles.avatarContainer}>
@@ -124,7 +236,7 @@ const Header = () => {
             justifyContent: 'center',
           }}>
           <CustomText
-            text="A"
+            text={props.genre.name[0].toUpperCase()}
             weight="bold"
             style={{
               color: Theme.colors.white,
@@ -137,13 +249,18 @@ const Header = () => {
           style={{
             justifyContent: 'center',
           }}>
-          <CustomText text="Horror" weight="bold" style={styles.name} />
           <CustomText
-            text="1.4K Film • 13.2K TV Shows"
+            text={props.genre.name}
+            weight="bold"
+            style={styles.name}
+          />
+          <CustomText
+            text={`${props.counts.film} Films • ${props.counts.series} TV Shows`}
+            // text="1.4K Film • 13.2K TV Shows"
             style={{
               color: 'white',
               opacity: 0.7,
-              fontSize: Theme.fontSizes.sm,
+              fontSize: Theme.fontSizes.xs,
             }}
           />
         </View>
@@ -152,13 +269,40 @@ const Header = () => {
   );
 };
 
-const renderScene = SceneMap({
-  first: FeaturesTab,
-  second: ShortsTab,
-  third: TvShowsTab,
-  fourth: CommentsTab,
-  fifth: DiscussionsTab,
-});
+const renderScene = (
+  {route}: {route: {key: string; title: string}},
+  genreData: any,
+  refreshData: () => void,
+) => {
+  switch (route.key) {
+    case 'first':
+      return <FeaturesTab data={genreData.features} />;
+    case 'second':
+      return <ShortsTab data={genreData.shorts} />;
+    case 'third':
+      return <TvShowsTab data={genreData.series} />;
+    case 'fourth':
+      return (
+        <CommentsTab
+          data={genreData.comment}
+          endpoint="genre-comment"
+          uuid={genreData.genre.slug}
+          refreshData={refreshData}
+        />
+      );
+    case 'fifth':
+      return (
+        <DiscussionsTab
+          data={genreData.discussion}
+          endpoint="genre-discussion"
+          uuid={genreData.genre.slug}
+        />
+      );
+
+    default:
+      return null;
+  }
+};
 
 const routes = [
   {key: 'first', title: 'Features'},

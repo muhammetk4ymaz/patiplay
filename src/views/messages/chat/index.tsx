@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import React, {useContext} from 'react';
-import {Theme} from '../../../constants/Theme';
+import {Theme} from '../../../utils/theme';
 import {WebSocketContext} from '../../../context/WebSocketContext';
 import {
   NavigationProp,

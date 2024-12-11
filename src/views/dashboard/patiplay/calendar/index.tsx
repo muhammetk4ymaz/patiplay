@@ -1,31 +1,104 @@
-import {Dimensions, FlatList, StyleSheet, View} from 'react-native';
 import React from 'react';
+import {Dimensions, FlatList, StyleSheet, Text, View} from 'react-native';
 import CustomPage from '../../../../components/shared/CustomPage';
 import TitleCarousel from '../../../../components/shared/TitleCarousel';
-import {FlagList} from '../../home';
-import nowPlayMovies from '../../../../models/now_play_movies';
-import CarouselItemForCalendar from './CarouselItemForCalendar';
 import VerticalPoster from '../../../../components/shared/VerticalPoster';
-import DateLabel from '../../../../components/shared/DateLabel';
-import {Theme} from '../../../../constants/Theme';
+import nowPlayMovies from '../../../../models/now_play_movies';
 import {useAppSelector} from '../../../../redux/hooks';
 import {RootState} from '../../../../redux/store';
+import {Theme} from '../../../../utils/theme';
 import PreRegistrationView from '../../../preregistration/PreRegistrationView';
-
-import {useHeaderHeight} from '@react-navigation/elements';
+import CarouselItemForCalendar from './CarouselItemForCalendar';
+import {FlagList} from '../../../../components/shared/FlagList';
+import DateLabel from '../../../../components/shared/Labels/DateLabel';
+import networkService from '../../../../helpers/networkService';
+import axios from 'axios';
 
 type Props = {};
 
 const CalendarView = (props: Props) => {
+  const [calendarData, setCalendarData] = React.useState<any[]>([]);
+
+  const [loading, setLoading] = React.useState(true);
+
   const isAuthenticated = useAppSelector(
     (state: RootState) => state.auth.isAuthenticated,
   );
+
+  React.useEffect(() => {
+    console.log('Rendered CalendarView');
+
+    const fetchCampaignsData = async () => {
+      try {
+        const response = await networkService.get(
+          'title/api/calender-page-view/',
+        );
+        console.log('Response', response.data);
+        setCalendarData(response.data);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+
+            switch (error.response.status) {
+              case 400:
+                console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+                break;
+              case 401:
+                console.log(
+                  'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+                );
+
+                break;
+              case 500:
+                console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+                break;
+              default:
+                console.log(
+                  'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+                );
+            }
+          } else if (error.request) {
+            console.log(error.request);
+            console.log(
+              'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+            );
+          } else {
+            console.log('Error', error.message);
+            console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+          }
+        } else {
+          console.log('Error', error);
+          console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCampaignsData();
+  }, []);
 
   if (!isAuthenticated) {
     return <PreRegistrationView title={'Coming Soon?'} />;
   }
 
-  const headerHeight = useHeaderHeight();
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'black',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Text style={{color: 'white'}}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <CustomPage
@@ -57,11 +130,11 @@ const CalendarTitles = () => {
         removeClippedSubviews={true}
         showsHorizontalScrollIndicator={false}
         numColumns={4}
-        columnWrapperStyle={{gap: 12}}
+        columnWrapperStyle={{gap: Theme.spacing.columnGap}}
         scrollEnabled={false}
         contentContainerStyle={{
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-          gap: 12,
+          rowGap: Theme.spacing.rowGap,
         }}
         renderItem={({item}) => (
           <CalendarTitleCard posterPath={item.poster_path} />
@@ -94,7 +167,7 @@ const CalendarTitleCard = React.memo((props: CalendarTitleCardProps) => {
         style={StyleSheet.absoluteFillObject}
       />
       <DateLabel
-        date="18"
+        day="18"
         month="MAR"
         backgroundColor={'rgba(17, 24, 39,0.5)'}
         dateFontSize={10}

@@ -1,25 +1,46 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import IconButton from '../../../../components/shared/IconButton';
-import {Theme} from '../../../../constants/Theme';
+
+import {Theme} from '../../../../utils/theme';
+import IconButton from '../../../../components/shared/Buttons/IconButton';
+import networkService from '../../../../helpers/networkService';
 
 type Props = {
   icon: React.JSX.Element;
-  initialActive: boolean;
+  value?: boolean;
+  onPress?: () => void;
+  uuid?: string;
+  type: string;
+  endpoint: string;
 };
 
 const InteractionButton = (props: Props) => {
-  const [active, setActive] = React.useState(props.initialActive);
+  const [value, setValue] = React.useState(props.value);
   return (
     <View>
       <IconButton
-        onPress={() => {
-          setActive(!active);
+        onPress={async () => {
+          try {
+            const response = await networkService.post(
+              `title/api/${props.endpoint}-buttons/`,
+              {
+                type: props.type,
+                uuid: props.uuid,
+              },
+            );
+
+            if (response.status === 200) {
+              console.log(props.type, response.data);
+              setValue(!value);
+            }
+          } catch (error) {
+            console.log(error);
+          }
         }}
         style={{
-          padding: 10,
-          backgroundColor: active ? Theme.colors.primary : '#222121FF',
-          borderColor: active ? Theme.colors.primary : Theme.colors.gray,
+          padding: Theme.paddings.interactionButtonPadding,
+          backgroundColor: value ? Theme.colors.primary : '#222121FF',
+          borderColor: value ? Theme.colors.primary : Theme.colors.gray,
         }}
         icon={props.icon}
       />

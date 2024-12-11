@@ -3,8 +3,7 @@ import {StyleSheet, TouchableOpacity, View} from 'react-native';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import ShareButton from '../components/shared/ShareButton';
-import {Theme} from '../constants/Theme';
+import {Theme} from '../utils/theme';
 
 import HomeView from '../views/dashboard/home';
 import {RootStackParamList} from './routes';

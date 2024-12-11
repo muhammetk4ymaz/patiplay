@@ -1,6 +1,6 @@
 import {Avatar, Box, Button, Icon, IconButton, Modal} from 'native-base';
 import {Image, Pressable, TouchableOpacity, View} from 'react-native';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import CustomText from '../../../../components/shared/CustomText';
 import IconFontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';

@@ -1,6 +1,6 @@
 import {MotiView} from 'moti';
 import {Dimensions, FlatList, Pressable, StyleSheet, View} from 'react-native';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import Animated, {
   FadeInDown,
   FadeInUp,

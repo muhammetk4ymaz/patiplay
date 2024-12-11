@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import {useSelector} from 'react-redux';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
 import CustomText from '../../../../components/shared/CustomText';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
@@ -16,16 +16,12 @@ import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootState} from '../../../../redux/store';
 import {RootStackParamList} from '../../../../navigation/routes';
 
-type Props = {};
+type Props = {
+  dubLanguages: any[];
+  subLanguages: any[];
+};
 
 const TitleLanguagesTab = (props: Props) => {
-  const languages = useSelector(
-    (state: RootState) => state.titleDetail.languages,
-  );
-  const languagesInitialLoading = useSelector(
-    (state: RootState) => state.titleDetail.languagesInitialLoading,
-  );
-
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   // English (EN): Mavi (#4A90E2)
@@ -37,10 +33,7 @@ const TitleLanguagesTab = (props: Props) => {
   // Chinese (ZH): Sarı (#F8E71C)
 
   return (
-    <View
-      style={{
-        paddingVertical: 12,
-      }}>
+    <View style={{}}>
       <CustomText
         text="Audio Languages"
         style={{
@@ -51,33 +44,14 @@ const TitleLanguagesTab = (props: Props) => {
         weight="medium"
       />
       <FlatList
-        data={languages.slice(0, 3)}
-        scrollEnabled={false}
-        numColumns={3}
-        columnWrapperStyle={{
-          gap: Theme.spacing.columnGap,
-        }}
-        ListHeaderComponent={() => {
-          return (
-            languagesInitialLoading && (
-              <View
-                style={{
-                  paddingVertical: Theme.spacing.columnGap,
-                }}>
-                <ActivityIndicator
-                  size="large"
-                  color={Theme.colors.primary}
-                  animating={languagesInitialLoading}
-                />
-              </View>
-            )
-          );
-        }}
+        data={props.dubLanguages || []}
+        horizontal
         contentContainerStyle={{
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-          gap: Theme.spacing.rowGap,
+          gap: Theme.spacing.columnGap,
+          paddingVertical: Theme.spacing.rowGap,
         }}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={index => index.toString()}
         renderItem={({item}) => {
           return (
             <TouchableOpacity
@@ -86,38 +60,27 @@ const TitleLanguagesTab = (props: Props) => {
               }}>
               <View
                 style={{
-                  width: calculateGridItemWidth(4),
+                  height: 40,
                   aspectRatio: 1,
+                  borderRadius: 40 / 2,
+                  backgroundColor: 'black',
+                  borderWidth: 1,
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                  elevation: 5,
+                  shadowColor: 'rgba(255, 255, 255, 1)',
+                  shadowOpacity: 1,
+                  shadowOffset: {width: 0, height: 1},
+                  // backgroundColor: '#4A90E2',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: 5,
                 }}>
-                <View
-                  style={{
-                    width: '50%',
-                    height: '50%',
-                    borderRadius: 100,
-                    backgroundColor: '#4A90E2',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  <CustomText
-                    text="EN"
-                    weight="bold"
-                    style={{
-                      color: Theme.colors.white,
-                      fontSize: Theme.fontSizes.md,
-                      textAlign: 'center',
-                    }}
-                  />
-                </View>
                 <CustomText
-                  text="English"
+                  text={item.language.toUpperCase()}
+                  weight="bold"
                   style={{
-                    textAlign: 'center',
                     color: Theme.colors.white,
-                    opacity: 0.7,
-                    fontSize: Theme.fontSizes.sm,
+                    fontSize: Theme.fontSizes.md,
+                    textAlign: 'center',
                   }}
                 />
               </View>
@@ -135,31 +98,12 @@ const TitleLanguagesTab = (props: Props) => {
         weight="medium"
       />
       <FlatList
-        data={languages.slice(0, 3)}
-        scrollEnabled={false}
-        numColumns={3}
-        columnWrapperStyle={{
-          gap: Theme.spacing.columnGap,
-        }}
-        ListHeaderComponent={() => {
-          return (
-            languagesInitialLoading && (
-              <View
-                style={{
-                  paddingVertical: Theme.spacing.columnGap,
-                }}>
-                <ActivityIndicator
-                  size="large"
-                  color={Theme.colors.primary}
-                  animating={languagesInitialLoading}
-                />
-              </View>
-            )
-          );
-        }}
+        data={props.subLanguages || []}
+        horizontal
         contentContainerStyle={{
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-          gap: Theme.spacing.rowGap,
+          gap: Theme.spacing.columnGap,
+          paddingVertical: Theme.spacing.rowGap,
         }}
         keyExtractor={item => item.id.toString()}
         renderItem={({item}) => {
@@ -170,38 +114,27 @@ const TitleLanguagesTab = (props: Props) => {
               }}>
               <View
                 style={{
-                  width: calculateGridItemWidth(4),
+                  height: 40,
                   aspectRatio: 1,
+                  borderRadius: 40 / 2,
+                  backgroundColor: 'black',
+                  borderWidth: 1,
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                  elevation: 5,
+                  shadowColor: 'rgba(255, 255, 255, 1)',
+                  shadowOpacity: 1,
+                  shadowOffset: {width: 0, height: 1},
+                  // backgroundColor: '#4A90E2',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: 5,
                 }}>
-                <View
-                  style={{
-                    width: '50%',
-                    height: '50%',
-                    borderRadius: 100,
-                    backgroundColor: '#4A90E2',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  <CustomText
-                    text="EN"
-                    weight="bold"
-                    style={{
-                      color: Theme.colors.white,
-                      fontSize: Theme.fontSizes.md,
-                      textAlign: 'center',
-                    }}
-                  />
-                </View>
                 <CustomText
-                  text="English"
+                  text={item.sub_language.toUpperCase()}
+                  weight="bold"
                   style={{
-                    textAlign: 'center',
                     color: Theme.colors.white,
-                    opacity: 0.7,
-                    fontSize: Theme.fontSizes.sm,
+                    fontSize: Theme.fontSizes.md,
+                    textAlign: 'center',
                   }}
                 />
               </View>

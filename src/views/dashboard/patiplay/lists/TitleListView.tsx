@@ -8,13 +8,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Theme} from '../../../../constants/Theme';
+import {Theme} from '../../../../utils/theme';
 import CustomText from '../../../../components/shared/CustomText';
 import popularTitles from '../../../../models/popular';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import TopMovie from '../../../../models/top_movie';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../../../../navigation/routes';
+import networkService from '../../../../helpers/networkService';
 
 const width = Dimensions.get('window').width;
 
@@ -32,9 +33,21 @@ export const TitleListView = React.memo(() => {
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 300);
+    const fetchLists = async () => {
+      try {
+        const response = await networkService.post('title/api/lists-view/', {
+          tab: 'Titles',
+        });
+
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLists();
   }, []);
 
   if (loading) {

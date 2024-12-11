@@ -2,7 +2,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
 import {StyleSheet} from 'react-native';
-import {Theme} from '../constants/Theme';
+import {Theme} from '../utils/theme';
 import '../i18n';
 import {RootStackParamList, Routes} from './routes';
 
@@ -14,7 +14,7 @@ const UnauthenticatedRoute = (props: Props) => {
   const {t} = useTranslation();
   return (
     <Stack.Navigator
-      initialRouteName="Packages"
+      initialRouteName="Auth"
       screenOptions={{
         statusBarTranslucent: true,
         statusBarColor: 'transparent',
@@ -92,6 +92,14 @@ const UnauthenticatedRoute = (props: Props) => {
       <Stack.Screen
         name="Packages"
         component={Routes.PACKAGES}
+        options={{
+          headerShown: false,
+          animation: 'fade',
+        }}
+      />
+      <Stack.Screen
+        name="Payment"
+        component={Routes.PAYMENT}
         options={{
           headerShown: false,
           animation: 'fade',

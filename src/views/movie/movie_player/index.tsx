@@ -1,77 +1,28 @@
-import {
-  ActivityIndicator,
-  Dimensions,
-  ScaledSize,
-  StyleSheet,
-  TouchableOpacity,
-  StatusBar,
-  View,
-} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-import {Theme} from '../../../constants/Theme';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
+
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
-import IconFeather from 'react-native-vector-icons/Feather';
+import {Theme} from '../../../utils/theme';
 
-import {
-  setInteractionSectionVisible,
-  setReplySectionVisible,
-} from '../../../redux/features/interaction/interactionSlice';
+import {Drawer} from 'react-native-drawer-layout';
 import VideoPlayer from '../../../components/shared/VideoPlayer/VideoPlayer';
-import InteractionSection from './components/InteractionSection';
+import {setInteractionSectionVisible} from '../../../redux/features/interaction/interactionSlice';
 import InteractionInputs from './components/InteractionInputs';
-
-const height = Dimensions.get('window').width;
+import InteractionSection from './components/InteractionSection';
 
 const MovieView = () => {
-  const [dimensions, setDimensions] = useState<ScaledSize>();
-
   const [loading, setLoading] = useState(true);
+
+  const interactionSectionVisible = useAppSelector(
+    state => state.interaction.interactionSectionVisible,
+  );
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
     }, 300);
   }, []);
-
-  const videoWidth = useSharedValue(100);
-  const chatContainerWidth = useSharedValue(0);
-  const chatContainerOpacity = useSharedValue(0);
-  const dispatch = useAppDispatch();
-
-  const videoAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      width: `${videoWidth.value}%`,
-    };
-  });
-
-  const containerAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      width: `${chatContainerWidth.value}%`,
-      opacity: chatContainerOpacity.value,
-    };
-  });
-
-  const toggleBottomSheet = () => {
-    if (chatContainerWidth.value === 0) {
-      videoWidth.value = withTiming(60);
-      chatContainerWidth.value = withTiming(40);
-      chatContainerOpacity.value = withTiming(1, {duration: 1200});
-      dispatch(setInteractionSectionVisible(true));
-    } else {
-      videoWidth.value = withTiming(100);
-      chatContainerWidth.value = withTiming(0);
-      chatContainerOpacity.value = withTiming(0, {duration: 150});
-      dispatch(setReplySectionVisible(false));
-      dispatch(setInteractionSectionVisible(false));
-    }
-  };
-
-  console.log(MovieView.name);
 
   if (loading) {
     return (
@@ -87,23 +38,22 @@ const MovieView = () => {
     );
   } else {
     return (
-      <View
-        style={[
-          styles.container,
-          {
-            minHeight: height,
-          },
-        ]}>
-        <StatusBar hidden={true} />
-
-        <Animated.View style={videoAnimatedStyle}>
+      <View style={{flex: 1}}>
+        <Drawer
+          drawerPosition="right"
+          drawerType="slide"
+          open={interactionSectionVisible}
+          onOpen={() => {
+            dispatch(setInteractionSectionVisible(true));
+          }}
+          onClose={() => {
+            dispatch(setInteractionSectionVisible(false));
+          }}
+          renderDrawerContent={() => {
+            return <InteractionSection />;
+          }}>
           <VideoPlayer />
-          <InteractionButton onPress={toggleBottomSheet} />
-        </Animated.View>
-        <Animated.View
-          style={[containerAnimatedStyle, {backgroundColor: 'black'}]}>
-          <InteractionSection />
-        </Animated.View>
+        </Drawer>
         <InteractionInputs />
       </View>
     );
@@ -120,21 +70,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
-const InteractionButton = ({onPress}: {onPress: () => void}) => {
-  const pressed = useAppSelector(state => state.videoplayer.pressed);
-  return (
-    pressed && (
-      <TouchableOpacity
-        onPress={onPress}
-        style={{
-          padding: 16,
-          position: 'absolute',
-          right: 0,
-          top: 0,
-        }}>
-        <IconFeather name="message-circle" size={24} color={'white'} />
-      </TouchableOpacity>
-    )
-  );
-};

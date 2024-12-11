@@ -1,6 +1,6 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-import {Theme} from '../../constants/Theme';
+import {Theme} from '../../utils/theme';
 import CustomText from '../../components/shared/CustomText';
 import {ImageManager} from '../../constants/ImageManager';
 import {useAppSelector} from '../../redux/hooks';

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import nowPlayMovies from '../../../../../models/now_play_movies';
-import {Theme} from '../../../../../constants/Theme';
+import {Theme} from '../../../../../utils/theme';
 import CustomText from '../../../../../components/shared/CustomText';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import TopMovie from '../../../../../models/top_movie';

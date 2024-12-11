@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -5,89 +6,150 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import React from 'react';
 import {useSelector} from 'react-redux';
-import {RootState} from '../../../../redux/store';
-import {Theme} from '../../../../constants/Theme';
-import DicussionNew from '../../../../components/shared/DicussionNew';
 import CircularAvatar from '../../../../components/shared/CircularAvatar';
-import {ImageManager} from '../../../../constants/ImageManager';
 import CustomText from '../../../../components/shared/CustomText';
+import {ImageManager} from '../../../../constants/ImageManager';
+import {RootState} from '../../../../redux/store';
+import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
+import {Theme} from '../../../../utils/theme';
+import axios from 'axios';
+import networkService from '../../../../helpers/networkService';
 
-type Props = {};
+type Props = {
+  uuid: string;
+};
 
 const width = Dimensions.get('window').width;
 
 const TitleCastTab = (props: Props) => {
-  const casts = useSelector((state: RootState) => state.titleDetail.casts);
-  const castsInitialLoading = useSelector(
-    (state: RootState) => state.titleDetail.castsInitialLoading,
-  );
+  const [loading, setLoading] = React.useState(true);
+  const [cast, setCast] = React.useState<any[]>([]);
 
-  return (
-    <FlatList
-      data={casts}
-      scrollEnabled={false}
-      initialNumToRender={5}
-      numColumns={4}
-      columnWrapperStyle={{
-        gap: Theme.spacing.columnGap,
-      }}
-      ListHeaderComponent={() => {
-        return (
-          castsInitialLoading && (
+  const fetchCastData = async () => {
+    try {
+      const response = await networkService.post('title/api/title-tab-movie/', {
+        slug: props.uuid,
+        tab: 'Cast',
+      });
+      setCast(response.data.actors);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+
+          switch (error.response.status) {
+            case 400:
+              console.log('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+              break;
+            case 401:
+              console.log(
+                'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+              );
+
+              break;
+            case 500:
+              console.log('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+              break;
+            default:
+              console.log(
+                'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+              );
+          }
+        } else if (error.request) {
+          console.log(error.request);
+          console.log(
+            'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+          );
+        } else {
+          console.log('Error', error.message);
+          console.log('Bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } else {
+        console.log('Error', error);
+        console.log('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    console.log('Rendered CastTab');
+
+    fetchCastData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: width,
+        }}>
+        <ActivityIndicator
+          size="large"
+          color={Theme.colors.primary}
+          animating={loading}
+        />
+      </View>
+    );
+  } else {
+    return (
+      <FlatList
+        data={cast}
+        scrollEnabled={false}
+        numColumns={3}
+        columnWrapperStyle={{
+          columnGap: Theme.spacing.columnGap,
+        }}
+        contentContainerStyle={{
+          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+          rowGap: Theme.spacing.rowGap,
+        }}
+        keyExtractor={index => index.toString()}
+        renderItem={({item}) => {
+          return (
             <View
               style={{
-                paddingVertical: Theme.spacing.columnGap,
+                alignItems: 'center',
+                width: calculateGridItemWidth(3),
               }}>
-              <ActivityIndicator
-                size="large"
-                color={Theme.colors.primary}
-                animating={castsInitialLoading}
+              <CircularAvatar
+                imagePath={
+                  item.image
+                    ? {uri: item.image}
+                    : ImageManager.IMAGE_NAMES.MANAVATAR
+                }
+              />
+              <CustomText
+                text={item.name}
+                style={{
+                  color: Theme.colors.white,
+                  textAlign: 'center',
+                  fontSize: Theme.fontSizes.xs,
+                }}
+              />
+              <CustomText
+                text={'Character'}
+                style={{
+                  color: Theme.colors.white,
+                  textAlign: 'center',
+                  opacity: 0.5,
+                  fontSize: Theme.fontSizes.xs,
+                }}
               />
             </View>
-          )
-        );
-      }}
-      contentContainerStyle={{
-        paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-        gap: Theme.spacing.rowGap,
-      }}
-      keyExtractor={item => item.id.toString()}
-      renderItem={({item}) => {
-        return (
-          <View
-            style={{
-              alignItems: 'center',
-              width:
-                (Dimensions.get('window').width -
-                  2 * Theme.paddings.viewHorizontalPadding -
-                  3 * Theme.spacing.columnGap) /
-                4,
-            }}>
-            <CircularAvatar imagePath={ImageManager.IMAGE_NAMES.MANAVATAR} />
-            <CustomText
-              text="Muhammet Kaymaz"
-              style={{
-                color: Theme.colors.white,
-                textAlign: 'center',
-                fontSize: Theme.fontSizes.xs,
-              }}
-            />
-            <CustomText
-              text="Tom"
-              style={{
-                color: Theme.colors.white,
-                textAlign: 'center',
-                opacity: 0.5,
-                fontSize: Theme.fontSizes['2xs'],
-              }}
-            />
-          </View>
-        );
-      }}
-    />
-  );
+          );
+        }}
+      />
+    );
+  }
 };
 
 export default React.memo(TitleCastTab);
