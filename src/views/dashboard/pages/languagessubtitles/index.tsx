@@ -20,6 +20,8 @@ import DiscussionsTab from '../components/DiscussionsTab';
 import FeaturesTab from '../components/FeaturesTab';
 import ShortsTab from '../components/ShortsTab';
 import TvShowsTab from '../components/TvShowsTab';
+import {DynamicHeader} from '../companies';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const {width, height} = Dimensions.get('window');
 
@@ -89,76 +91,64 @@ const LanguagesSubtitlesView = (props: Props) => {
   }, [currentSubtitleLang]);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-          backgroundColor: 'black',
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (
     <View style={{flex: 1, backgroundColor: 'black'}}>
-      <View
-        style={{
-          height: height * 0.35,
-          justifyContent: 'flex-end',
-          gap: 12,
-          zIndex: 0,
-          marginBottom: 12,
-        }}>
-        <View style={{flex: 1}}>
-          <Image
-            source={ImageManager.IMAGE_NAMES.DETAILBACKGROUND}
-            style={{
-              ...StyleSheet.absoluteFillObject,
-              width: width,
-              height: height * 0.3,
+      <DynamicHeader componentHeight={height * 0.45}>
+        <View
+          style={{
+            height: height * 0.45,
+            justifyContent: 'flex-end',
+            gap: 12,
+            zIndex: 0,
+            marginBottom: 12,
+          }}>
+          <View style={{flex: 1}}>
+            <Image
+              source={ImageManager.IMAGE_NAMES.DETAILBACKGROUND}
+              style={{
+                ...StyleSheet.absoluteFillObject,
+                width: width,
+                height: height * 0.4,
+              }}
+            />
+            <LinearGradient
+              colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
+              style={{width: width, height: height * 0.4}}
+            />
+          </View>
+          <FlagList
+            flags={
+              subtitlesData.countries.length > 0
+                ? subtitlesData.countries.map((country: any) => country.iso2!)
+                : []
+            }
+            onPress={(iso2: string) => {
+              console.log('iso2', iso2.toLocaleLowerCase());
+              setCurrentSubtitleLang(iso2.toLocaleLowerCase());
             }}
           />
-          <LinearGradient
-            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
-            style={{width: width, height: height * 0.3}}
+          <Header
+            country={subtitlesData.country}
+            counts={{
+              films: subtitlesData.titles.length + subtitlesData.shorts.length,
+              series: subtitlesData.series.length,
+            }}
+          />
+          <CustomText
+            text="Movie enthusiast with a passion for discovering hidden gems and the latest blockbusters"
+            style={{
+              color: 'white',
+              fontSize: 13,
+              paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+            }}
+            weight="light"
           />
         </View>
-        <FlagList
-          flags={
-            subtitlesData.countries.length > 0
-              ? subtitlesData.countries.map((country: any) => country.iso2!)
-              : []
-          }
-          onPress={(iso2: string) => {
-            console.log('iso2', iso2.toLocaleLowerCase());
-            setCurrentSubtitleLang(iso2.toLocaleLowerCase());
-          }}
-        />
-        <Header
-          country={subtitlesData.country}
-          counts={{
-            films: subtitlesData.titles.length + subtitlesData.shorts.length,
-            series: subtitlesData.series.length,
-          }}
-        />
-      </View>
-      <CustomText
-        text="Movie enthusiast with a passion for discovering hidden gems and the latest blockbusters"
-        style={{
-          color: 'white',
-          fontSize: 13,
-          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-        }}
-        weight="light"
-      />
+      </DynamicHeader>
+
       <CustomTabBar
         routes={routes}
         renderScene={route =>

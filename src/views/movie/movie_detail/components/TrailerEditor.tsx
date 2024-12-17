@@ -76,7 +76,7 @@ const TrailerEditor = (props: TrailerEditorProps) => {
           source: props.backdropPath,
           resizeMode: 'cover',
         }}
-        volume={0}
+        volume={1}
         onProgress={e => setProgress(e)}
         source={require('../../../../../assets/CivilWar.mp4')}
         ref={videoRef}

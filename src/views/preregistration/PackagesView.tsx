@@ -10,7 +10,9 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
-import ContentWithIconCard from '../../components/shared/Cards/ContentWithIconCard';
+import ContentWithIconCard, {
+  TermAndPrivacyText,
+} from '../../components/shared/Cards/ContentWithIconCard';
 import CustomText from '../../components/shared/CustomText';
 import {ImageManager} from '../../constants/ImageManager';
 import networkService from '../../helpers/networkService';
@@ -45,81 +47,107 @@ const PackagesView = (props: Props) => {
         {paddingTop: insets.top + 50, paddingBottom: insets.bottom},
       ]}
       keyboardShouldPersistTaps="handled">
-      <ContentWithIconCard
-        icon={
-          <Image
-            source={ImageManager.IMAGE_NAMES.PATILOGOWHIE}
-            style={{height: 100, width: 100}}
-          />
-        }>
-        <View style={{gap: 24}}>
-          <View
-            style={{
-              gap: 8,
-              flexDirection: 'row',
-            }}>
-            {packages.map((packageItem, index) => (
-              <PackagesItem
-                packageItem={packageItem}
-                key={index}
-                active={selectedPackageIndex === index}
-                onPress={() => setSelectedPackageIndex(index)}
-              />
-            ))}
-          </View>
-          {selectedPackageIndex !== undefined && (
-            <View style={{gap: 24}}>
-              <CustomText
-                text={'All Packages'}
-                style={{color: 'white', textAlign: 'center', opacity: 0.5}}
-              />
-              <View style={{gap: 8}}>
-                {packages[selectedPackageIndex].features.map(
-                  (feature: any, index: number) => (
-                    <View
-                      key={index}
-                      style={{
-                        borderRadius: 8,
-                        justifyContent: 'center',
-                        paddingVertical: 8,
-                        paddingHorizontal: 16,
-                        backgroundColor: 'rgba(40,40,40,0.8)',
-                      }}>
-                      <CustomText
-                        text={feature.value}
-                        style={{color: 'white'}}
-                      />
-                    </View>
-                  ),
-                )}
-              </View>
-            </View>
-          )}
-          <View style={{gap: 8}}>
-            <View style={{alignSelf: 'center'}}>
+      <View style={{flex: 1, justifyContent: 'center'}}>
+        <ContentWithIconCard
+          button={
+            <View style={{backgroundColor: 'black'}}>
               <CustomTextButton
+                backgroundColor="black"
+                border={true}
                 text={'Continue'}
                 onPress={() => {}}
                 textColor="white"
                 paddingHorizontal={36}
-                paddingVertical={8}
               />
             </View>
-            <View style={{alignSelf: 'center'}}>
-              <CustomTextButton
-                text={'Previous'}
-                backgroundColor="transparent"
-                onPress={() => {
-                  navigation.goBack();
+          }
+          icon={
+            <Image
+              source={ImageManager.IMAGE_NAMES.PATIPLAYLOGO}
+              style={{height: 80, width: 80}}
+            />
+          }>
+          <View style={{gap: 24, paddingBottom: 24}}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <CustomText
+                text="Packages"
+                style={{
+                  fontSize: 20,
+                  color: 'white',
+                  textAlign: 'center',
+                  flex: 1,
                 }}
-                textColor="rgba(255,255,255,0.5)"
-                paddingHorizontal={36}
-                paddingVertical={8}
               />
+              <View style={{position: 'absolute', right: 0}}>
+                <CustomText
+                  text="2/3"
+                  style={{
+                    fontSize: 14,
+                    color: 'white',
+                    textAlign: 'center',
+                    opacity: 0.7,
+                  }}
+                />
+              </View>
             </View>
+
+            <View
+              style={{
+                gap: 8,
+                flexDirection: 'row',
+              }}>
+              {packages.map((packageItem, index) => (
+                <PackagesItem
+                  packageItem={packageItem}
+                  key={index}
+                  active={selectedPackageIndex === index}
+                  onPress={() => setSelectedPackageIndex(index)}
+                />
+              ))}
+            </View>
+            {selectedPackageIndex !== undefined && (
+              <View style={{gap: 24}}>
+                <CustomText
+                  text={'All Packages'}
+                  style={{color: 'white', textAlign: 'center', opacity: 0.7}}
+                />
+                <View style={{gap: 8}}>
+                  {packages[selectedPackageIndex].features.map(
+                    (feature: any, index: number) => (
+                      <View
+                        key={index}
+                        style={{
+                          borderRadius: 8,
+                          justifyContent: 'center',
+                          paddingVertical: 8,
+                          paddingHorizontal: 16,
+                          backgroundColor: 'rgba(40,40,40,0.8)',
+                        }}>
+                        <CustomText
+                          text={feature.value}
+                          style={{color: 'white'}}
+                        />
+                      </View>
+                    ),
+                  )}
+                </View>
+              </View>
+            )}
           </View>
+        </ContentWithIconCard>
+        <View style={{marginTop: 28, alignSelf: 'center'}}>
+          <CustomTextButton
+            text={'Previous'}
+            backgroundColor="transparent"
+            onPress={() => {
+              navigation.goBack();
+            }}
+            textColor="rgba(255,255,255,0.7)"
+            paddingHorizontal={36}
+          />
         </View>
-      </ContentWithIconCard>
+      </View>
+      <TermAndPrivacyText />
     </ScrollView>
   );
 };

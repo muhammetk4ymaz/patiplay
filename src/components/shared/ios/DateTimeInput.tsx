@@ -9,12 +9,14 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
 import {Theme} from '../../../utils/theme';
 import CustomText from '../CustomText';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
+import {CalendarIcon} from '../../../../assets/icons';
+import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 type Props = {
   value: Date;
@@ -36,13 +38,13 @@ const DateTimeInputIos = (props: Props) => {
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 2,
-        paddingHorizontal: 12,
-        paddingVertical: 4,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
         borderRadius: 30,
-        borderColor: Theme.colors.primary,
-        gap: 10,
+        borderColor: 'rgb(75, 85, 99)',
+        gap: 13,
       }}>
-      <IconMaterialIcons name="date-range" size={32} color="white" />
+      <CalendarIcon size={24} />
 
       <CustomText
         text={`${date.getFullYear()}/${(date.getMonth() + 1)

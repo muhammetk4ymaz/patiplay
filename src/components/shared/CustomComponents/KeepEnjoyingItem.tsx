@@ -9,6 +9,7 @@ import {calculateGridItemWidth} from '../../../utils/calculateGridItemWidth';
 type Props = {
   item: any;
   index: number;
+  type: 'Title' | 'Episode' | 'Clip';
 };
 
 const KeepEnjoyingItem = (props: Props) => {
@@ -19,20 +20,20 @@ const KeepEnjoyingItem = (props: Props) => {
         gap: 5,
       }}>
       <TitleWithProgress
-        backdropPath={props.item.backdrop_path}
-        percentage={50}
-        runtime={120}
+        backdropPath={{uri: props.item.video.filmImageUrl[0]?.url}}
+        percentage={parseInt(props.item.completion_rate.replace('%', ''), 10)}
+        runtime={props.item.title.total_time}
       />
       <View style={{flexDirection: 'row', flex: 1}}>
         <View style={{flex: 1}}>
           <CustomText
             numberOfLines={1}
-            text={props.item.title}
+            text={props.item.title.title[0].title}
             style={{color: 'white', fontSize: Theme.fontSizes.sm}}
             weight="light"
           />
 
-          {props.index % 2 === 1 && (
+          {props.type === 'Episode' && (
             <CustomText
               numberOfLines={1}
               text={
@@ -49,7 +50,10 @@ const KeepEnjoyingItem = (props: Props) => {
 
           <CustomText
             numberOfLines={1}
-            text={'1h 30m left'}
+            text={
+              formatDuration(props.item.title.total_time - props.item.time) +
+              ' left'
+            }
             style={{
               color: 'white',
               fontSize: Theme.fontSizes.sm,
@@ -74,3 +78,26 @@ const KeepEnjoyingItem = (props: Props) => {
 export default React.memo(KeepEnjoyingItem);
 
 const styles = StyleSheet.create({});
+
+function formatDuration(seconds: number) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+
+  let formattedTime = '';
+
+  if (hours > 0) {
+    formattedTime += `${hours}h `;
+  }
+  if (minutes > 0) {
+    formattedTime += `${minutes}m `;
+  }
+
+  if (hours === 0 || minutes === 0) {
+    if (remainingSeconds !== 0) {
+      formattedTime += `${remainingSeconds}s`;
+    }
+  }
+
+  return formattedTime.trim();
+}

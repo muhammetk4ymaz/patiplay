@@ -1,4 +1,9 @@
-import {RouteProp, useRoute} from '@react-navigation/native';
+import {
+  NavigationProp,
+  RouteProp,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import axios from 'axios';
 import {Avatar} from 'native-base';
 import React, {useState} from 'react';
@@ -6,6 +11,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
+  Keyboard,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -23,6 +29,15 @@ import CommentsTab from '../components/CommentsTab';
 import DiscussionsTab from '../components/DiscussionsTab';
 import FansTab from '../components/FansTab';
 import TitlesTab from '../components/TitlesTab';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {RootStackParamList} from '../../../../navigation/routes';
+import {useHeaderHeight} from '@react-navigation/elements';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const {width, height} = Dimensions.get('window');
 
@@ -147,100 +162,93 @@ const CompaniesDetailView = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-          backgroundColor: 'black',
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   }
+
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={{flex: 1}}>
-      <View
-        style={{
-          height: height * 0.45,
-          justifyContent: 'flex-end',
-          gap: 12,
-          zIndex: 0,
-        }}>
-        <View style={{flex: 1}}>
-          <Image
-            source={ImageManager.IMAGE_NAMES.DETAILBACKGROUND}
-            style={{
-              ...StyleSheet.absoluteFillObject,
-              width: width,
-              height: height * 0.45,
-            }}
-          />
-          <LinearGradient
-            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
-            style={{width: width, height: height * 0.45}}
-          />
-        </View>
-        <Header
-          name={companyData.company.legalName}
-          titlesLength={companyData.titles.len}
-          clipsLength={companyData.clips.len}
-          avatarUrl={companyData.company.logo}
-          city={companyData.company.city}
-          state={companyData.company.state}
-          country={companyData.company.country}
-          establishmentYear={
-            companyData.company.establishmentDate.split('-')[0]
-          }
-          button_active={companyData.button_active}
-          uuid={companyData.company.slug}
-        />
-        <CustomText
-          text="Movie enthusiast with a passion for discovering hidden gems and the latest blockbusters"
+      <DynamicHeader componentHeight={height * 0.45}>
+        <View
           style={{
-            color: 'white',
-            fontSize: 13,
-            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-          }}
-          weight="light"
-        />
-        <View style={{paddingHorizontal: Theme.paddings.viewHorizontalPadding}}>
-          <TouchableOpacity onPress={() => {}}>
-            <LinearGradient
-              colors={['#8b5cf6', '#a855f7']} // from violet-500 to purple-500
+            height: height * 0.45,
+            justifyContent: 'flex-end',
+            gap: 12,
+            zIndex: 0,
+          }}>
+          <View style={{flex: 1}}>
+            <Image
+              source={ImageManager.IMAGE_NAMES.DETAILBACKGROUND}
               style={{
-                paddingHorizontal: 12,
-                paddingVertical: 12,
-                borderRadius: 36,
-              }}>
-              <CustomText
-                text="Follow"
+                ...StyleSheet.absoluteFillObject,
+                width: width,
+                height: height * 0.4,
+              }}
+            />
+            <LinearGradient
+              colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
+              style={{width: width, height: height * 0.4}}
+            />
+          </View>
+          <Header
+            name={companyData.company.legalName}
+            titlesLength={companyData.titles.len}
+            clipsLength={companyData.clips.len}
+            avatarUrl={companyData.company.logo}
+            city={companyData.company.city}
+            state={companyData.company.state}
+            country={companyData.company.country}
+            establishmentYear={
+              companyData.company.establishmentDate.split('-')[0]
+            }
+            button_active={companyData.button_active}
+            uuid={companyData.company.slug}
+          />
+          <CustomText
+            text="Movie enthusiast with a passion for discovering hidden gems and the latest blockbusters"
+            style={{
+              color: 'white',
+              fontSize: 13,
+              paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+            }}
+            weight="light"
+          />
+          <View
+            style={{paddingHorizontal: Theme.paddings.viewHorizontalPadding}}>
+            <TouchableOpacity onPress={() => {}}>
+              <LinearGradient
+                colors={['#8b5cf6', '#a855f7']} // from violet-500 to purple-500
                 style={{
-                  color: 'white',
-                  fontSize: Theme.fontSizes.sm,
-                  textAlign: 'center',
-                }}
-              />
-            </LinearGradient>
-          </TouchableOpacity>
+                  paddingHorizontal: 12,
+                  paddingVertical: 12,
+                  borderRadius: 36,
+                }}>
+                <CustomText
+                  text="Follow"
+                  style={{
+                    color: 'white',
+                    fontSize: Theme.fontSizes.sm,
+                    textAlign: 'center',
+                  }}
+                />
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </DynamicHeader>
 
-      <CustomTabBar
-        routes={routes}
-        renderScene={route =>
-          renderScene(route, companyData, () => {
-            fetchCompanyData();
-          })
-        }
-      />
+      <View style={{flex: 1}}>
+        <CustomTabBar
+          headerVisible={true}
+          routes={routes}
+          renderScene={route =>
+            renderScene(route, companyData, () => {
+              fetchCompanyData();
+            })
+          }
+        />
+      </View>
     </View>
   );
 };
@@ -375,4 +383,49 @@ const Header = (props: HeaderProps) => {
       </View>
     </View>
   );
+};
+
+type DynamicHeaderProps = {
+  children: React.ReactNode;
+  componentHeight: number;
+};
+
+export const DynamicHeader = (props: DynamicHeaderProps) => {
+  const [containerHeight, setContainerHeight] = useState(props.componentHeight);
+  const headerHeight = useHeaderHeight();
+  const height = useSharedValue(containerHeight);
+  const opacity = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      height: height.value,
+      opacity: opacity.value,
+    };
+  });
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  React.useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        height.value = withTiming(headerHeight);
+        opacity.value = withTiming(0);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        height.value = withTiming(props.componentHeight);
+        opacity.value = withTiming(1);
+      },
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+
+  return <Animated.View style={animatedStyle}>{props.children}</Animated.View>;
 };

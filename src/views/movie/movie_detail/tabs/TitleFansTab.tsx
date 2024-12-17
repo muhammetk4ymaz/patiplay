@@ -15,6 +15,7 @@ import CommentsTab from '../../../dashboard/pages/components/CommentsTab';
 import networkService from '../../../../helpers/networkService';
 import axios from 'axios';
 import FansTab from '../../../dashboard/pages/components/FansTab';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 type Props = {
   uuid: string;
@@ -84,21 +85,7 @@ const TitleFansTab = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return <FansTab data={{fans}} />;
   }

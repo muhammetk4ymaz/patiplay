@@ -11,6 +11,7 @@ import ClipItem from '../../../../components/shared/CustomComponents/ClipItem';
 import networkService from '../../../../helpers/networkService';
 import {Theme} from '../../../../utils/theme';
 import ClipsTab from '../../../dashboard/pages/components/ClipsTab';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const width = Dimensions.get('window').width;
 
@@ -84,21 +85,7 @@ const TitleClipsTab = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return <ClipsTab data={{clips}} scrollEnabled={false} />;
   }

@@ -2,28 +2,22 @@ import {RouteProp, useRoute} from '@react-navigation/native';
 import axios from 'axios';
 import {Avatar} from 'native-base';
 import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Dimensions, Image, StyleSheet, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomTabBar from '../../../../components/CustomTabBar';
 import FollowButton from '../../../../components/shared/Buttons/FollowButton';
 import CustomText from '../../../../components/shared/CustomText';
 import {AddFavoriteInteractionButton} from '../../../../components/shared/InteractionButtons/AddFavoriteInteractionButton';
 import {LikeInteractionButton} from '../../../../components/shared/InteractionButtons/LikeInteractionButton';
-import ReactionToggleComponent from '../../../../components/shared/ReactionToggleComponent';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 import {ImageManager} from '../../../../constants/ImageManager';
 import networkService from '../../../../helpers/networkService';
 import {Theme} from '../../../../utils/theme';
+import {DynamicHeader} from '../companies';
 import ClipsTab from '../components/ClipsTab';
 import CommentsTab from '../components/CommentsTab';
-import FansTab from '../components/FansTab';
-import TitlesTab from '../components/TitlesTab';
 import DiscussionsTab from '../components/DiscussionsTab';
+import TitlesTab from '../components/TitlesTab';
 
 const {width, height} = Dimensions.get('window');
 
@@ -102,62 +96,51 @@ const CastDetailView = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (
     <View style={{flex: 1, backgroundColor: 'black'}}>
-      <View
-        style={{
-          height: height * 0.45,
-          justifyContent: 'flex-end',
-          gap: 12,
-          zIndex: 0,
-        }}>
-        <View style={{flex: 1}}>
-          <Image
-            source={ImageManager.IMAGE_NAMES.DETAILBACKGROUND}
-            style={{
-              ...StyleSheet.absoluteFillObject,
-              width: width,
-              height: height * 0.45,
-            }}
-          />
-          <LinearGradient
-            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
-            style={{width: width, height: height * 0.45}}
-          />
-        </View>
-        <Header
-          name={castData.actor.name}
-          titlesLength={castData.titles.len}
-          clipsLength={castData.clips.len}
-          avatarUrl={castData.actor.image}
-          button_active={castData.button_active}
-          uuid={castData.actor.slug}
-        />
-        <View style={{paddingHorizontal: Theme.paddings.viewHorizontalPadding}}>
-          <FollowButton
-            endpoint="cast"
-            initialValue={castData.in_network}
+      <DynamicHeader componentHeight={height * 0.45}>
+        <View
+          style={{
+            height: height * 0.45,
+            justifyContent: 'flex-end',
+            gap: 12,
+            zIndex: 0,
+          }}>
+          <View style={{flex: 1}}>
+            <Image
+              source={ImageManager.IMAGE_NAMES.DETAILBACKGROUND}
+              style={{
+                ...StyleSheet.absoluteFillObject,
+                width: width,
+                height: height * 0.4,
+              }}
+            />
+            <LinearGradient
+              colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
+              style={{width: width, height: height * 0.4}}
+            />
+          </View>
+          <Header
+            name={castData.actor.name}
+            titlesLength={castData.titles.len}
+            clipsLength={castData.clips.len}
+            avatarUrl={castData.actor.image}
+            button_active={castData.button_active}
             uuid={castData.actor.slug}
           />
+          <View
+            style={{paddingHorizontal: Theme.paddings.viewHorizontalPadding}}>
+            <FollowButton
+              endpoint="cast"
+              initialValue={castData.in_network}
+              uuid={castData.actor.slug}
+            />
+          </View>
         </View>
-      </View>
+      </DynamicHeader>
 
       <CustomTabBar
         routes={routes}

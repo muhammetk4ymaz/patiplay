@@ -19,6 +19,7 @@ import {faker} from '@faker-js/faker';
 import {ImageManager} from '../../../../constants/ImageManager';
 import {RootStackParamList} from '../../../../navigation/routes';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 type Props = {};
 
@@ -49,22 +50,7 @@ const CastFollowings = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: Dimensions.get('window').width,
-          backgroundColor: 'black',
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (

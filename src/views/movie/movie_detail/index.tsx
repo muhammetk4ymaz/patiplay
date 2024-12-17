@@ -9,6 +9,10 @@ import React from 'react';
 import {
   ActivityIndicator,
   Dimensions,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Platform,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -18,12 +22,20 @@ import CustomTextButton from '../../../components/shared/Buttons/CustomTextButto
 import CustomText from '../../../components/shared/CustomText';
 import {Theme} from '../../../utils/theme';
 
+import {useHeaderHeight} from '@react-navigation/elements';
+import {KeyboardAvoidingView} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {reactions} from '../../../components/shared/Comment/Comment';
 import DynamicTabBar from '../../../components/shared/DynamicTabBar/DynamicTabBar';
+import CustomTextInput from '../../../components/shared/Inputs/CustomTextInput';
 import {AddFavoriteInteractionButton} from '../../../components/shared/InteractionButtons/AddFavoriteInteractionButton';
+import {AddMyListIntereactionButton} from '../../../components/shared/InteractionButtons/AddMyListIntereactionButton';
 import {AddWatchListInteractionButton} from '../../../components/shared/InteractionButtons/AddWatchListInteractionButton';
 import {GetNotificationsInteractionButton} from '../../../components/shared/InteractionButtons/GetNotificationsInteractionButton';
+import {GiftInteractionButton} from '../../../components/shared/InteractionButtons/GiftInteractionButton';
 import {LikeInteractionButton} from '../../../components/shared/InteractionButtons/LikeInteractionButton';
+import {ShareInteractionButton} from '../../../components/shared/InteractionButtons/ShareInteractionButton';
+import ReactionToggleComponent from '../../../components/shared/ReactionToggleComponent';
 import {ImageManager} from '../../../constants/ImageManager';
 import networkService from '../../../helpers/networkService';
 import {RootStackParamList} from '../../../navigation/routes';
@@ -40,10 +52,18 @@ import TitleListsTab from './tabs/TitleListsTab';
 import TitleRecommendationsTab from './tabs/TitleRecommendationsTab';
 import TitleRelatedTab from './tabs/TitleRelatedTab';
 import TitleTrailersTab from './tabs/TitleTrailersTab';
-import ReactionToggleComponent from '../../../components/shared/ReactionToggleComponent';
-import {AddMyListIntereactionButton} from '../../../components/shared/InteractionButtons/AddMyListIntereactionButton';
-import {GiftInteractionButton} from '../../../components/shared/InteractionButtons/GiftInteractionButton';
-import {ShareInteractionButton} from '../../../components/shared/InteractionButtons/ShareInteractionButton';
+import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
+import {
+  fetchComments,
+  fetchRecommendations,
+  setCommentInputVisible,
+  setRecommendationInputVisible,
+} from '../../../redux/features/titledetail/titleDetailSlice';
+import {Avatar, Button, Input} from 'native-base';
+import IconIonicons from 'react-native-vector-icons/Ionicons';
+import {CommentInput} from '../../../components/shared/Comment/CommentInput';
+import {useFocusEffect} from '@react-navigation/native';
+import LoadingWidget from '../../../components/shared/LoadingWidget';
 
 type RouteParams = {
   MovieDetail: {
@@ -58,9 +78,18 @@ const MovieDetailView = () => {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const scrollViewRef = React.useRef<ScrollView>(null);
+  const insets = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
+  const dispatch = useAppDispatch();
+  const [scrollY, setScrollY] = React.useState(0);
 
-  const uuid = 'e1e2ed55-c705-45e5-a5f3-f0553a5bb910';
-  // const uuid = 'dd1d40cb-9011-4bdd-9318-4df0efb44cf1';
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const contentOffsetY = event.nativeEvent.contentOffset.y;
+    setScrollY(contentOffsetY); // Kaydırma pozisyonunu güncelle
+  };
+
+  // const uuid = 'e1e2ed55-c705-45e5-a5f3-f0553a5bb910';
+  const uuid = 'dd1d40cb-9011-4bdd-9318-4df0efb44cf1';
   React.useEffect(() => {
     console.log('Rendered MovieDetailView');
 
@@ -129,17 +158,29 @@ const MovieDetailView = () => {
     fetchTitleData();
   }, []);
 
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     // Sayfa odağa alındığında yapılacak işlemler
+  //     console.log('Sayfaya geçildi!');
+
+  //     // Sayfa odaktan çıktığında yapılacak işlemler (cleanup fonksiyonu)
+  //     return () => {
+  //       console.log('Sayfadan çıkıldı!');
+  //       dispatch(setCommentInputVisible(false));
+  //     };
+  //   }, []),
+  // );
+
+  React.useEffect(() => {
+    return () => {
+      console.log('Sayfadan çıkıldı!');
+      dispatch(setCommentInputVisible(false));
+      dispatch(setRecommendationInputVisible(false));
+    };
+  }, []);
+
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          backgroundColor: Theme.colors.background,
-        }}>
-        <ActivityIndicator size="large" color={Theme.colors.primary} />
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   if (error) {
@@ -157,33 +198,65 @@ const MovieDetailView = () => {
   }
 
   return (
-    <ScrollView
-      automaticallyAdjustKeyboardInsets={false}
-      ref={scrollViewRef}
-      style={{flex: 1, backgroundColor: 'black'}}>
-      <MovieSection movie={movie} />
-      <View style={{minHeight: Dimensions.get('window').height * 0.5}}>
-        <DynamicTabBar
-          components={[
-            <TitleEpisodesTab uuid={uuid} />,
-            <TitleClipsTab uuid={uuid} />,
-            <TitleTrailersTab uuid={uuid} />,
-            <TitleCommentsTab uuid={uuid} />,
-            <TitleDiscussionsTab uuid={uuid} />,
-            <TitleRecommendationsTab uuid={uuid} />,
-            <TitleListsTab uuid={uuid} />,
-            <TitleFansTab uuid={uuid} />,
-            <TitleCastTab uuid={uuid} />,
-            <TitleCrewTab crewData={movie.title.occupation} />,
-            <TitleLanguagesTab
-              dubLanguages={movie.title.dub_language}
-              subLanguages={movie.title.sub_language}
-            />,
-            <TitleRelatedTab uuid={uuid} />,
-          ]}
-        />
-      </View>
-    </ScrollView>
+    <View style={{flex: 1, backgroundColor: 'black'}}>
+      <ScrollView
+        ref={scrollViewRef}
+        onScroll={handleScroll}
+        contentContainerStyle={{
+          paddingBottom: insets.bottom,
+          flexGrow: 1,
+        }}>
+        <MovieSection movie={movie} />
+
+        <View
+          style={{
+            minHeight: Dimensions.get('window').height * 0.5,
+          }}>
+          <DynamicTabBar
+            tabChange={(index: number) => {
+              if (scrollViewRef.current) {
+                if (scrollY < 200) {
+                  scrollViewRef.current.scrollTo({
+                    y: 200,
+                    animated: true,
+                  });
+                }
+              }
+
+              if (index === 3) {
+                dispatch(setCommentInputVisible(true));
+                dispatch(setRecommendationInputVisible(false));
+              } else if (index === 5) {
+                dispatch(setRecommendationInputVisible(true));
+                dispatch(setCommentInputVisible(false));
+              } else {
+                dispatch(setCommentInputVisible(false));
+                dispatch(setRecommendationInputVisible(false));
+              }
+            }}
+            components={[
+              <TitleEpisodesTab uuid={uuid} />,
+              <TitleClipsTab uuid={uuid} />,
+              <TitleTrailersTab uuid={uuid} />,
+              <TitleCommentsTab uuid={uuid} />,
+              <TitleDiscussionsTab uuid={uuid} />,
+              <TitleRecommendationsTab uuid={uuid} />,
+              <TitleListsTab uuid={uuid} />,
+              <TitleFansTab uuid={uuid} />,
+              <TitleCastTab uuid={uuid} />,
+              <TitleCrewTab crewData={movie.title.occupation} />,
+              <TitleLanguagesTab
+                dubLanguages={movie.title.dub_language}
+                subLanguages={movie.title.sub_language}
+              />,
+              <TitleRelatedTab uuid={uuid} />,
+            ]}
+          />
+        </View>
+      </ScrollView>
+      <TitleCommentInput uuid={uuid} />
+      <TitleRecommendationsInput uuid={uuid} />
+    </View>
   );
 };
 
@@ -474,3 +547,45 @@ function formatDuration(seconds: number) {
 
   return formattedTime.trim();
 }
+
+type TitleCommentInputProps = {
+  uuid: string;
+};
+
+const TitleCommentInput = (props: TitleCommentInputProps) => {
+  const isCommentInputVisible = useAppSelector(
+    state => state.titleDetail.commentInputVisible,
+  );
+  const dispatch = useAppDispatch();
+
+  if (isCommentInputVisible) {
+    return (
+      <CommentInput
+        endpoint="title-comment"
+        uuid={props.uuid}
+        onSend={() => {
+          dispatch(fetchComments(props.uuid));
+        }}
+      />
+    );
+  }
+};
+
+const TitleRecommendationsInput = (props: TitleCommentInputProps) => {
+  const isRecommendationInputVisible = useAppSelector(
+    state => state.titleDetail.recommendationInputVisible,
+  );
+  const dispatch = useAppDispatch();
+
+  if (isRecommendationInputVisible) {
+    return (
+      <CommentInput
+        endpoint="title-recommendation"
+        uuid={props.uuid}
+        onSend={() => {
+          dispatch(fetchRecommendations(props.uuid));
+        }}
+      />
+    );
+  }
+};

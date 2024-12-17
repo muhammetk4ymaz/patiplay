@@ -30,12 +30,14 @@ import {FlagList} from '../../../../components/shared/FlagList';
 import networkService from '../../../../helpers/networkService';
 import axios from 'axios';
 import {CountryModel} from '../../../../models/patiplay/CountryModel';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 const {width, height} = Dimensions.get('window');
 
 const OnTvView = () => {
   const [onTvData, setOnTvData] = React.useState<any>([]);
   const [countryData, setCountryData] = React.useState<CountryModel[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [keepEnjoyingData, setKeepEnjoyingData] = React.useState<any[]>([]);
 
   const isAuthenticated = useAppSelector(
     (state: RootState) => state.auth.isAuthenticated,
@@ -50,6 +52,11 @@ const OnTvView = () => {
         console.log(response.data.title);
         setOnTvData(response.data.title);
         setCountryData(response.data.countries);
+        setKeepEnjoyingData(
+          (response.data.keep_enjoying as []).filter(
+            (item: any) => item.video.video_type === 'Episode',
+          ),
+        );
       } catch (error) {
         if (axios.isAxiosError(error)) {
           if (error.response) {
@@ -98,17 +105,7 @@ const OnTvView = () => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: 'black',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text style={{color: 'white'}}>Loading...</Text>
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   if (!isAuthenticated) {
@@ -148,7 +145,7 @@ const OnTvView = () => {
           />
         </DelayedComponent>
         <DelayedComponent delay={400}>
-          <KeepEnjoying />
+          <KeepEnjoying data={keepEnjoyingData} />
         </DelayedComponent>
         <DelayedComponent delay={500}>
           <UnscrollableTitleList
@@ -189,7 +186,11 @@ const OnTvView = () => {
 
 export default OnTvView;
 
-const KeepEnjoying = React.memo(() => {
+type KeepEnjoyingItemProps = {
+  data: any;
+};
+
+const KeepEnjoying = React.memo((props: KeepEnjoyingItemProps) => {
   return (
     <View style={{gap: 12}}>
       <View style={{paddingHorizontal: Theme.paddings.viewHorizontalPadding}}>
@@ -200,17 +201,19 @@ const KeepEnjoying = React.memo(() => {
         />
       </View>
       <FlatList
+        nestedScrollEnabled
         removeClippedSubviews={true}
-        data={nowPlayMovies.slice(4, 9)}
+        data={props.data}
+        initialNumToRender={3}
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={{
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-          gap: 12,
+          gap: Theme.spacing.columnGap,
         }}
         renderItem={({item, index}) => (
-          <KeepEnjoyingItem item={item} index={index} />
+          <KeepEnjoyingItem item={item} index={index} type="Episode" />
         )}
       />
     </View>

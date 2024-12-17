@@ -18,6 +18,7 @@ import ProgressIndicator from '../../../../components/shared/ProgressIndicator';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import RemoveFavoriteModal from './components/RemoveFavoriteModal';
 import FavoriteItemComponent from './components/FavoriteItemComponent';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 type Props = {};
 
@@ -36,21 +37,7 @@ const FavoriteTrailersView = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <View>

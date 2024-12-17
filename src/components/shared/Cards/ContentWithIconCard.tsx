@@ -1,8 +1,8 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Theme} from '../../../utils/theme';
 import CustomText from '../CustomText';
-import CustomTextButton from '../Buttons/CustomTextButton';
 
 type Props = {
   children: React.ReactNode;
@@ -23,25 +23,6 @@ const ContentWithIconCard = (props: Props) => {
         }}>
         {props.button}
       </View>
-      {/* <View>
-        <TouchableOpacity
-          style={{
-            alignSelf: 'center',
-            padding: 12,
-            bottom: -20,
-          }}
-          onPress={() => {
-            console.log('Learn More');
-          }}>
-          <CustomText
-            text="Terms | Privacy "
-            style={{
-              color: 'white',
-              fontSize: Theme.fontSizes.xs,
-            }}
-          />
-        </TouchableOpacity>
-      </View> */}
     </View>
   );
 };
@@ -52,21 +33,47 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: 'black',
     paddingHorizontal: 16,
-    borderRadius: 72,
+    borderRadius: 52,
     borderWidth: 2,
     borderColor: Theme.colors.primary,
     paddingBottom: 30,
-    paddingTop: 90,
+    paddingTop: 70,
   },
   icon: {
     position: 'absolute',
-    top: -52,
+    top: -40,
     alignSelf: 'center',
     backgroundColor: 'black',
-    padding: 8,
+    paddingHorizontal: 8,
   },
   button: {
     position: 'absolute',
     alignSelf: 'center',
   },
 });
+
+export const TermAndPrivacyText = () => {
+  const insets = useSafeAreaInsets();
+  return (
+    <View style={{bottom: insets.bottom}}>
+      <TouchableOpacity
+        style={{
+          alignSelf: 'center',
+          padding: 12,
+          // backgroundColor: 'red',
+        }}
+        onPress={() => {
+          console.log('Learn More');
+        }}>
+        <CustomText
+          text="Terms | Privacy "
+          style={{
+            color: 'white',
+            opacity: 0.7,
+            fontSize: Theme.fontSizes.xs,
+          }}
+        />
+      </TouchableOpacity>
+    </View>
+  );
+};

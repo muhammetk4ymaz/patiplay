@@ -4,6 +4,7 @@ import {ActivityIndicator, Dimensions, FlatList, View} from 'react-native';
 import {Theme} from '../../../../utils/theme';
 import FavoriteItemComponent from './components/FavoriteItemComponent';
 import RemoveFavoriteModal from './components/RemoveFavoriteModal';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const {width} = Dimensions.get('window');
 
@@ -16,21 +17,7 @@ const FavoriteTitlesView = (props: Props) => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <View style={{flex: 1}}>

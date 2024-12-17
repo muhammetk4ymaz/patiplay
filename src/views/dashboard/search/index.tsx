@@ -28,6 +28,7 @@ import upComingTitles from '../../../models/upcoming';
 import PreRegistrationView from '../../preregistration/PreRegistrationView';
 
 import {useHeaderHeight} from '@react-navigation/elements';
+import LoadingWidget from '../../../components/shared/LoadingWidget';
 
 type Props = {};
 
@@ -234,17 +235,7 @@ const SearchTitleList = () => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          paddingVertical: 12,
-          flex: 1,
-        }}>
-        <ActivityIndicator size="large" color={Theme.colors.primary} />
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (

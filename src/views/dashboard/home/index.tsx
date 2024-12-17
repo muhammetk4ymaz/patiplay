@@ -54,9 +54,9 @@ const HomeView = () => {
             titles={popularTitles.slice(4, 20)}
           />
         </DelayedComponent>
-        <DelayedComponent delay={400}>
+        {/* <DelayedComponent delay={400}>
           <KeepEnjoying />
-        </DelayedComponent>
+        </DelayedComponent> */}
         <DelayedComponent delay={500}>
           <UnscrollableTitleList
             title="Title-2"

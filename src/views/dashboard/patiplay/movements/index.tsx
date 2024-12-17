@@ -17,6 +17,7 @@ import PreRegistrationView from '../../../preregistration/PreRegistrationView';
 import networkService from '../../../../helpers/networkService';
 import axios from 'axios';
 import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 const {width} = Dimensions.get('window');
 
 const posterWidth = (width - 2 * Theme.paddings.viewHorizontalPadding - 12) / 4;
@@ -90,17 +91,7 @@ const MovementsView = () => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: 'black',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text style={{color: 'white'}}>Loading...</Text>
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   const headerHeight = useHeaderHeight();

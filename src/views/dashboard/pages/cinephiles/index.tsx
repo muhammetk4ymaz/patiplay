@@ -35,6 +35,7 @@ import ScrollableRow from '../../../../components/shared/ScrollableRow';
 import ListHeaderText from '../../../../components/shared/Texts/ListHeaderText';
 import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
 import FastImage from 'react-native-fast-image';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const SPACING = 8;
 
@@ -85,22 +86,7 @@ const CinephilesDetailView = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-          backgroundColor: 'black',
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (

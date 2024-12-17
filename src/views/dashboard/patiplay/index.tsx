@@ -19,6 +19,7 @@ const PatiplayView = () => {
   return (
     <FlatList
       data={menuItems}
+      scrollEnabled={false}
       contentContainerStyle={{
         paddingVertical: SPACE,
         paddingHorizontal: Theme.paddings.viewHorizontalPadding,
@@ -121,7 +122,7 @@ const menuItems: CardItemProps[] = [
     page: 'Premiere',
   },
   {
-    icon: 'movie-open',
+    icon: 'movie-open-outline',
     text: 'In Theaters',
     page: 'InTheaters',
   },
@@ -131,12 +132,12 @@ const menuItems: CardItemProps[] = [
     page: 'OnTv',
   },
   {
-    icon: 'movie',
+    icon: 'movie-outline',
     text: 'Shorts',
     page: 'Shorts',
   },
   {
-    icon: 'video',
+    icon: 'video-outline',
     text: 'Clips',
     page: 'Clips',
   },
@@ -146,7 +147,7 @@ const menuItems: CardItemProps[] = [
     page: 'Premiere',
   },
   {
-    icon: 'movie-filter',
+    icon: 'movie-filter-outline',
     text: 'Movements',
     page: 'Movements',
   },
@@ -161,17 +162,17 @@ const menuItems: CardItemProps[] = [
     page: 'Charts',
   },
   {
-    icon: 'account-group',
+    icon: 'account-group-outline',
     text: 'Communities',
     page: 'Communities',
   },
   {
-    icon: 'bullhorn',
+    icon: 'bullhorn-outline',
     text: 'Campaigns',
     page: 'Campaigns',
   },
   {
-    icon: 'calendar',
+    icon: 'calendar-outline',
     text: 'Calendar',
     page: 'Calendar',
   },

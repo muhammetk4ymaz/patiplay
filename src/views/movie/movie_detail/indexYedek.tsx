@@ -54,6 +54,7 @@ import TitleRecommendationsTab from './tabs/TitleRecommendationsTab';
 import TitleRelatedTab from './tabs/TitleRelatedTab';
 import TitleTrailersTab from './tabs/TitleTrailersTab';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import LoadingWidget from '../../../components/shared/LoadingWidget';
 
 type RouteParams = {
   MovieDetail: {
@@ -92,16 +93,7 @@ const MovieDetailView = () => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          backgroundColor: Theme.colors.background,
-        }}>
-        <ActivityIndicator size="large" color={Theme.colors.primary} />
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   if (error) {

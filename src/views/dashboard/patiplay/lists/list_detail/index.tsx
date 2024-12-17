@@ -32,6 +32,7 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import TopMovie from '../../../../../models/top_movie';
 import HorizontalPoster from '../../../../../components/shared/HorizontalPoster';
 import ProgressIndicator from '../../../../../components/shared/ProgressIndicator';
+import LoadingWidget from '../../../../../components/shared/LoadingWidget';
 
 const paddingHorizontal = Theme.paddings.viewHorizontalPadding;
 
@@ -388,13 +389,7 @@ const CommentModal = ({
       </View>
 
       {loading ? (
-        <View
-          style={{
-            justifyContent: 'center',
-            flex: 1,
-          }}>
-          <ActivityIndicator size="large" color={Theme.colors.primary} />
-        </View>
+        <LoadingWidget />
       ) : (
         <FlatList
           scrollEnabled={true}

@@ -15,6 +15,7 @@ import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
 import {Theme} from '../../../../utils/theme';
 import axios from 'axios';
 import networkService from '../../../../helpers/networkService';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 type Props = {
   uuid: string;
@@ -84,21 +85,7 @@ const TitleCastTab = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <FlatList

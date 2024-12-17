@@ -15,6 +15,7 @@ import TitleWithProgress from '../../../../components/shared/CustomComponents/Ti
 import {ImageManager} from '../../../../constants/ImageManager';
 import CustomText from '../../../../components/shared/CustomText';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const width = Dimensions.get('window').width;
 
@@ -88,21 +89,7 @@ const TitleTrailersTab = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <FlatList

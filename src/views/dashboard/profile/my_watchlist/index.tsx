@@ -19,6 +19,7 @@ import {Theme} from '../../../../utils/theme';
 import FastImage from 'react-native-fast-image';
 import TopMovie from '../../../../models/top_movie';
 import networkService from '../../../../helpers/networkService';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 type Props = {};
 
@@ -45,17 +46,7 @@ const MyWatchlistView = (props: Props) => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: 'black',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text style={{color: 'white'}}>Loading...</Text>
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (

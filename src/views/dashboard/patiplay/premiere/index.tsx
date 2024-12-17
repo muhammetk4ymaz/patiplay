@@ -14,6 +14,7 @@ import {RootState} from '../../../../redux/store';
 import PreRegistrationView from '../../../preregistration/PreRegistrationView';
 import {CountryModel} from '../../../../models/patiplay/CountryModel';
 import {DigitalGalaModel} from '../../../../models/patiplay/DigitalGalaModel';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 const {width, height} = Dimensions.get('window');
 
 type Props = {};
@@ -144,17 +145,7 @@ const PremiereView = (props: Props) => {
   }
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: 'black',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text style={{color: 'white'}}>Loading...</Text>
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (

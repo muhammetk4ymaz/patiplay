@@ -14,6 +14,7 @@ import {characterLimited} from '../../../profile/favorite_companies';
 import {Theme} from '../../../../../utils/theme';
 import {calculateGridItemWidth} from '../../../../../utils/calculateGridItemWidth';
 import CircularAvatar from '../../../../../components/shared/CircularAvatar';
+import {ChartRatingLabel} from '../../../../../components/shared/Labels/ChartRatingLabel';
 
 const {width} = Dimensions.get('window');
 
@@ -36,27 +37,7 @@ const ChartOtherItem = (props: Props) => {
       onPress={props.onPress}>
       <View>
         <CircularAvatar imagePath={props.avatarUrl} />
-        <View
-          style={{
-            position: 'absolute',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            borderRadius: 36,
-            alignSelf: 'flex-end',
-            padding: 4,
-            alignItems: 'center',
-            justifyContent: 'center',
-            top: -8,
-            right: -8,
-          }}>
-          <CustomText
-            text={props.rate.toString()}
-            weight="medium"
-            style={{
-              color: 'white',
-              fontSize: 18,
-            }}
-          />
-        </View>
+        <ChartRatingLabel rating={props.rate} />
       </View>
       <View>
         <CustomText

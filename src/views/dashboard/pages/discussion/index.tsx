@@ -14,6 +14,7 @@ import {Theme} from '../../../../utils/theme';
 import {ReplyInput} from '../../../../components/shared/ReplyModal';
 import Comment from '../../../../components/shared/Comment/Comment';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 type Props = {};
 
@@ -95,16 +96,7 @@ const DiscussionView = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          backgroundColor: Theme.colors.background,
-        }}>
-        <ActivityIndicator size="large" color={Theme.colors.primary} />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <View style={{flex: 1}}>

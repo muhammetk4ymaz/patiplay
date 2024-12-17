@@ -1,21 +1,22 @@
-import {Keyboard, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import axios from 'axios';
 import React, {useState} from 'react';
+import {Keyboard, StyleSheet, View} from 'react-native';
+import CustomText from '../../../components/shared/CustomText';
+import InputErrorText from '../../../components/shared/Texts/InputErrorText';
+import networkService from '../../../helpers/networkService';
+import {RootStackParamList} from '../../../navigation/routes';
 import {Theme} from '../../../utils/theme';
 import EmailTextField from './EmailTextField';
 import PasswordTextField from './PasswordTextField';
-import CustomText from '../../../components/shared/CustomText';
-import networkService from '../../../helpers/networkService';
-import {useNavigation} from '@react-navigation/native';
-import RegisterButton from './RegisterButton';
-import InputErrorText from '../../../components/shared/Texts/InputErrorText';
 
 type Props = {};
 
-const RegisterForm = (props: any) => {
-  const navigation = useNavigation();
-  const [email, setEmail] = useState('muhammetk4ymaz@gmail.com');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+const RegisterForm = React.forwardRef((props: Props, ref) => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [email, setEmail] = useState('muhammetk4ymaz@hotmail.com');
+  const [password, setPassword] = useState('1122332211Mk');
+  const [confirmPassword, setConfirmPassword] = useState('1122332211Mk');
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
   const [emailError, setEmailError] = useState('');
@@ -29,25 +30,34 @@ const RegisterForm = (props: any) => {
     specialChar: false,
   });
 
+  React.useImperativeHandle(ref, () => ({
+    handleSubmit,
+  }));
+
   const register = async () => {
     try {
-      const response = await networkService.post('register/', {
+      const response = await networkService.post('api/user/register/', {
         email: email,
         password: password,
       });
       console.log(response.data);
-      networkService.post('send-mail/', {
+      await networkService.post('api/user/send-mail/', {
         email: email,
         uuid: response.data.uuid,
+        html_type: 'verification',
       });
       const uuid = response.data.uuid;
-      navigation.navigate('Verification', {uuid});
     } catch (error) {
-      setFormError(error.response.data.error);
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.log(error.response.data);
+          setFormError(error.response.data.error);
+        }
+      }
     }
   };
 
-  const validateEmail = value => {
+  const validateEmail = (value: string) => {
     setEmail(value);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(value)) {
@@ -57,7 +67,7 @@ const RegisterForm = (props: any) => {
     }
   };
 
-  const validatePassword = value => {
+  const validatePassword = (value: string) => {
     setPassword(value);
 
     const length = value.length >= 8 && value.length <= 16;
@@ -69,11 +79,11 @@ const RegisterForm = (props: any) => {
     setValidations({length, uppercase, lowercase, number, specialChar});
   };
 
-  const validateConfirmPassword = value => {
+  const validateConfirmPassword = (value: string) => {
     setConfirmPassword(value);
     setConfirmPasswordTouched(true);
     if (password !== value) {
-      setFormError('Whoops! Looks like it’s not a match.Give it another shot!');
+      setFormError('Oops, something went wrong. Please try again.');
     } else {
       setFormError('');
     }
@@ -156,43 +166,16 @@ const RegisterForm = (props: any) => {
           {formError && <InputErrorText errorMessage={formError} />}
         </View>
       </View>
-      <RegisterButton handleSubmit={handleSubmit} />
-      <View
-        style={{
-          justifyContent: 'center',
-          flexDirection: 'row',
-          gap: 5,
-        }}>
-        <CustomText
-          text="Zaten bir hesabınız var mı?"
-          style={styles.alreadyHaveAccount}
-        />
-        <TouchableOpacity
-          onPress={() => {
-            props.setAuth('login');
-          }}>
-          <CustomText text="Şimdi Giriş Yap" style={styles.login} />
-        </TouchableOpacity>
-      </View>
     </View>
   );
-};
+});
 
 export default RegisterForm;
 
 const styles = StyleSheet.create({
   view: {
-    gap: 16,
-  },
-  login: {
-    color: Theme.colors.lilageode,
-    fontSize: Theme.fontSizes.sm,
-    fontWeight: 'bold',
-  },
-  alreadyHaveAccount: {
-    color: Theme.colors.white,
-    fontSize: Theme.fontSizes.sm,
-    fontWeight: '600',
+    gap: 12,
+    paddingBottom: 24,
   },
 });
 

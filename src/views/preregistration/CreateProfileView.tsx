@@ -1,71 +1,32 @@
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import React from 'react';
 import {
   Image,
+  KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
-import {Theme} from '../../utils/theme';
-import {AuthIcon, UserIcon} from '../../../assets/icons';
-import CustomText from '../../components/shared/CustomText';
+import {CalendarIcon, EmailIcon} from '../../../assets/icons';
 import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
-import {
-  NavigationProp,
-  StackActions,
-  useNavigation,
-} from '@react-navigation/native';
-import {RootStackParamList} from '../../navigation/routes';
+import ContentWithIconCard, {
+  TermAndPrivacyText,
+} from '../../components/shared/Cards/ContentWithIconCard';
+import CustomText from '../../components/shared/CustomText';
 import {ImageManager} from '../../constants/ImageManager';
-import ContentWithIconCard from '../../components/shared/Cards/ContentWithIconCard';
+import {RootStackParamList} from '../../navigation/routes';
+import {Theme} from '../../utils/theme';
 
-import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import {Dropdown} from 'react-native-element-dropdown';
-import DateTimeInputIos from '../../components/shared/ios/DateTimeInput';
 import CustomTextInput from '../../components/shared/Inputs/CustomTextInput';
+import DateTimeInputIos from '../../components/shared/ios/DateTimeInput';
 import InputErrorText from '../../components/shared/Texts/InputErrorText';
 import networkService from '../../helpers/networkService';
 
 const CreateProfileView = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  return (
-    <ScrollView
-      contentContainerStyle={[styles.view]}
-      keyboardShouldPersistTaps="handled">
-      <ContentWithIconCard
-        icon={
-          <Image
-            source={ImageManager.IMAGE_NAMES.PATILOGOWHIE}
-            style={{height: 100, width: 100}}
-          />
-        }>
-        <CreateProfileForm />
-      </ContentWithIconCard>
-    </ScrollView>
-  );
-};
-
-export default CreateProfileView;
-
-const styles = StyleSheet.create({
-  view: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-    backgroundColor: Theme.colors.background,
-    paddingVertical: 100,
-  },
-  informationText: {
-    fontSize: Theme.fontSizes.sm,
-    color: Theme.colors.white,
-    opacity: 0.5,
-  },
-});
-
-const CreateProfileForm = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [username, setUsername] = React.useState('');
   const [usernameError, setUsernameError] = React.useState('');
@@ -127,90 +88,160 @@ const CreateProfileForm = () => {
   };
 
   return (
-    <View style={{gap: 12}}>
-      <View style={{gap: 5}}>
-        <CustomTextInput
-          onChangeText={text => {
-            setUsername(text.toLowerCase());
-          }}
-          value={username}
-          placeholder={'Username'}
-          // error={usernameError ? true : false}
-          icon={<UserIcon size={Theme.iconSize} fiil={Theme.colors.white} />}
-        />
-        {usernameError && <InputErrorText errorMessage={usernameError} />}
-      </View>
-
-      <View style={{flexDirection: 'row', gap: 8}}>
-        <View style={{flex: 1}}>
-          {Platform.select({
-            ios: (
-              <DateTimeInputIos value={date} onChange={date => setDate(date)} />
-            ),
-            android: (
-              <TouchableOpacity
-                onPress={() => {
-                  DateTimePickerAndroid.open({
-                    value: date,
-                    onChange(event, selectedDate) {
-                      setDate(selectedDate || date);
-                    },
-                    maximumDate: new Date(
-                      Date.now() - 13 * 365 * 24 * 60 * 60 * 1000,
-                    ),
-                  });
+    <ScrollView
+      contentContainerStyle={[styles.view]}
+      keyboardShouldPersistTaps="handled">
+      <KeyboardAvoidingView
+        style={{flex: 1, justifyContent: 'center'}}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ContentWithIconCard
+          button={
+            <View style={{backgroundColor: 'black'}}>
+              <CustomTextButton
+                text={'Continue'}
+                onPress={handleContinue}
+                textColor="white"
+                paddingHorizontal={36}
+                backgroundColor="black"
+                border={true}
+              />
+            </View>
+          }
+          icon={
+            <Image
+              source={ImageManager.IMAGE_NAMES.PATIPLAYLOGO}
+              style={{height: 80, width: 80}}
+            />
+          }>
+          <View style={{gap: 24, paddingBottom: 24}}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <CustomText
+                text="Profile"
+                style={{
+                  fontSize: 20,
+                  color: 'white',
+                  textAlign: 'center',
+                  flex: 1,
                 }}
+              />
+              <View style={{position: 'absolute', right: 0}}>
+                <CustomText
+                  text="1/3"
+                  style={{
+                    fontSize: 14,
+                    color: 'white',
+                    textAlign: 'center',
+                    opacity: 0.7,
+                  }}
+                />
+              </View>
+            </View>
+            <View style={{gap: 12}}>
+              <View style={{gap: 5}}>
+                <CustomTextInput
+                  onChangeText={text => {
+                    setUsername(text.toLowerCase());
+                  }}
+                  value={username}
+                  placeholder={'Username'}
+                  // error={usernameError ? true : false}
+                  icon={
+                    <EmailIcon
+                      size={Theme.iconSize}
+                      fiil={Theme.colors.white}
+                    />
+                  }
+                />
+                {usernameError && (
+                  <InputErrorText errorMessage={usernameError} />
+                )}
+              </View>
+
+              <View style={{flexDirection: 'row', gap: 8}}>
+                <View style={{flex: 1}}>
+                  {Platform.select({
+                    ios: (
+                      <DateTimeInputIos
+                        value={date}
+                        onChange={date => setDate(date)}
+                      />
+                    ),
+                    android: (
+                      <TouchableOpacity
+                        onPress={() => {
+                          DateTimePickerAndroid.open({
+                            value: date,
+                            onChange(event, selectedDate) {
+                              setDate(selectedDate || date);
+                            },
+                            maximumDate: new Date(
+                              Date.now() - 13 * 365 * 24 * 60 * 60 * 1000,
+                            ),
+                          });
+                        }}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          borderWidth: 2,
+                          paddingHorizontal: 16,
+                          paddingVertical: 8,
+                          borderRadius: 30,
+                          borderColor: 'rgb(75, 85, 99)',
+                          gap: 16,
+                        }}>
+                        <CalendarIcon size={24} />
+                        <CustomText
+                          text={`${date.getFullYear()}/${(date.getMonth() + 1)
+                            .toString()
+                            .padStart(2, '0')}/${date
+                            .getDate()
+                            .toString()
+                            .padStart(2, '0')}`}
+                          style={{color: Theme.colors.white}}
+                        />
+                      </TouchableOpacity>
+                    ),
+                  })}
+                </View>
+                <View style={{flex: 1}}>
+                  <DropdownComponent
+                    onChanged={item => {
+                      gender = item.label;
+                    }}
+                  />
+                </View>
+              </View>
+              <View
                 style={{
                   flexDirection: 'row',
-                  alignItems: 'center',
-                  borderWidth: 2,
-                  paddingHorizontal: 12,
-                  paddingVertical: 4,
-                  borderRadius: 30,
-                  borderColor: Theme.colors.primary,
-                  gap: 10,
+                  justifyContent: 'center',
                 }}>
-                <IconMaterialIcons name="date-range" size={32} color="white" />
-                <CustomText
-                  text={`${date.getFullYear()}/${(date.getMonth() + 1)
-                    .toString()
-                    .padStart(2, '0')}/${date
-                    .getDate()
-                    .toString()
-                    .padStart(2, '0')}`}
-                  style={{color: Theme.colors.white}}
-                />
-              </TouchableOpacity>
-            ),
-          })}
-        </View>
-        <View style={{flex: 1}}>
-          <DropdownComponent
-            onChanged={item => {
-              gender = item.label;
-            }}
-          />
-        </View>
-      </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-        }}>
-        {genderError && <InputErrorText errorMessage={genderError} />}
-      </View>
-      <View style={{alignSelf: 'center', marginTop: 20}}>
-        <CustomTextButton
-          text={'Continue'}
-          onPress={handleContinue}
-          textColor="black"
-          paddingHorizontal={36}
-          paddingVertical={8}
-        />
-      </View>
-    </View>
+                {genderError && <InputErrorText errorMessage={genderError} />}
+              </View>
+            </View>
+          </View>
+        </ContentWithIconCard>
+      </KeyboardAvoidingView>
+      <TermAndPrivacyText />
+    </ScrollView>
   );
 };
+
+export default CreateProfileView;
+
+const styles = StyleSheet.create({
+  view: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+    backgroundColor: Theme.colors.background,
+  },
+  informationText: {
+    fontSize: Theme.fontSizes.sm,
+    color: Theme.colors.white,
+    opacity: 0.5,
+  },
+});
 
 const data = [
   {label: 'Male', value: '1'},
@@ -230,7 +261,10 @@ const DropdownComponent = (props: DropdownComponentProps) => {
 
   return (
     <Dropdown
-      style={stylesDropdown.dropdown}
+      style={[
+        stylesDropdown.dropdown,
+        {borderColor: isFocus ? Theme.colors.primary : 'rgb(75, 85, 99)'},
+      ]}
       placeholderStyle={stylesDropdown.placeholderStyle}
       selectedTextProps={{
         numberOfLines: 1,
@@ -275,7 +309,6 @@ const DropdownComponent = (props: DropdownComponentProps) => {
 const stylesDropdown = StyleSheet.create({
   dropdown: {
     paddingVertical: Platform.select({ios: 10, android: 10}),
-    borderColor: Theme.colors.primary,
     borderWidth: 2,
     borderRadius: 36,
     paddingHorizontal: 12,

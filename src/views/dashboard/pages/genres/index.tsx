@@ -21,6 +21,8 @@ import TvShowsTab from '../components/TvShowsTab';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import CommentsTab from '../components/CommentsTab';
 import DiscussionsTab from '../components/DiscussionsTab';
+import {DynamicHeader} from '../companies';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const {width, height} = Dimensions.get('window');
 
@@ -100,93 +102,82 @@ const GenresView = (props: Props) => {
   }, [currentGenreSlug]);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (
     <View style={{flex: 1, backgroundColor: 'black'}}>
-      <View
-        style={{
-          height: height * 0.35,
-          justifyContent: 'flex-end',
-          gap: 12,
-          zIndex: 0,
-          marginBottom: 12,
-        }}>
-        <View style={{flex: 1}}>
-          <Image
-            source={ImageManager.IMAGE_NAMES.DETAILBACKGROUND}
-            style={{
-              ...StyleSheet.absoluteFillObject,
-              width: width,
-              height: height * 0.3,
-            }}
-          />
-          <LinearGradient
-            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
-            style={{width: width, height: height * 0.3}}
-          />
-        </View>
-        <View>
-          <FlatList
-            data={genreData.genres}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-              gap: Theme.spacing.columnGap,
-            }}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                onPress={() => {
-                  setCurrentGenreSlug(item.slug);
-                }}
-                style={{
-                  height: 50,
-                  width: 50,
-                  borderRadius: 100,
-                  backgroundColor: '#F5A623',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <CustomText
-                  text={item.name[0].toUpperCase()}
-                  weight="bold"
-                  style={{
-                    color: Theme.colors.white,
-                    fontSize: Theme.fontSizes.md,
-                    textAlign: 'center',
+      <DynamicHeader componentHeight={height * 0.45}>
+        <View
+          style={{
+            height: height * 0.45,
+            justifyContent: 'flex-end',
+            gap: 12,
+            zIndex: 0,
+            marginBottom: 12,
+          }}>
+          <View style={{flex: 1}}>
+            <Image
+              source={ImageManager.IMAGE_NAMES.DETAILBACKGROUND}
+              style={{
+                ...StyleSheet.absoluteFillObject,
+                width: width,
+                height: height * 0.4,
+              }}
+            />
+            <LinearGradient
+              colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
+              style={{width: width, height: height * 0.4}}
+            />
+          </View>
+          <View>
+            <FlatList
+              data={genreData.genres}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+                gap: Theme.spacing.columnGap,
+              }}
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    setCurrentGenreSlug(item.slug);
                   }}
-                />
-              </TouchableOpacity>
-            )}
+                  style={{
+                    height: 50,
+                    width: 50,
+                    borderRadius: 100,
+                    backgroundColor: '#F5A623',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <CustomText
+                    text={item.name[0].toUpperCase()}
+                    weight="bold"
+                    style={{
+                      color: Theme.colors.white,
+                      fontSize: Theme.fontSizes.md,
+                      textAlign: 'center',
+                    }}
+                  />
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+          <Header counts={genreData.counts} genre={genreData.genre} />
+          <CustomText
+            text="Movie enthusiast with a passion for discovering hidden gems and the latest blockbusters"
+            style={{
+              color: 'white',
+              fontSize: 13,
+              paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+            }}
+            weight="light"
           />
         </View>
-        <Header counts={genreData.counts} genre={genreData.genre} />
-      </View>
-      <CustomText
-        text="Movie enthusiast with a passion for discovering hidden gems and the latest blockbusters"
-        style={{
-          color: 'white',
-          fontSize: 13,
-          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-        }}
-        weight="light"
-      />
+      </DynamicHeader>
+
       <CustomTabBar
         routes={routes}
         renderScene={route =>

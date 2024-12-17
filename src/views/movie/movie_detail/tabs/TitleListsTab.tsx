@@ -20,6 +20,7 @@ import {RootStackParamList} from '../../../../navigation/routes';
 import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
 import FastImage from 'react-native-fast-image';
 import {ImageManager} from '../../../../constants/ImageManager';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 type Props = {
   uuid: string;
@@ -87,21 +88,7 @@ const TitleListsTab = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <FlatList

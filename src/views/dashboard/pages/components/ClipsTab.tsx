@@ -11,6 +11,7 @@ import {Theme} from '../../../../utils/theme';
 import nowPlayMovies from '../../../../models/now_play_movies';
 import ClipItem from '../../../../components/shared/CustomComponents/ClipItem';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const width = Dimensions.get('window').width;
 
@@ -28,21 +29,7 @@ const ClipsTab = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <FlatList

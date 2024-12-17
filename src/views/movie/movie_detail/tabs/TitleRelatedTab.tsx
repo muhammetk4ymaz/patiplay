@@ -16,6 +16,7 @@ import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
 import FastImage from 'react-native-fast-image';
 import networkService from '../../../../helpers/networkService';
 import axios from 'axios';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 type Props = {
   uuid: string;
@@ -83,21 +84,7 @@ const TitleRelatedTab = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: Dimensions.get('window').width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <FlatList

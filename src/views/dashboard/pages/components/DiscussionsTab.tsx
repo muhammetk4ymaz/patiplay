@@ -10,6 +10,7 @@ import {
 import {Theme} from '../../../../utils/theme';
 import Discussion from '../../../../components/shared/Discussion/Discussion';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 const {width, height} = Dimensions.get('window');
 
 type Props = {
@@ -29,21 +30,7 @@ const DiscussionsTab = (props: Props) => {
   const insets = useSafeAreaInsets();
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <FlatList

@@ -12,15 +12,25 @@ const RegisterButton = (props: Props) => {
   return (
     <View style={styles.registerButton}>
       {loading ? (
-        <ActivityIndicator size="large" color={Theme.colors.primary} />
+        <View
+          style={{
+            backgroundColor: 'black',
+            paddingHorizontal: 24,
+          }}>
+          <ActivityIndicator size="large" color={Theme.colors.primary} />
+        </View>
       ) : (
-        <CustomTextButton
-          text="Kayıt Ol"
-          paddingHorizontal={48}
-          onPress={() => {
-            props.handleSubmit();
-          }}
-        />
+        <View style={{backgroundColor: 'black'}}>
+          <CustomTextButton
+            border={true}
+            text="Register"
+            backgroundColor="black"
+            paddingHorizontal={48}
+            onPress={async () => {
+              props.handleSubmit();
+            }}
+          />
+        </View>
       )}
     </View>
   );

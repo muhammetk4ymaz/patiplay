@@ -15,6 +15,7 @@ import IconIonicons from 'react-native-vector-icons/Ionicons';
 import TopMovie from '../../../../models/top_movie';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../../../../navigation/routes';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const width = Dimensions.get('window').width;
 
@@ -38,15 +39,7 @@ export const CLipsListView = React.memo(() => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          justifyContent: 'center',
-          flex: 1,
-        }}>
-        <ActivityIndicator size="large" color={Theme.colors.primary} />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <ScrollView

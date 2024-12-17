@@ -9,6 +9,7 @@ import VideoPlayer from '../../../components/shared/VideoPlayer/VideoPlayer';
 import {setInteractionSectionVisible} from '../../../redux/features/interaction/interactionSlice';
 import InteractionInputs from './components/InteractionInputs';
 import InteractionSection from './components/InteractionSection';
+import LoadingWidget from '../../../components/shared/LoadingWidget';
 
 const MovieView = () => {
   const [loading, setLoading] = useState(true);
@@ -25,17 +26,7 @@ const MovieView = () => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          backgroundColor: 'black',
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <ActivityIndicator size={'large'} color={Theme.colors.primary} />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <View style={{flex: 1}}>

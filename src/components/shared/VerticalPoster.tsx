@@ -11,7 +11,7 @@ import FastImage from 'react-native-fast-image';
 
 type Props = {
   width: DimensionValue;
-  posterPath: ImageSourcePropType;
+  posterPath: string;
   style?: ViewStyle;
 };
 

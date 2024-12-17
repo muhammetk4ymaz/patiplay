@@ -14,6 +14,7 @@ import {CommentInput} from '../../../../components/shared/Comment/CommentInput';
 import CustomText from '../../../../components/shared/CustomText';
 import {ReplyModal} from '../../../../components/shared/ReplyModal';
 import {Theme} from '../../../../utils/theme';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const width = Dimensions.get('window').width;
 
@@ -50,21 +51,7 @@ const CommentsTab = (props: Props) => {
   }, [props.refreshData]);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     if (props.data.length === 0) {
       return (
@@ -129,15 +116,15 @@ const CommentsTab = (props: Props) => {
               )}
             </View>
           )}></FlatList>
-
-        <CommentInput
-          endpoint={props.endpoint}
-          onSend={() => {
-            props.refreshData();
-          }}
-          uuid={props.uuid}
-        />
-
+        {props.commentInputVisible && (
+          <CommentInput
+            endpoint={props.endpoint}
+            onSend={() => {
+              props.refreshData();
+            }}
+            uuid={props.uuid}
+          />
+        )}
         <ReplyModal
           endpoint={props.endpoint}
           bottomSheetRef={bottomSheetModalRef}
@@ -152,5 +139,10 @@ const CommentsTab = (props: Props) => {
 };
 
 export default CommentsTab;
+
+CommentsTab.defaultProps = {
+  scrollEnabled: true,
+  commentInputVisible: true,
+};
 
 const styles = StyleSheet.create({});

@@ -1,42 +1,40 @@
+import {useHeaderHeight} from '@react-navigation/elements';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
+import axios from 'axios';
 import {Avatar} from 'native-base';
+import React from 'react';
+import {useTranslation} from 'react-i18next';
 import {
   Dimensions,
   Image,
   ImageSourcePropType,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import CustomText from '../../../components/shared/CustomText';
-import {Theme} from '../../../utils/theme';
-import MenuItemComponent, {MenuItem} from './components/MenuItem';
-import {useHeaderHeight} from '@react-navigation/elements';
-import React from 'react';
-import {useTranslation} from 'react-i18next';
-import DeviceInfo from 'react-native-device-info';
+import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
+import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import StatsCard from '../../../components/shared/Cards/StatsCard';
 import CircularAvatar from '../../../components/shared/CircularAvatar';
 import ViewingStats from '../../../components/shared/CustomComponents/ViewingStats';
 import CustomPage from '../../../components/shared/CustomPage';
+import CustomText from '../../../components/shared/CustomText';
+import LoadingWidget from '../../../components/shared/LoadingWidget';
 import NavigableListSection from '../../../components/shared/NavigableListSection ';
-import VerticalPoster from '../../../components/shared/VerticalPoster';
 import {ImageManager} from '../../../constants/ImageManager';
+import networkService from '../../../helpers/networkService';
 import '../../../i18n';
 import nowPlayMovies from '../../../models/now_play_movies';
 import TopMovie from '../../../models/top_movie';
 import {RootStackParamList} from '../../../navigation/routes';
 import {useAppSelector} from '../../../redux/hooks';
 import {RootState} from '../../../redux/store';
-import PreRegistrationView from '../../preregistration/PreRegistrationView';
-import WatchHistoryItem from './components/WatchHistoryItem';
-import networkService from '../../../helpers/networkService';
-import axios from 'axios';
-import FastImage from 'react-native-fast-image';
 import {calculateGridItemWidth} from '../../../utils/calculateGridItemWidth';
+import {Theme} from '../../../utils/theme';
+import PreRegistrationView from '../../preregistration/PreRegistrationView';
+import MenuItemComponent, {MenuItem} from './components/MenuItem';
+import WatchHistoryItem from './components/WatchHistoryItem';
 
 const {height, width} = Dimensions.get('window');
 
@@ -112,17 +110,7 @@ const ProfileView = () => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: 'black',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text style={{color: 'white'}}>Loading...</Text>
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (

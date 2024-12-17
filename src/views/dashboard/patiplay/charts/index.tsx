@@ -1,24 +1,16 @@
-import {MotiView} from 'moti';
-import {Dimensions, FlatList, Pressable, StyleSheet, View} from 'react-native';
-import {Theme} from '../../../../utils/theme';
-import Animated, {
-  FadeInDown,
-  FadeInUp,
-  LayoutAnimationConfig,
-} from 'react-native-reanimated';
-import {useState} from 'react';
+import {useHeaderHeight} from '@react-navigation/elements';
 import React from 'react';
-import TitleChartsView from './TitlesChartsView';
-import CompaniesChartsView from './CompaniesChartsView';
-import CastChartsView from './CastChartsView';
-import CrewChartsView from './CrewChartsView';
-import CinephilesChartsView from './CinephilesChartsView';
-import CustomTabBar from '../../../../components/CustomTabBar';
+import {View} from 'react-native';
 import {SceneMap} from 'react-native-tab-view';
+import CustomTabBar from '../../../../components/CustomTabBar';
 import {useAppSelector} from '../../../../redux/hooks';
 import {RootState} from '../../../../redux/store';
 import PreRegistrationView from '../../../preregistration/PreRegistrationView';
-import {useHeaderHeight} from '@react-navigation/elements';
+import CastChartsView from './CastChartsView';
+import CinephilesChartsView from './CinephilesChartsView';
+import CompaniesChartsView from './CompaniesChartsView';
+import CrewChartsView from './CrewChartsView';
+import TitleChartsView from './TitlesChartsView';
 
 type Props = {};
 

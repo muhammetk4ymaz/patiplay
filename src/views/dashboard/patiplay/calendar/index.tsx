@@ -13,6 +13,7 @@ import {FlagList} from '../../../../components/shared/FlagList';
 import DateLabel from '../../../../components/shared/Labels/DateLabel';
 import networkService from '../../../../helpers/networkService';
 import axios from 'axios';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 type Props = {};
 
@@ -87,17 +88,7 @@ const CalendarView = (props: Props) => {
   }
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: 'black',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text style={{color: 'white'}}>Loading...</Text>
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (

@@ -14,6 +14,7 @@ type Props = {
 };
 
 const TitleWithProgress = (props: Props) => {
+  console.log('Percentage', props.percentage);
   return (
     <View style={styles.card}>
       <FastImage
@@ -23,7 +24,8 @@ const TitleWithProgress = (props: Props) => {
           StyleSheet.absoluteFillObject,
           {
             borderRadius: Theme.titlePosterRadius,
-            backgroundColor: Theme.colors.primary,
+            backgroundColor: 'black',
+            // backgroundColor: Theme.colors.primary,
           },
         ]}
       />

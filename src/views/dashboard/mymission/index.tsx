@@ -24,6 +24,7 @@ import {useAppSelector} from '../../../redux/hooks';
 import {RootState} from '../../../redux/store';
 import PreRegistrationView from '../../preregistration/PreRegistrationView';
 import SectionTitleText from '../../../components/shared/Texts/SectionTitleText';
+import LoadingWidget from '../../../components/shared/LoadingWidget';
 
 type Props = {};
 
@@ -178,23 +179,7 @@ const MissionHistory = React.memo(
     }
 
     if (loading) {
-      return (
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingVertical: 12,
-            flex: 1,
-          }}>
-          <CustomText
-            text="Loading..."
-            style={{
-              color: 'white',
-              fontSize: Theme.fontSizes.xl,
-            }}
-          />
-        </View>
-      );
+      return <LoadingWidget />;
     }
 
     return (

@@ -23,6 +23,8 @@ import TvShowsTab from '../components/TvShowsTab';
 import networkService from '../../../../helpers/networkService';
 import axios from 'axios';
 import {RouteProp, useRoute} from '@react-navigation/native';
+import {DynamicHeader} from '../companies';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const {width, height} = Dimensions.get('window');
 
@@ -101,94 +103,82 @@ const ReleaseDatesView = (props: Props) => {
   }, [currentYear]);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-          backgroundColor: 'black',
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (
     <View style={{flex: 1, backgroundColor: 'black'}}>
-      <View
-        style={{
-          height: height * 0.35,
-          justifyContent: 'flex-end',
-          gap: 12,
-          zIndex: 0,
-          marginBottom: 12,
-        }}>
-        <View style={{flex: 1}}>
-          <Image
-            source={ImageManager.IMAGE_NAMES.DETAILBACKGROUND}
-            style={{
-              ...StyleSheet.absoluteFillObject,
-              width: width,
-              height: height * 0.3,
-            }}
-          />
-          <LinearGradient
-            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
-            style={{width: width, height: height * 0.3}}
-          />
-        </View>
-        <View>
-          <FlatList
-            data={releaseData.years}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-              gap: Theme.spacing.columnGap,
-            }}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                onPress={() => {
-                  setCurrentYear(item.toString());
-                }}
-                style={{
-                  height: 50,
-                  width: 50,
-                  borderRadius: 100,
-                  backgroundColor: Theme.colors.sambucus,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <CustomText
-                  text={item.toString()}
-                  weight="bold"
-                  style={{
-                    color: Theme.colors.white,
-                    fontSize: Theme.fontSizes.md,
-                    textAlign: 'center',
+      <DynamicHeader componentHeight={height * 0.45}>
+        <View
+          style={{
+            height: height * 0.45,
+            justifyContent: 'flex-end',
+            gap: 12,
+            zIndex: 0,
+            marginBottom: 12,
+          }}>
+          <View style={{flex: 1}}>
+            <Image
+              source={ImageManager.IMAGE_NAMES.DETAILBACKGROUND}
+              style={{
+                ...StyleSheet.absoluteFillObject,
+                width: width,
+                height: height * 0.4,
+              }}
+            />
+            <LinearGradient
+              colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
+              style={{width: width, height: height * 0.4}}
+            />
+          </View>
+          <View>
+            <FlatList
+              data={releaseData.years}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+                gap: Theme.spacing.columnGap,
+              }}
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    setCurrentYear(item.toString());
                   }}
-                />
-              </TouchableOpacity>
-            )}
+                  style={{
+                    height: 50,
+                    width: 50,
+                    borderRadius: 100,
+                    backgroundColor: Theme.colors.sambucus,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <CustomText
+                    text={item.toString()}
+                    weight="bold"
+                    style={{
+                      color: Theme.colors.white,
+                      fontSize: Theme.fontSizes.md,
+                      textAlign: 'center',
+                    }}
+                  />
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+          <Header count={releaseData.count} currentYear={currentYear} />
+          <CustomText
+            text="Movie enthusiast with a passion for discovering hidden gems and the latest blockbusters"
+            style={{
+              color: 'white',
+              fontSize: 13,
+              paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+            }}
+            weight="light"
           />
         </View>
-        <Header count={releaseData.count} currentYear={currentYear} />
-      </View>
-      <CustomText
-        text="Movie enthusiast with a passion for discovering hidden gems and the latest blockbusters"
-        style={{
-          color: 'white',
-          fontSize: 13,
-          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-        }}
-        weight="light"
-      />
+      </DynamicHeader>
+
       <CustomTabBar
         routes={routes}
         renderScene={route =>

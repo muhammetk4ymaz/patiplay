@@ -1,28 +1,31 @@
-import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import axios from 'axios';
 import React, {useState} from 'react';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import CustomTextButton from '../../../components/shared/Buttons/CustomTextButton';
 import networkService from '../../../helpers/networkService';
-import {Theme} from '../../../utils/theme';
-import axios from 'axios';
-import {useAppDispatch} from '../../../redux/hooks';
-import {loginAsync, setUser} from '../../../redux/features/auth/authSlice';
 import storageService, {StorageKeys} from '../../../helpers/storageService';
+import {RootStackParamList} from '../../../navigation/routes';
+import {loginAsync, setUser} from '../../../redux/features/auth/authSlice';
+import {useAppDispatch} from '../../../redux/hooks';
+import {Theme} from '../../../utils/theme';
 
 type Props = {
   handleSubmit: (onSubmit: any) => any;
-  onSubmitted: (message: {}) => void;
+  onSubmitted: (message: string) => void;
 };
 
 const LoginButton = (props: Props) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const onSubmit = async (data: any) => {
     setLoading(true);
 
     try {
       const response = await networkService.post('api/user/login/', data);
       console.log(response.data);
-      props.onSubmitted('Giriş başarılı.');
+      // navigation.navigate('AllReadyHaveAnAccount');
       storageService.setItem(StorageKeys.ACCESS_TOKEN, response.data.data);
       dispatch(setUser(response.data.user.email, response.data.user.uuid));
       dispatch(loginAsync());
@@ -35,56 +38,62 @@ const LoginButton = (props: Props) => {
           switch (error.response.status) {
             case 400:
               props.onSubmitted(
-                'Hatalı istek. Lütfen bilgilerinizi kontrol edin.',
+                'The login failed, please check your information and try again.',
               );
               break;
             case 401:
               props.onSubmitted(
-                'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+                'Unauthorized entry. Please check your email and password.',
               );
               break;
             case 500:
-              props.onSubmitted(
-                'Sunucu hatası. Lütfen daha sonra tekrar deneyin.',
-              );
+              props.onSubmitted('Server error. Please try again later.');
               break;
             default:
               props.onSubmitted(
-                'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+                'An unexpected error occurred. Please try again.',
               );
           }
         } else if (error.request) {
           console.log(error.request);
           props.onSubmitted(
-            'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+            'The server cannot be reached. Please check your internet connection.',
           );
         } else {
           console.log('Error', error.message);
-          props.onSubmitted('Bir hata oluştu. Lütfen tekrar deneyin.');
+          props.onSubmitted('An error has occurred. Please try again.');
         }
       } else {
         console.log('Error', error);
-        props.onSubmitted(
-          'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
-        );
+        props.onSubmitted('An unexpected error occurred. Please try again.');
       }
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <View style={styles.loginButton}>
       {loading ? (
-        <ActivityIndicator size="large" color={Theme.colors.primary} />
+        <View
+          style={{
+            backgroundColor: 'black',
+            paddingHorizontal: 24,
+          }}>
+          <ActivityIndicator size="large" color={Theme.colors.primary} />
+        </View>
       ) : (
-        <CustomTextButton
-          text="Login"
-          paddingHorizontal={48}
-          backgroundColor="black"
-          onPress={() => {
-            props.handleSubmit(onSubmit)();
-          }}
-        />
+        <View style={{backgroundColor: 'black'}}>
+          <CustomTextButton
+            border={true}
+            text="Sign In"
+            paddingHorizontal={36}
+            backgroundColor="black"
+            onPress={() => {
+              props.handleSubmit(onSubmit)();
+            }}
+          />
+        </View>
       )}
     </View>
   );
@@ -96,7 +105,5 @@ const styles = StyleSheet.create({
   loginButton: {
     justifyContent: 'center',
     flexDirection: 'row',
-    marginTop: 12,
-    marginBottom: 6,
   },
 });

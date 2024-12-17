@@ -1,21 +1,20 @@
 import * as React from 'react';
 import {
-  ScrollView,
+  Keyboard,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
   useWindowDimensions,
 } from 'react-native';
 import {
-  TabView,
-  SceneMap,
-  TabBar,
-  SceneRendererProps,
   NavigationState,
+  SceneRendererProps,
+  TabBar,
+  TabView,
 } from 'react-native-tab-view';
-import CustomText from './shared/CustomText';
 import {Theme} from '../utils/theme';
+import CustomText from './shared/CustomText';
+import {useHeaderHeight} from '@react-navigation/elements';
 
 type CustomTabBarProps = {
   renderScene: (
@@ -28,6 +27,7 @@ type CustomTabBarProps = {
   ) => React.ReactNode;
   routes: {key: string; title: string}[];
   swipeEnabled?: boolean;
+  headerVisible?: boolean;
 };
 
 export default function CustomTabBar(props: CustomTabBarProps) {
@@ -127,9 +127,16 @@ export default function CustomTabBar(props: CustomTabBarProps) {
       onIndexChange={setIndex}
       initialLayout={{width: layout.width}}
       renderTabBar={renderTabBar}
+      style={{
+        backgroundColor: Theme.colors.background,
+      }}
     />
   );
 }
+
+CustomTabBar.defaultProps = {
+  headerVisible: false,
+};
 
 const styles = StyleSheet.create({
   tabBar: {

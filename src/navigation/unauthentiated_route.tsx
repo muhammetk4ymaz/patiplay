@@ -1,10 +1,13 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
-import {StyleSheet} from 'react-native';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Theme} from '../utils/theme';
 import '../i18n';
 import {RootStackParamList, Routes} from './routes';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {ImageManager} from '../constants/ImageManager';
 
 type Props = {};
 
@@ -36,12 +39,84 @@ const UnauthenticatedRoute = (props: Props) => {
         }}
       />
       <Stack.Screen
+        name="SignUpWebView"
+        component={Routes.SIGNUPWEBVİEW}
+        options={{
+          animation: 'fade',
+          headerShown: true,
+          headerTitle: () => (
+            <Image
+              source={ImageManager.IMAGE_NAMES.PATIHORIZONTALLOGO}
+              resizeMode="contain"
+              style={{height: 50, width: 75}}
+            />
+          ),
+
+          headerBackTitleVisible: false,
+          headerTintColor: Theme.colors.white,
+          headerBackVisible: false,
+          headerStyle: {
+            backgroundColor: 'black',
+          },
+
+          headerRight(props) {
+            const navigation =
+              useNavigation<NavigationProp<RootStackParamList>>();
+            return (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                  style={{padding: 8}}>
+                  <IconMaterialCommunityIcons
+                    name="close"
+                    size={24}
+                    color={Theme.colors.white}
+                  />
+                </TouchableOpacity>
+              </View>
+            );
+          },
+        }}
+      />
+      <Stack.Screen
         name="Verification"
         component={Routes.VERIFICATION}
         options={{
+          animation: 'fade',
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="ForgotPassword"
+        component={Routes.FORGOTPASSWORD}
+        options={{
+          animation: 'fade',
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="NewPassword"
+        component={Routes.NEWPASSWORD}
+        options={{
+          animation: 'fade',
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="PasswordChangeSucces"
+        component={Routes.PASSWORDCHANGESUCCES}
+        options={{
+          animation: 'fade',
+          headerShown: false,
+        }}
+      />
+
       <Stack.Screen
         name="Dashboard"
         component={Routes.DASBOARD}
@@ -60,14 +135,6 @@ const UnauthenticatedRoute = (props: Props) => {
       <Stack.Screen
         name="DontHaveAnAccount"
         component={Routes.DONTHAVEANDACCOUNT}
-        options={{
-          headerShown: false,
-          animation: 'fade',
-        }}
-      />
-      <Stack.Screen
-        name="PreVerification"
-        component={Routes.PREVERIFICATION}
         options={{
           headerShown: false,
           animation: 'fade',
@@ -105,13 +172,22 @@ const UnauthenticatedRoute = (props: Props) => {
           animation: 'fade',
         }}
       />
+      <Stack.Screen
+        name="WelcomePati"
+        component={Routes.WELCOMEPATI}
+        options={{
+          headerShown: false,
+          animation: 'fade',
+        }}
+      />
 
       <Stack.Screen
         name="Notifications"
         component={Routes.NOTIFICATIONS}
         options={{
           animation: 'fade',
-          headerTitle: t('notifications:title'),
+          // headerTitle: t('notifications:title'),
+          headerTitle: 'Notifications',
           headerStyle: {
             backgroundColor: 'transparent',
           },
@@ -125,7 +201,8 @@ const UnauthenticatedRoute = (props: Props) => {
         component={Routes.MESSAGES}
         options={{
           animation: 'fade',
-          headerTitle: t('profile:messages.title'),
+          // headerTitle: t('profile:messages.title'),
+          headerTitle: 'Messages',
           headerStyle: {
             backgroundColor: 'transparent',
           },

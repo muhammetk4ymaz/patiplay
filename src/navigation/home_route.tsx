@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
@@ -9,6 +9,8 @@ import HomeView from '../views/dashboard/home';
 import {RootStackParamList} from './routes';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import HeaderRight from '../components/shared/HeaderRight';
+import HeaderLeftTitle from '../components/shared/ios/HeaderLeftTitle';
+import {useAppSelector} from '../redux/hooks';
 
 type Props = {};
 
@@ -18,6 +20,7 @@ const iconPadding: number = 8;
 
 const HomeRoute = (props: Props) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
   return (
     <Stack.Navigator
       initialRouteName="Home"
@@ -39,7 +42,11 @@ const HomeRoute = (props: Props) => {
         options={{
           headerTitleAlign: 'left',
           headerBackTitleVisible: false,
-          headerTitle: '',
+          headerTitle: !isAuthenticated
+            ? Platform.select({ios: '', android: 'Home'})
+            : '',
+          headerLeft: () =>
+            !isAuthenticated ? <HeaderLeftTitle title="Home" /> : null,
           headerRight(props) {
             return <HeaderRight />;
           },

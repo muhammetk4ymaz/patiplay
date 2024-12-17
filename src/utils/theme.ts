@@ -6,7 +6,7 @@ export const Theme = {
     error: '#FF0000',
     white: '#FFFFFF',
     lightgray: '#F3F4F6',
-    lightGreen: '#49FF17',
+    lightGreen: '#90eb39',
     lilageode: '#B388FF',
     direWolf: '#282828',
     gray: '#D1D5DB',

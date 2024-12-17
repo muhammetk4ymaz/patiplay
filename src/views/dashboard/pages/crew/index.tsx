@@ -23,6 +23,8 @@ import FansTab from '../components/FansTab';
 import TitlesTab from '../components/TitlesTab';
 import {LikeInteractionButton} from '../../../../components/shared/InteractionButtons/LikeInteractionButton';
 import {AddFavoriteInteractionButton} from '../../../../components/shared/InteractionButtons/AddFavoriteInteractionButton';
+import {DynamicHeader} from '../companies';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const {width, height} = Dimensions.get('window');
 
@@ -102,63 +104,51 @@ const CrewDetailView = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (
     <View style={{flex: 1, backgroundColor: 'black'}}>
-      <View
-        style={{
-          height: height * 0.45,
-          justifyContent: 'flex-end',
-          gap: 12,
-          zIndex: 0,
-        }}>
-        <View style={{flex: 1}}>
-          <Image
-            source={ImageManager.IMAGE_NAMES.DETAILBACKGROUND}
-            style={{
-              ...StyleSheet.absoluteFillObject,
-              width: width,
-              height: height * 0.45,
-            }}
-          />
-          <LinearGradient
-            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
-            style={{width: width, height: height * 0.45}}
-          />
-        </View>
-
-        <Header
-          name={crewData.crew.name}
-          titlesLength={crewData.titles.len}
-          clipsLength={crewData.clips.len}
-          avatarUrl={crewData.crew.image}
-          button_active={crewData.button_active}
-          uuid={crewData.crew.slug}
-        />
-
-        <StatsSection />
-
+      <DynamicHeader componentHeight={height * 0.45}>
         <View
           style={{
-            paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-          }}></View>
-      </View>
+            height: height * 0.45,
+            justifyContent: 'flex-end',
+            gap: 12,
+            zIndex: 0,
+          }}>
+          <View style={{flex: 1}}>
+            <Image
+              source={ImageManager.IMAGE_NAMES.DETAILBACKGROUND}
+              style={{
+                ...StyleSheet.absoluteFillObject,
+                width: width,
+                height: height * 0.4,
+              }}
+            />
+            <LinearGradient
+              colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
+              style={{width: width, height: height * 0.4}}
+            />
+          </View>
+
+          <Header
+            name={crewData.crew.name}
+            titlesLength={crewData.titles.len}
+            clipsLength={crewData.clips.len}
+            avatarUrl={crewData.crew.image}
+            button_active={crewData.button_active}
+            uuid={crewData.crew.slug}
+          />
+
+          <StatsSection />
+
+          <View
+            style={{
+              paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+            }}></View>
+        </View>
+      </DynamicHeader>
 
       <CustomTabBar
         routes={routes}

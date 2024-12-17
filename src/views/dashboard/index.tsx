@@ -1,23 +1,28 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Avatar} from 'native-base';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
 import {Image, Platform, StyleSheet, View} from 'react-native';
-import {HomeIcon, SearchFilledIcon, SearchIcon} from '../../../assets/icons';
-import HeaderLeftTitle from '../../components/shared/ios/HeaderLeftTitle';
-import {ImageManager} from '../../constants/ImageManager';
-import {Theme} from '../../utils/theme';
-import '../../i18n';
-import {Routes} from '../../navigation/routes';
+import IconIonicons from 'react-native-vector-icons/Ionicons';
+import {useSelector} from 'react-redux';
+import {
+  HomeIcon,
+  SearchFilledIcon,
+  SearchIcon,
+  TrophyIcon,
+} from '../../../assets/icons';
+import ShareButton from '../../components/shared/Buttons/ShareButton';
 import {
   FilterBotton,
   LanguageButton,
   MessageButton,
   NotificationButton,
 } from '../../components/shared/HeaderRight';
-import {useSelector} from 'react-redux';
+import HeaderLeftTitle from '../../components/shared/ios/HeaderLeftTitle';
+import {ImageManager} from '../../constants/ImageManager';
+import '../../i18n';
+import {Routes} from '../../navigation/routes';
 import {RootState} from '../../redux/store';
-import ShareButton from '../../components/shared/Buttons/ShareButton';
+import {Theme} from '../../utils/theme';
 
 type Props = {};
 
@@ -138,6 +143,13 @@ const DashboardView = (props: Props) => {
         component={Routes.MISSION}
         options={{
           tabBarLabel: 'Mission',
+          tabBarIcon: ({focused}) => {
+            return focused ? (
+              <TrophyIcon size={tabIconSize} fill={activeColor} />
+            ) : (
+              <TrophyIcon size={tabIconSize} />
+            );
+          },
         }}
       />
 
@@ -147,14 +159,28 @@ const DashboardView = (props: Props) => {
         options={{
           tabBarLabel: 'Profile',
           tabBarIcon: ({focused}) => {
-            return (
-              <Avatar
-                borderWidth={1.5}
-                borderColor={focused ? activeColor : 'transparent'}
-                size={'sm'}
-                source={ImageManager.IMAGE_NAMES.MANAVATAR}
+            return focused ? (
+              <IconIonicons
+                name="person-circle"
+                size={tabIconSize + 2}
+                color={activeColor}
+              />
+            ) : (
+              <IconIonicons
+                name="person-circle-outline"
+                size={tabIconSize + 2}
+                color={Theme.colors.white}
               />
             );
+
+            // return (
+            //   <Avatar
+            //     borderWidth={1.5}
+            //     borderColor={focused ? activeColor : 'transparent'}
+            //     size={'sm'}
+            //     source={ImageManager.IMAGE_NAMES.MANAVATAR}
+            //   />
+            // );
           },
         }}
       />

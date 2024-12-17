@@ -1,30 +1,24 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-import {
-  Platform,
-  Settings,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 
 import {Theme} from '../utils/theme';
 
-import MyNetworkView from '../views/dashboard/profile/my_network';
-import {RootStackParamList, Routes} from './routes';
-import ProfileView from '../views/dashboard/profile';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {useAppSelector} from '../redux/hooks';
+import ProfileView from '../views/dashboard/profile';
+import MyNetworkView from '../views/dashboard/profile/my_network';
+import {RootStackParamList, Routes} from './routes';
 
-import HeaderLeftTitle from '../components/shared/ios/HeaderLeftTitle';
+import ShareButton from '../components/shared/Buttons/ShareButton';
 import {
   LanguageButton,
   MessageButton,
   NotificationButton,
   SettingsButton,
 } from '../components/shared/HeaderRight';
-import ShareButton from '../components/shared/Buttons/ShareButton';
+import HeaderLeftTitle from '../components/shared/ios/HeaderLeftTitle';
 
 type Props = {};
 

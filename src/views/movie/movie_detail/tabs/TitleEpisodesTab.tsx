@@ -19,6 +19,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import networkService from '../../../../helpers/networkService';
 import axios from 'axios';
 import CustomText from '../../../../components/shared/CustomText';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 type Props = {
   uuid: string;
@@ -93,22 +94,7 @@ const TitleEpisodesTab = (props: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-          paddingTop: Theme.spacing.columnGap,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (

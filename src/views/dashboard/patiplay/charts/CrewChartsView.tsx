@@ -7,6 +7,7 @@ import {RootStackParamList} from '../../../../navigation/routes';
 import {Theme} from '../../../../utils/theme';
 import ChartOtherItem from './components/ChartOtherItem';
 import {ImageManager} from '../../../../constants/ImageManager';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const {width} = Dimensions.get('window');
 
@@ -73,21 +74,7 @@ const CrewChartsView = React.memo(() => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <FlatList

@@ -335,7 +335,8 @@ const AuthenticatedRoute = (props: Props) => {
           component={Routes.NOTIFICATIONS}
           options={{
             animation: 'fade',
-            headerTitle: t('notifications:title'),
+            // headerTitle: t('notifications:title'),
+            headerTitle: 'Notifications',
             headerStyle: {
               backgroundColor: 'black',
             },
@@ -349,7 +350,8 @@ const AuthenticatedRoute = (props: Props) => {
           component={Routes.MESSAGES}
           options={{
             animation: 'fade',
-            headerTitle: t('profile:messages.title'),
+            // headerTitle: t('profile:messages.title'),
+            headerTitle: 'Messages',
             headerStyle: {
               backgroundColor: 'black',
             },

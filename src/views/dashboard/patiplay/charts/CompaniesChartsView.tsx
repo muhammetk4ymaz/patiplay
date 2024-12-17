@@ -10,6 +10,7 @@ import {RootStackParamList} from '../../../../navigation/routes';
 import networkService from '../../../../helpers/networkService';
 import axios from 'axios';
 import {ImageManager} from '../../../../constants/ImageManager';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const {width} = Dimensions.get('window');
 
@@ -76,21 +77,7 @@ const CompaniesChartsView = React.memo(() => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <FlatList

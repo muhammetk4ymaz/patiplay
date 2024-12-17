@@ -14,6 +14,7 @@ import PreRegistrationView from '../../../preregistration/PreRegistrationView';
 import CarouselItemForCampaigns from './CarouselItemForCampaigns';
 import {Theme} from '../../../../utils/theme';
 import CampaignsTitleCard from './CampaignsTitleCard';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 type Props = {};
 
@@ -89,17 +90,7 @@ const CampaignsView = (props: Props) => {
   }
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: 'black',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text style={{color: 'white'}}>Loading...</Text>
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (

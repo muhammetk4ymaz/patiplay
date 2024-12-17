@@ -47,15 +47,19 @@ import MovieDetailView from '../views/movie/movie_detail';
 import MovieView from '../views/movie/movie_player';
 import NotificationsView from '../views/notifications';
 import AlmostHereView from '../views/preregistration/AlmostHereView';
-import AlmostHere from '../views/preregistration/AlmostHereView';
 import AlreadyHaveAnAccountView from '../views/preregistration/AlreadyHaveAnAccountView';
 import CreateProfileView from '../views/preregistration/CreateProfileView';
 import DontHaveAnAccountView from '../views/preregistration/DontHaveAnAccountView';
+import ForgotPasswordView from '../views/preregistration/ForgotPasswordView';
+import NewPasswordView from '../views/preregistration/NewPasswordView';
 import PackagesView from '../views/preregistration/PackagesView';
+import PasswordChangeSuccesView from '../views/preregistration/PasswordChangeSuccesView';
 import PaymentView from '../views/preregistration/PaymentView';
-import PreRegistrationView from '../views/preregistration/PreRegistrationView';
-import PreVerificationView from '../views/preregistration/PreVerificationView';
-import VerificationView from '../views/verification';
+import SignUpWebView from '../views/preregistration/SignUpWebView';
+import VerificationView from '../views/preregistration/VerificationView';
+import WelcomePatiView from '../views/preregistration/WelcomePatiView';
+import UpdateView from '../views/update';
+
 import HomeRoute from './home_route';
 import MissionRoute from './mymission_route';
 import PatiPlayRoute from './patiplay_route';
@@ -63,6 +67,7 @@ import ProfileRoute from './profile_route';
 
 export const Routes = {
   AUTH: AuthView,
+  UPDATE: UpdateView,
   VERIFICATION: VerificationView,
   DASBOARD: DashboardView,
   HOME: HomeRoute,
@@ -117,15 +122,20 @@ export const Routes = {
   EDITFOLLOWINGS: EditFollowingsView,
   ALLREADYHAVEANACCOUNT: AlreadyHaveAnAccountView,
   DONTHAVEANDACCOUNT: DontHaveAnAccountView,
-  PREVERIFICATION: PreVerificationView,
   ALMOSTHERE: AlmostHereView,
   CREATEPROFILE: CreateProfileView,
   PACKAGES: PackagesView,
   PAYMENT: PaymentView,
+  WELCOMEPATI: WelcomePatiView,
+  FORGOTPASSWORD: ForgotPasswordView,
+  NEWPASSWORD: NewPasswordView,
+  PASSWORDCHANGESUCCES: PasswordChangeSuccesView,
+  SIGNUPWEBVİEW: SignUpWebView,
 };
 
 export type RootStackParamList = {
   Auth: undefined;
+  Update: undefined;
   Verification: undefined;
   Dashboard: undefined;
   Home: undefined;
@@ -182,11 +192,15 @@ export type RootStackParamList = {
   Genres: {slug: string};
   AllReadyHaveAnAccount: undefined;
   DontHaveAnAccount: undefined;
-  PreVerification: {uuid: string};
   AlmostHere: undefined;
   CreateProfile: undefined;
   Packages: undefined;
   Payment: undefined;
+  WelcomePati: undefined;
+  ForgotPassword: undefined;
+  NewPassword: {uuid: string};
+  PasswordChangeSucces: undefined;
+  SignUpWebView: undefined;
 
   // other routes...
 };

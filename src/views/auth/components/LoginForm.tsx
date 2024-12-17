@@ -1,117 +1,81 @@
-import {Pressable, StyleSheet, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
-import {Theme} from '../../../utils/theme';
+import React from 'react';
+import {Control, Controller, FieldErrors} from 'react-hook-form';
+import {Keyboard, StyleSheet, TextInput, View} from 'react-native';
+import InputErrorText from '../../../components/shared/Texts/InputErrorText';
 import EmailTextField from './EmailTextField';
 import PasswordTextField from './PasswordTextField';
-import CheckBox from '@react-native-community/checkbox';
-import CustomText from '../../../components/shared/CustomText';
-import {Controller, useForm} from 'react-hook-form';
-import LoginButton from './LoginButton';
-import InputErrorText from '../../../components/shared/Texts/InputErrorText';
 
-const LoginForm = (props: any) => {
-  const [toggleCheckBox, setToggleCheckBox] = useState(false);
+interface LoginFormData {
+  email: string;
+  password: string;
+}
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: {errors},
-  } = useForm({
-    defaultValues: {
-      email: 'emre.gungor@eytsoft.com',
-      password: 'Emre.1234',
-    },
-  });
+interface LoginFormProps {
+  errors: FieldErrors;
+  control: Control<LoginFormData>;
+}
+
+const LoginForm = (props: LoginFormProps) => {
+  const passwordTextInputRef = React.useRef<TextInput>(null);
 
   return (
-    <View style={styles.view}>
-      <View>
-        <Controller
-          control={control}
-          name="email"
-          rules={{
-            required: 'Email is required',
-            pattern: {
-              value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-              message: 'Invalid email address',
-            },
-          }}
-          render={({field: {onChange, value}}) => (
-            <EmailTextField
-              onChangeText={onChange}
-              value={value}
-              error={errors.email as boolean}
-            />
-          )}
-        />
-        {errors.email && (
-          <InputErrorText errorMessage={errors.email.message as string} />
-        )}
-      </View>
-      <View>
-        <Controller
-          control={control}
-          name="password"
-          rules={{
-            required: 'Password is required.',
-          }}
-          render={({field: {onChange, value}}) => (
-            <PasswordTextField
-              onChangeText={onChange}
-              placeholder="Password"
-              error={errors.password as boolean}
-              value={value}
-            />
-          )}
-        />
-        {errors.password && (
-          <InputErrorText errorMessage={errors.password.message as string} />
-        )}
-      </View>
-      <View style={styles.loginOptions}>
-        <Pressable
-          onPress={() => {
-            setToggleCheckBox(!toggleCheckBox);
-          }}
-          style={{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
-          <CheckBox
-            disabled={false}
-            value={toggleCheckBox}
-            tintColors={{
-              true: Theme.colors.primary,
-              false: Theme.colors.white,
+    <View style={{gap: 24}}>
+      <View style={styles.view}>
+        <View>
+          <Controller
+            control={props.control}
+            name="email"
+            rules={{
+              required: 'Email is required',
+              pattern: {
+                value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                message: 'Invalid email address',
+              },
             }}
-            onValueChange={newValue => setToggleCheckBox(newValue)}
+            render={({field: {onChange, value}}) => (
+              <EmailTextField
+                onChangeText={onChange}
+                value={value}
+                error={props.errors.email !== undefined}
+                onSubmitEditing={() => {
+                  passwordTextInputRef.current?.focus();
+                }}
+              />
+            )}
           />
-          <CustomText text="Beni Hatırla" style={styles.dontHaveAccount} />
-        </Pressable>
-        <TouchableOpacity>
-          <CustomText
-            text="Şifrenizi mi unuttunuz?"
-            style={styles.forgotPassword}
+          {props.errors.email && (
+            <InputErrorText
+              errorMessage={props.errors.email.message as string}
+            />
+          )}
+        </View>
+        <View>
+          <Controller
+            control={props.control}
+            name="password"
+            rules={{
+              required: 'Password is required.',
+            }}
+            render={({field: {onChange, value}}) => (
+              <PasswordTextField
+                ref={passwordTextInputRef}
+                onChangeText={onChange}
+                placeholder="Password"
+                error={props.errors.password !== undefined}
+                value={value}
+                returnKeyType="done"
+                onSubmitEditing={() => {
+                  Keyboard.dismiss();
+                }}
+              />
+            )}
           />
-        </TouchableOpacity>
-      </View>
-      <LoginButton
-        handleSubmit={handleSubmit}
-        onSubmitted={message => {
-          console.log(message);
-        }}
-      />
-      <View
-        style={{
-          justifyContent: 'center',
-          flexDirection: 'row',
-          gap: 5,
-        }}>
-        <CustomText text="Hesabınız yok mu?" style={styles.dontHaveAccount} />
-        <TouchableOpacity
-          onPress={() => {
-            props.setAuth('register');
-          }}>
-          <CustomText text="Şimdi Kaydolun" style={styles.register} />
-        </TouchableOpacity>
+          {props.errors.password && (
+            <InputErrorText
+              errorMessage={props.errors.password.message as string}
+            />
+          )}
+        </View>
       </View>
     </View>
   );
@@ -121,27 +85,6 @@ export default LoginForm;
 
 const styles = StyleSheet.create({
   view: {
-    gap: 16,
-  },
-  register: {
-    color: Theme.colors.lilageode,
-    fontSize: Theme.fontSizes.sm,
-    fontWeight: 'bold',
-  },
-  forgotPassword: {
-    color: Theme.colors.white,
-    fontSize: Theme.fontSizes.sm,
-    fontWeight: 'bold',
-  },
-  dontHaveAccount: {
-    color: Theme.colors.white,
-    fontSize: Theme.fontSizes.sm,
-    fontWeight: '600',
-  },
-
-  loginOptions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 5,
+    gap: 12,
   },
 });

@@ -9,6 +9,8 @@ function CustomButton({
   backgroundColor = Theme.colors.primary,
   onPress,
   child,
+  border = false,
+  activeOpacity,
 }: {
   paddingVertical?: number;
   paddingHorizontal?: number;
@@ -16,13 +18,14 @@ function CustomButton({
   fontsize?: number;
   child: React.ReactNode;
   backgroundColor?: string;
-
+  border?: boolean;
+  activeOpacity?: number;
   onPress: () => void;
 }) {
   const styles = StyleSheet.create({
     button: {
-      borderColor: Theme.colors.primary,
-      borderWidth: 2,
+      borderColor: border ? Theme.colors.primary : 'transparent',
+      borderWidth: border ? 2 : 0,
       paddingVertical: paddingVertical,
       paddingHorizontal: paddingHorizontal,
       borderRadius: borderRadius,
@@ -32,7 +35,10 @@ function CustomButton({
   });
 
   return (
-    <TouchableOpacity onPress={onPress} style={styles.button}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={styles.button}
+      activeOpacity={activeOpacity}>
       {child}
     </TouchableOpacity>
   );

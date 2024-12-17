@@ -12,6 +12,7 @@ import VerticalPoster from '../../../../components/shared/VerticalPoster';
 import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
 import FastImage from 'react-native-fast-image';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 const {width} = Dimensions.get('window');
 
 type Props = {
@@ -23,21 +24,7 @@ const TitlesTab = (props: Props) => {
   const insets = useSafeAreaInsets();
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <FlatList

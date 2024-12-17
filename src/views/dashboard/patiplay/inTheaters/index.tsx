@@ -1,11 +1,5 @@
 import React, {useCallback} from 'react';
-import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Dimensions, FlatList, StyleSheet, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomPage from '../../../../components/shared/CustomPage';
 import nowPlayMovies from '../../../../models/now_play_movies';
@@ -15,7 +9,6 @@ import upComingTitles from '../../../../models/upcoming';
 import {Theme} from '../../../../utils/theme';
 import {DelayedComponent} from '../../home';
 import UnscrollableTitleList from '../../../../components/shared/UnscrollableTitleList';
-
 import KeepEnjoyingItem from '../../../../components/shared/CustomComponents/KeepEnjoyingItem';
 import NewcomersItem from '../../../../components/shared/CustomComponents/NewcomersItem';
 import OnlyHereItem from '../../../../components/shared/CustomComponents/OnlyHereItem';
@@ -31,13 +24,14 @@ import PreRegistrationView from '../../../preregistration/PreRegistrationView';
 import networkService from '../../../../helpers/networkService';
 import axios from 'axios';
 import {CountryModel} from '../../../../models/patiplay/CountryModel';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const InTheatersView = () => {
   const [loading, setLoading] = React.useState(true);
 
   const [inTheatersData, setInTheatersData] = React.useState<any[]>([]);
   const [countryData, setCountryData] = React.useState<CountryModel[]>([]);
-  const [keepEnjoyinData, setKeepEnjoyingData] = React.useState<any[]>([]);
+  const [keepEnjoyingData, setKeepEnjoyingData] = React.useState<any[]>([]);
 
   const isAuthenticated = useAppSelector(
     (state: RootState) => state.auth.isAuthenticated,
@@ -54,6 +48,11 @@ const InTheatersView = () => {
         console.log(response.data.title);
         setInTheatersData(response.data.title);
         setCountryData(response.data.countries);
+        setKeepEnjoyingData(
+          (response.data.keep_enjoying as []).filter(
+            (item: any) => item.video.video_type === 'Title',
+          ),
+        );
       } catch (error) {
         if (axios.isAxiosError(error)) {
           if (error.response) {
@@ -106,15 +105,7 @@ const InTheatersView = () => {
   }
 
   if (isAuthenticated && loading) {
-    return (
-      <View
-        style={{
-          justifyContent: 'center',
-          flex: 1,
-        }}>
-        <ActivityIndicator size="large" color={Theme.colors.primary} />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <CustomPage
@@ -149,7 +140,7 @@ const InTheatersView = () => {
             />
           </DelayedComponent>
           <DelayedComponent delay={400}>
-            <KeepEnjoying />
+            <KeepEnjoying data={keepEnjoyingData} />
           </DelayedComponent>
           <DelayedComponent delay={500}>
             <UnscrollableTitleList
@@ -191,13 +182,12 @@ const InTheatersView = () => {
 
 export default InTheatersView;
 
-const KeepEnjoying = React.memo(() => {
-  const renderItem = useCallback(
-    ({item, index}: {item: TopMovie; index: number}) => (
-      <KeepEnjoyingItem item={item} index={index} />
-    ),
-    [],
-  );
+type KeepEnjoyingItemProps = {
+  data: any;
+};
+
+const KeepEnjoying = React.memo((props: KeepEnjoyingItemProps) => {
+  console.log('KeepEnjoyingData', props.data);
 
   return (
     <View style={{gap: Theme.spacing.columnGap}}>
@@ -207,7 +197,7 @@ const KeepEnjoying = React.memo(() => {
       <FlatList
         nestedScrollEnabled
         removeClippedSubviews={true}
-        data={nowPlayMovies.slice(4, 9)}
+        data={props.data}
         initialNumToRender={3}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -216,7 +206,9 @@ const KeepEnjoying = React.memo(() => {
           paddingHorizontal: Theme.paddings.viewHorizontalPadding,
           gap: Theme.spacing.columnGap,
         }}
-        renderItem={({item, index}) => renderItem({item, index})}
+        renderItem={({item, index}) => (
+          <KeepEnjoyingItem item={item} index={index} type="Title" />
+        )}
       />
     </View>
   );

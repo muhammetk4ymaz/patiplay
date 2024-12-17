@@ -29,6 +29,7 @@ import axios from 'axios';
 import {ImageManager} from '../../../../constants/ImageManager';
 import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
 import {CountryModel} from '../../../../models/patiplay/CountryModel';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 type Props = {};
 
@@ -160,17 +161,7 @@ const ClipsView = (props: Props) => {
   }
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: 'black',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text style={{color: 'white'}}>Loading...</Text>
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (

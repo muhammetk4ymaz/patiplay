@@ -93,6 +93,14 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            if (project.hasProperty('/Users/eytsoft/patiplay/android/app/myapp-release-key.keystore')) {
+                storeFile file('/Users/eytsoft/patiplay/android/app/myapp-release-key.keystore')
+                storePassword 112233
+                keyAlias 112233
+                keyPassword 112233
+            }
+        }
     }
     buildTypes {
         debug {

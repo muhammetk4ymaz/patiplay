@@ -14,6 +14,8 @@ type Props = {
   backgroundColor?: string;
   fontWeight?: 'light' | 'medium' | 'bold';
   textStyle?: StyleProp<TextStyle>;
+  activeOpacity?: number;
+  border?: boolean;
 };
 
 const CustomTextButton = (props: Props) => {
@@ -23,6 +25,8 @@ const CustomTextButton = (props: Props) => {
       paddingVertical={props.paddingVertical}
       paddingHorizontal={props.paddingHorizontal}
       backgroundColor={props.backgroundColor}
+      activeOpacity={props.activeOpacity}
+      border={props.border}
       child={
         <CustomText
           text={props.text}

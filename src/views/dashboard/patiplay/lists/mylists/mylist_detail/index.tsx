@@ -33,6 +33,7 @@ import VerticalPoster from '../../../../../../components/shared/VerticalPoster';
 import HorizontalPoster from '../../../../../../components/shared/HorizontalPoster';
 import Comment from '../../../../../movie/movie_player/components/Comment';
 import ProgressIndicator from '../../../../../../components/shared/ProgressIndicator';
+import LoadingWidget from '../../../../../../components/shared/LoadingWidget';
 
 const paddingHorizontal = Theme.paddings.viewHorizontalPadding;
 
@@ -389,13 +390,7 @@ const CommentModal = ({
       </View>
 
       {loading ? (
-        <View
-          style={{
-            justifyContent: 'center',
-            flex: 1,
-          }}>
-          <ActivityIndicator size="large" color={Theme.colors.primary} />
-        </View>
+        <LoadingWidget />
       ) : (
         <FlatList
           scrollEnabled={true}

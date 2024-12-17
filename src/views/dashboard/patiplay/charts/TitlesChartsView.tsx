@@ -8,6 +8,7 @@ import {ChartTitleItem} from './components/ChartTitleItem';
 import topMovies from '../../../../models/topMovies';
 import networkService from '../../../../helpers/networkService';
 import axios from 'axios';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 const {width} = Dimensions.get('window');
 
@@ -79,21 +80,7 @@ const TitleChartsView = memo(({title}: Props) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <FlatList

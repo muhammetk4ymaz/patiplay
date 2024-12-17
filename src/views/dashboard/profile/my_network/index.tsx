@@ -19,6 +19,7 @@ import networkService from '../../../../helpers/networkService';
 import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
 import {Theme} from '../../../../utils/theme';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 export const characterLimited = (text: string, limit: number) => {
   if (text.length > limit) {
@@ -96,22 +97,7 @@ const MyNetworkView = (props: MyNetworkViewProps) => {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: Dimensions.get('window').width,
-          backgroundColor: 'black',
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   }
 
   return (

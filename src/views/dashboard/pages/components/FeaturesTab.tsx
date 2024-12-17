@@ -11,6 +11,7 @@ import nowPlayMovies from '../../../../models/now_play_movies';
 import VerticalPoster from '../../../../components/shared/VerticalPoster';
 import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
 import FastImage from 'react-native-fast-image';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 const {width} = Dimensions.get('window');
 
 type Props = {
@@ -21,21 +22,7 @@ const FeaturesTab = (props: Props) => {
   const [loading, setLoading] = React.useState(false);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: width,
-        }}>
-        <ActivityIndicator
-          size="large"
-          color={Theme.colors.primary}
-          animating={loading}
-        />
-      </View>
-    );
+    return <LoadingWidget />;
   } else {
     return (
       <FlatList

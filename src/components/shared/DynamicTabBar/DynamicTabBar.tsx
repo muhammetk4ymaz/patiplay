@@ -6,6 +6,7 @@ import TabView from './TabView';
 
 type Props = {
   components: React.JSX.Element[];
+  tabChange?: (index: number) => void;
 };
 
 const DynamicTabBar = (props: Props) => {
@@ -57,6 +58,7 @@ const DynamicTabBar = (props: Props) => {
               ]}
               onPress={() => {
                 onTabPress(index);
+                props.tabChange && props.tabChange(index);
               }}>
               <View
                 style={[

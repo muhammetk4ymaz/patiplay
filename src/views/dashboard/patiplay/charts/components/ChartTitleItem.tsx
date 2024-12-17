@@ -4,6 +4,7 @@ import FastImage from 'react-native-fast-image';
 import React from 'react';
 import CustomText from '../../../../../components/shared/CustomText';
 import {calculateGridItemWidth} from '../../../../../utils/calculateGridItemWidth';
+import {ChartRatingLabel} from '../../../../../components/shared/Labels/ChartRatingLabel';
 
 const width = Dimensions.get('window').width;
 
@@ -28,26 +29,7 @@ export const ChartTitleItem = React.memo((props: ChartTitleItemProps) => {
         style={[StyleSheet.absoluteFillObject, {borderRadius: 12}]}
       />
 
-      <View
-        style={{
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          borderRadius: 36,
-          alignSelf: 'flex-end',
-          padding: 4,
-          alignItems: 'center',
-          justifyContent: 'center',
-          top: -8,
-          right: -8,
-        }}>
-        <CustomText
-          text={props.index.toString()}
-          weight="medium"
-          style={{
-            color: 'white',
-            fontSize: 18,
-          }}
-        />
-      </View>
+      <ChartRatingLabel rating={props.index} />
     </View>
   );
 });
