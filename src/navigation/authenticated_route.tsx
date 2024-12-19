@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {WebSocketProvider} from '../context/WebSocketContext';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -15,10 +15,13 @@ import IconIonicons from 'react-native-vector-icons/Ionicons';
 import CustomText from '../components/shared/CustomText';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import HeaderBackWithTitle from '../components/shared/ios/HeaderBackWithTitle';
+import {ShareIcon} from '../../assets/icons';
 
 type Props = {};
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const iconPadding: number = 8;
 
 const AuthenticatedRoute = (props: Props) => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -32,12 +35,14 @@ const AuthenticatedRoute = (props: Props) => {
           statusBarColor: 'transparent',
           statusBarStyle: 'light',
           headerBackTitleVisible: false,
+          headerTintColor: 'white',
           contentStyle: {
             backgroundColor: 'transparent',
           },
           headerTitleStyle: {
             fontFamily: 'HelveticaNeue-Medium',
             fontSize: Theme.appBarTitleFontSize,
+            color: 'white',
           },
         }}>
         <Stack.Screen
@@ -70,6 +75,7 @@ const AuthenticatedRoute = (props: Props) => {
             headerShown: false,
             animation: 'slide_from_right',
             orientation: 'landscape',
+            statusBarHidden: true,
           }}
         />
         <Stack.Screen
@@ -245,6 +251,85 @@ const AuthenticatedRoute = (props: Props) => {
           }}
         />
         <Stack.Screen
+          name="MyLists"
+          component={Routes.MYLIST}
+          options={{
+            animation: 'slide_from_right',
+            headerTitle: 'My Lists',
+            headerTitleAlign: 'center',
+            headerStyle: {
+              backgroundColor: 'black',
+            },
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name="MyListDetail"
+          component={Routes.MYLISTDETAIL}
+          options={{
+            animation: 'slide_from_right',
+            headerTitle: Platform.select({ios: '', android: 'Details'}),
+            headerLeft(props) {
+              return <HeaderBackWithTitle title="Details" />;
+            },
+            headerStyle: {
+              backgroundColor: 'black',
+            },
+            headerRight(props) {
+              const [liked, setLiked] = React.useState(false);
+              return (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      paddingHorizontal: 11,
+                    }}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setLiked(!liked);
+                      }}
+                      style={{padding: iconPadding}}>
+                      <IconAntDesign
+                        name={liked ? 'like1' : 'like2'}
+                        color={'white'}
+                        size={Theme.menuIconSize}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {}}>
+                      <CustomText
+                        text="113"
+                        style={{
+                          color: 'white',
+                        }}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => {}}
+                    style={{padding: iconPadding}}>
+                    <ShareIcon size={Theme.menuIconSize} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {}}
+                    style={{padding: iconPadding}}>
+                    <IconIonicons
+                      name={'ellipsis-vertical'}
+                      color="white"
+                      size={Theme.menuIconSize}
+                    />
+                  </TouchableOpacity>
+                </View>
+              );
+            },
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
           name="MyListEdit"
           component={Routes.MYLISTEDIT}
           options={{
@@ -265,7 +350,11 @@ const AuthenticatedRoute = (props: Props) => {
                     gap: 3,
                   }}>
                   <TouchableOpacity onPress={() => {}} style={{padding: 8}}>
-                    <IconIonicons name={'checkmark'} color="white" size={24} />
+                    <IconIonicons
+                      name={'checkmark'}
+                      color="white"
+                      size={Theme.menuIconSize}
+                    />
                   </TouchableOpacity>
                 </View>
               );
@@ -279,7 +368,7 @@ const AuthenticatedRoute = (props: Props) => {
           component={Routes.LISTDETAIL}
           options={{
             animation: 'slide_from_right',
-            headerTitle: 'Details',
+            headerTitle: '',
             headerStyle: {
               backgroundColor: 'black',
             },
@@ -304,7 +393,7 @@ const AuthenticatedRoute = (props: Props) => {
                       <IconAntDesign
                         name={liked ? 'like1' : 'like2'}
                         color={'white'}
-                        size={24}
+                        size={Theme.menuIconSize}
                       />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {}}>
@@ -317,16 +406,41 @@ const AuthenticatedRoute = (props: Props) => {
                     </TouchableOpacity>
                   </View>
                   <TouchableOpacity onPress={() => {}} style={{padding: 8}}>
-                    <IconIonicons
-                      name={'share-social'}
-                      color="white"
-                      size={24}
-                    />
+                    <ShareIcon size={Theme.menuIconSize} />
                   </TouchableOpacity>
                 </View>
               );
             },
             headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name="ListComments"
+          component={Routes.LISTCOMMENTS}
+          options={{
+            animation: 'slide_from_bottom',
+            headerTitle: 'Comments',
+            headerStyle: {
+              backgroundColor: 'black',
+            },
+            headerBackVisible: false,
+            headerShown: true,
+            headerRight(props) {
+              const navigation = useNavigation();
+              return (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                  style={{padding: 8}}>
+                  <IconMaterialCommunityIcons
+                    name="close"
+                    color="white"
+                    size={24}
+                  />
+                </TouchableOpacity>
+              );
+            },
           }}
         />
 
@@ -357,6 +471,15 @@ const AuthenticatedRoute = (props: Props) => {
             },
             headerTitleAlign: 'center',
             headerTintColor: 'white',
+          }}
+        />
+
+        <Stack.Screen
+          name="Reply"
+          component={Routes.REPLY}
+          options={{
+            animation: 'none',
+            headerShown: true,
           }}
         />
 

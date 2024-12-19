@@ -1,84 +1,49 @@
-import {
-  Dimensions,
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native';
 import React from 'react';
+import {Dimensions, StyleSheet, View} from 'react-native';
 
 import {Theme} from '../../../../../../utils/theme';
 
-import nowPlayMovies from '../../../../../../models/now_play_movies';
-import HorizontalPoster from '../../../../../../components/shared/HorizontalPoster';
-import ProgressIndicator from '../../../../../../components/shared/ProgressIndicator';
-import CustomText from '../../../../../../components/shared/CustomText';
-import TopMovie from '../../../../../../models/top_movie';
+import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import DraggableFlatList, {
   ScaleDecorator,
 } from 'react-native-draggable-flatlist';
-import CustomTextButton from '../../../../../../components/shared/Buttons/CustomTextButton';
-import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
-import CustomBottomSheetModal from '../../../../../../components/shared/CustomBottomSheetModal';
-import {BottomSheetModal} from '@gorhom/bottom-sheet';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import CustomTextInput from '../../../../../../components/shared/Inputs/CustomTextInput';
-import CustomTextAreaInput from '../../../../../../components/shared/Inputs/CustomTextAreaInput';
+import CustomBottomSheetModal from '../../../../../../components/shared/CustomBottomSheetModal';
+import CustomText from '../../../../../../components/shared/CustomText';
+import HorizontalPoster from '../../../../../../components/shared/HorizontalPoster';
+import ProgressIndicator from '../../../../../../components/shared/ProgressIndicator';
+import nowPlayMovies from '../../../../../../models/now_play_movies';
+import TopMovie from '../../../../../../models/top_movie';
 
 const paddingHorizontal = Theme.paddings.viewHorizontalPadding;
 
 const MyListEditView = () => {
-  const [data, setData] = React.useState(nowPlayMovies.slice(0, 8));
+  const [data, setData] = React.useState(nowPlayMovies.slice(0, 16));
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={{flex: 1, backgroundColor: 'black'}}>
-      <View
-        style={{
-          gap: 12,
-          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-        }}>
-        <CustomTextInput
-          label="Name"
-          placeholder="Name"
-          onChangeText={() => {}}
-          inputStyle={{
-            paddingHorizontal: 12,
-            paddingVertical: 0,
-            borderColor: '#4A4A4A',
+    <DraggableFlatList
+      data={data}
+      contentContainerStyle={{
+        backgroundColor: Theme.colors.background,
+        paddingBottom: insets.bottom,
+      }}
+      onDragEnd={({data}) => setData(data)} // Sıra değiştiğinde veriyi güncelle
+      keyExtractor={item => item.id.toString()}
+      renderItem={({item, drag, isActive, getIndex}) => (
+        <EditListItem
+          item={item}
+          drag={drag}
+          getIndex={getIndex}
+          isActive={isActive}
+          onDeleted={(index: number) => {
+            setData(data.filter((_, i) => i !== index));
           }}
-          placeHolderTextColor="#4A4A4A"
         />
-        <CustomTextAreaInput
-          label="Description"
-          placeholder="Description"
-          onChangeText={() => {}}
-          numberOfLines={4}
-          inputStyle={{
-            paddingHorizontal: 12,
-            paddingVertical: 0,
-            borderColor: '#4A4A4A',
-          }}
-          placeHolderTextColor="#4A4A4A"
-        />
-      </View>
-      <DraggableFlatList
-        data={data}
-        onDragEnd={({data}) => setData(data)} // Sıra değiştiğinde veriyi güncelle
-        keyExtractor={item => item.id.toString()}
-        renderItem={({item, drag, isActive, getIndex}) => (
-          <EditListItem
-            item={item}
-            drag={drag}
-            getIndex={getIndex}
-            isActive={isActive}
-            onDeleted={(index: number) => {
-              setData(data.filter((_, i) => i !== index));
-            }}
-          />
-        )}
-      />
-    </View>
+      )}
+    />
   );
 };
 
@@ -119,7 +84,8 @@ const EditListItem = ({
             backgroundColor: isActive ? 'rgba(255,255,255,0.1)' : 'transparent',
           }}
           onLongPress={drag}>
-          <View style={{justifyContent: 'center'}}>
+          <View
+            style={{justifyContent: 'center', width: 24, alignItems: 'center'}}>
             <CustomText
               text={(currnetIndex + 1).toString()}
               style={{color: 'white', fontSize: 20, opacity: 0.5}}

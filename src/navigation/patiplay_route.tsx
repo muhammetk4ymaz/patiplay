@@ -16,8 +16,6 @@ type Props = {};
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const iconPadding: number = 8;
-
 const PatiPlayRoute = (props: Props) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -170,83 +168,6 @@ const PatiPlayRoute = (props: Props) => {
           },
           headerShown: true,
           headerTransparent: true,
-        }}
-      />
-      <Stack.Screen
-        name="MyLists"
-        component={Routes.MYLIST}
-        options={{
-          animation: 'slide_from_right',
-          headerTitle: 'My Lists',
-          headerTitleAlign: 'center',
-          headerStyle: {
-            backgroundColor: 'black',
-          },
-          headerShown: true,
-        }}
-      />
-      <Stack.Screen
-        name="MyListDetail"
-        component={Routes.MYLISTDETAIL}
-        options={{
-          animation: 'slide_from_right',
-          headerTitle: 'Details',
-          headerStyle: {
-            backgroundColor: 'black',
-          },
-          headerRight(props) {
-            const [liked, setLiked] = React.useState(false);
-            return (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 3,
-                }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    paddingHorizontal: 11,
-                  }}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setLiked(!liked);
-                    }}
-                    style={{padding: iconPadding}}>
-                    <IconAntDesign
-                      name={liked ? 'like1' : 'like2'}
-                      color={'white'}
-                      size={24}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => {}}>
-                    <CustomText
-                      text="113"
-                      style={{
-                        color: 'white',
-                      }}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <TouchableOpacity
-                  onPress={() => {}}
-                  style={{padding: iconPadding}}>
-                  <IconIonicons name={'share-social'} color="white" size={24} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {}}
-                  style={{padding: iconPadding}}>
-                  <IconIonicons
-                    name={'ellipsis-vertical'}
-                    color="white"
-                    size={24}
-                  />
-                </TouchableOpacity>
-              </View>
-            );
-          },
-          headerShown: true,
         }}
       />
       <Stack.Screen

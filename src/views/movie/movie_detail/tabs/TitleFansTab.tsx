@@ -1,21 +1,9 @@
-import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  View,
-} from 'react-native';
-import React from 'react';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../../../redux/store';
-import {Theme} from '../../../../utils/theme';
-import Comment from '../../../../components/shared/Comment/Comment';
-import Comments from '../../../../components/shared/Comment/Comments';
-import CommentsTab from '../../../dashboard/pages/components/CommentsTab';
-import networkService from '../../../../helpers/networkService';
 import axios from 'axios';
-import FansTab from '../../../dashboard/pages/components/FansTab';
+import React from 'react';
+import {Dimensions, StyleSheet} from 'react-native';
 import LoadingWidget from '../../../../components/shared/LoadingWidget';
+import networkService from '../../../../helpers/networkService';
+import FansTab from '../../../dashboard/pages/components/FansTab';
 
 type Props = {
   uuid: string;

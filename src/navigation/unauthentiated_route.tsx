@@ -23,6 +23,7 @@ const UnauthenticatedRoute = (props: Props) => {
         statusBarColor: 'transparent',
         statusBarStyle: 'light',
         headerBackTitleVisible: false,
+
         contentStyle: {
           backgroundColor: 'transparent',
         },
@@ -42,7 +43,7 @@ const UnauthenticatedRoute = (props: Props) => {
         name="SignUpWebView"
         component={Routes.SIGNUPWEBVİEW}
         options={{
-          animation: 'fade',
+          animation: 'slide_from_bottom',
           headerShown: true,
           headerTitle: () => (
             <Image
@@ -113,6 +114,17 @@ const UnauthenticatedRoute = (props: Props) => {
         component={Routes.PASSWORDCHANGESUCCES}
         options={{
           animation: 'fade',
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="Reply"
+        component={Routes.REPLY}
+        options={{
+          animation: 'none',
+          presentation: 'transparentModal',
+
           headerShown: false,
         }}
       />

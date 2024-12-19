@@ -1,71 +1,36 @@
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {Avatar} from 'native-base';
+import React, {useState} from 'react';
 import {
-  ActivityIndicator,
   Dimensions,
   Image,
-  Keyboard,
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useCallback, useState} from 'react';
-import {Avatar, Button, Input} from 'native-base';
-import {ImageManager} from '../../../../../constants/ImageManager';
-import CustomText from '../../../../../components/shared/CustomText';
-import {Theme} from '../../../../../utils/theme';
+import {FlatList} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
-import nowPlayMovies from '../../../../../models/now_play_movies';
-import VerticalPoster from '../../../../../components/shared/VerticalPoster';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import BottomSheet, {
-  BottomSheetFlatList,
-  BottomSheetModal,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet';
-import OutsidePressHandler from 'react-native-outside-press';
-import Comment from '../../../../movie/movie_player/components/Comment';
-import IconIonicons from 'react-native-vector-icons/Ionicons';
-import {FlatList, NativeViewGestureHandler} from 'react-native-gesture-handler';
-import IconAntDesign from 'react-native-vector-icons/AntDesign';
-import TopMovie from '../../../../../models/top_movie';
-import HorizontalPoster from '../../../../../components/shared/HorizontalPoster';
+import CustomText from '../../../../../components/shared/CustomText';
 import ProgressIndicator from '../../../../../components/shared/ProgressIndicator';
-import LoadingWidget from '../../../../../components/shared/LoadingWidget';
+import VerticalPoster from '../../../../../components/shared/VerticalPoster';
+import {ImageManager} from '../../../../../constants/ImageManager';
+import nowPlayMovies from '../../../../../models/now_play_movies';
+import TopMovie from '../../../../../models/top_movie';
+import {RootStackParamList} from '../../../../../navigation/routes';
+import {Theme} from '../../../../../utils/theme';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {calculateGridItemWidth} from '../../../../../utils/calculateGridItemWidth';
 
 const paddingHorizontal = Theme.paddings.viewHorizontalPadding;
 
 const ListDetailView = () => {
-  const bottomSheetModalRef = React.useRef<BottomSheetModal>(null);
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'black'}}>
       <Content type="tv" titles={nowPlayMovies} />
-      <LinearGradient
-        colors={['#8b5cf6', '#a855f7']}
-        style={{
-          position: 'absolute',
-          bottom: 24,
-          right: 12,
-          borderRadius: 36,
-        }}>
-        <TouchableOpacity
-          style={{
-            padding: 12,
-
-            // backgroundColor: Theme.colors.primary,
-          }}
-          onPress={() => {
-            bottomSheetModalRef.current?.present();
-          }}>
-          <IconMaterialCommunityIcons
-            name="comment-text-multiple-outline"
-            size={24}
-            color={Theme.colors.white}
-          />
-        </TouchableOpacity>
-      </LinearGradient>
-      <CommentModal bottomSheetModalRef={bottomSheetModalRef} />
+      <CommentButton />
     </SafeAreaView>
   );
 };
@@ -108,7 +73,6 @@ type ContentProps = {
 };
 
 const Content = React.memo((props: ContentProps) => {
-  const [liked, setLiked] = useState(false);
   return (
     <ScrollView style={{flex: 1}} contentContainerStyle={{gap: 12}}>
       <View
@@ -183,31 +147,20 @@ const Content = React.memo((props: ContentProps) => {
             return (
               <VerticalPoster
                 posterPath={item.poster_path}
-                width={
-                  (Dimensions.get('window').width -
-                    2 * Theme.paddings.viewHorizontalPadding -
-                    36) /
-                  4
-                }
+                width={calculateGridItemWidth(4)}
               />
             );
           } else {
             return (
               <View
                 style={{
-                  width:
-                    (Dimensions.get('window').width -
-                      2 * Theme.paddings.viewHorizontalPadding -
-                      12) /
-                    2,
+                  width: calculateGridItemWidth(2),
                   gap: 5,
                 }}>
                 <View
                   style={{
                     aspectRatio: 500 / 281,
-                    width:
-                      (Dimensions.get('window').width - 2 * paddingHorizontal) /
-                      2,
+                    width: calculateGridItemWidth(2),
                     borderRadius: 12,
                     overflow: 'hidden',
                     justifyContent: 'flex-end',
@@ -332,150 +285,31 @@ const EnjoyedInfo = () => {
   );
 };
 
-const CommentModal = ({
-  bottomSheetModalRef,
-}: {
-  bottomSheetModalRef: React.RefObject<BottomSheetModal>;
-}) => {
-  console.log('FilterModal rendered');
-
-  // variables
-  const snapPoints = React.useMemo(() => ['94%'], []);
-
-  const handleSheetChanges = React.useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
-
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-  }, []);
-
+const CommentButton = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const insets = useSafeAreaInsets();
   return (
-    <BottomSheetModal
-      backgroundStyle={{backgroundColor: Theme.colors.background}}
-      handleIndicatorStyle={{backgroundColor: Theme.colors.white}}
-      ref={bottomSheetModalRef}
-      index={0}
-      snapPoints={snapPoints}
-      enableDynamicSizing={false}
-      onChange={handleSheetChanges}>
-      <View
+    <LinearGradient
+      colors={['#8b5cf6', '#a855f7']}
+      style={{
+        position: 'absolute',
+        bottom: insets.bottom + 12,
+        right: 24,
+        borderRadius: 36,
+      }}>
+      <TouchableOpacity
         style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingHorizontal: paddingHorizontal,
-          paddingBottom: 8,
-          alignItems: 'center',
-        }}>
-        <CustomText
-          text="Comments"
-          style={{color: Theme.colors.white, fontSize: Theme.fontSizes.lg}}
-        />
-        <TouchableOpacity
-          onPress={() => {
-            bottomSheetModalRef.current?.close();
-          }}>
-          <IconMaterialCommunityIcons
-            name="close"
-            size={24}
-            color={Theme.colors.white}
-            style={{padding: 4, right: -4}}
-          />
-        </TouchableOpacity>
-      </View>
-
-      {loading ? (
-        <LoadingWidget />
-      ) : (
-        <FlatList
-          scrollEnabled={true}
-          removeClippedSubviews={true}
-          data={[1, 2, 3, 4]}
-          contentContainerStyle={{
-            paddingHorizontal: paddingHorizontal,
-            paddingVertical: 10,
-            gap: 12,
-          }}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({item, index}) => <Comment />}></FlatList>
-      )}
-
-      <CommentInput />
-    </BottomSheetModal>
-  );
-};
-
-const CommentInput = () => {
-  const [value, onChangeText] = React.useState('');
-
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-
-  React.useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      e => {
-        setKeyboardVisible(true); // Klavye açıldığında durumu güncelle
-        setKeyboardHeight(e.endCoordinates.height);
-      },
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setKeyboardVisible(false); // Klavye kapandığında durumu güncelle
-        setKeyboardHeight(0);
-      },
-    );
-
-    // Event listener'ları temizle
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
-
-  return (
-    <View style={{bottom: keyboardHeight}}>
-      <Input
-        borderRadius={0}
-        value={value}
-        onChangeText={() => {}}
-        placeholder={'Your Comment'}
-        variant="filled"
-        bg="black"
-        color="white"
-        borderColor="transparent"
-        _focus={{
-          cursorColor: Theme.colors.primary,
-          borderColor: 'transparent',
-          backgroundColor: 'black',
+          padding: 12,
         }}
-        InputLeftElement={
-          <Avatar
-            borderColor={Theme.colors.gray}
-            borderWidth={1}
-            marginLeft={2}
-            source={ImageManager.IMAGE_NAMES.ANGRYEMOJI}
-            size="xs"
-          />
-        }
-        InputRightElement={
-          <Button
-            variant="unstyled"
-            onPress={() => {
-              console.log('onSend');
-            }}
-            _pressed={{
-              backgroundColor: 'transparent',
-            }}>
-            <IconIonicons name="send" size={24} color={Theme.colors.primary} />
-          </Button>
-        }
-      />
-    </View>
+        onPress={() => {
+          navigation.navigate('ListComments');
+        }}>
+        <IconMaterialCommunityIcons
+          name="comment-text-multiple-outline"
+          size={24}
+          color={Theme.colors.white}
+        />
+      </TouchableOpacity>
+    </LinearGradient>
   );
 };

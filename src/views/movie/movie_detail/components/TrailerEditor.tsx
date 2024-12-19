@@ -95,7 +95,7 @@ const TrailerEditor = (props: TrailerEditorProps) => {
           minimumTrackTintColor={Theme.colors.primary}
           maximumTrackTintColor="rgba(255, 255, 255, 0.5)"
           style={{
-            bottom: Platform.select({ios: -18, android: 0}),
+            bottom: Platform.select({ios: -18, android: -5}),
             height: 10,
             marginLeft: Platform.select({ios: -3, android: -15}),
             marginRight: Platform.select({ios: -3, android: -15}),

@@ -7,6 +7,7 @@ import TabView from './TabView';
 type Props = {
   components: React.JSX.Element[];
   tabChange?: (index: number) => void;
+  tabs: string[];
 };
 
 const DynamicTabBar = (props: Props) => {
@@ -24,6 +25,7 @@ const DynamicTabBar = (props: Props) => {
       animated: true,
     });
   };
+
   return (
     <View>
       <FlatList
@@ -34,20 +36,7 @@ const DynamicTabBar = (props: Props) => {
           backgroundColor: Theme.colors.background,
           gap: 10,
         }}
-        data={[
-          'Episodes',
-          'Clips',
-          'Trailers',
-          'Comments',
-          'Discussions',
-          'Recommendations',
-          'Lists',
-          'Fans',
-          'Cast',
-          'Crew',
-          'Languages',
-          'Related',
-        ]}
+        data={props.tabs}
         renderItem={({item, index}) => {
           return (
             <TouchableOpacity

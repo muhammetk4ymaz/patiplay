@@ -1,24 +1,13 @@
-import React from 'react';
-import {
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
-import ContentWithIconCard, {
-  TermAndPrivacyText,
-} from '../../components/shared/Cards/ContentWithIconCard';
-import CustomText from '../../components/shared/CustomText';
-import CustomTextInput from '../../components/shared/Inputs/CustomTextInput';
-import {ImageManager} from '../../constants/ImageManager';
-import {Theme} from '../../utils/theme';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
+import React from 'react';
+import {Dimensions, Image, StyleSheet, Text, View} from 'react-native';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
+import ContentWithIconCard from '../../components/shared/Cards/ContentWithIconCard';
+import CustomText from '../../components/shared/CustomText';
+import {ImageManager} from '../../constants/ImageManager';
 import {RootStackParamList} from '../../navigation/routes';
+import {Theme} from '../../utils/theme';
 
 type Props = {};
 
@@ -27,12 +16,12 @@ const WelcomePatiView = (props: Props) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   return (
-    <ScrollView
-      contentContainerStyle={[
-        styles.view,
-        {paddingTop: insets.top + 50, paddingBottom: insets.bottom},
-      ]}
-      keyboardShouldPersistTaps="handled">
+    <SafeAreaView
+      style={{
+        flex: 1,
+        paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+        backgroundColor: Theme.colors.background,
+      }}>
       <View style={{flex: 1, justifyContent: 'center'}}>
         <ContentWithIconCard
           button={
@@ -40,7 +29,7 @@ const WelcomePatiView = (props: Props) => {
               <CustomTextButton
                 text={'Done'}
                 onPress={() => {
-                  navigation.goBack();
+                  console.log('Done');
                 }}
                 textColor="white"
                 paddingHorizontal={36}
@@ -119,9 +108,16 @@ const WelcomePatiView = (props: Props) => {
             />
           </View>
         </ContentWithIconCard>
+        <Image
+          source={ImageManager.IMAGE_NAMES.WELCOMEPATIGIF}
+          style={[
+            StyleSheet.absoluteFillObject,
+            {height: Dimensions.get('window').height},
+          ]}
+          resizeMode="stretch"
+        />
       </View>
-      <TermAndPrivacyText />
-    </ScrollView>
+    </SafeAreaView>
   );
 };
 

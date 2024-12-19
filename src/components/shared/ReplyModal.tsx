@@ -1,4 +1,8 @@
-import {BottomSheetFlatList, BottomSheetModal} from '@gorhom/bottom-sheet';
+import {
+  BottomSheetBackdrop,
+  BottomSheetFlatList,
+  BottomSheetModal,
+} from '@gorhom/bottom-sheet';
 import React from 'react';
 import {Dimensions, Keyboard, TouchableOpacity, View} from 'react-native';
 import {Theme} from '../../utils/theme';

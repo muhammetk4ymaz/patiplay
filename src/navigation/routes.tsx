@@ -11,6 +11,7 @@ import GenresView from '../views/dashboard/pages/genres';
 import LanguagesAudioView from '../views/dashboard/pages/languagesaudio';
 import LanguagesSubtitlesView from '../views/dashboard/pages/languagessubtitles';
 import ReleaseDatesView from '../views/dashboard/pages/releasedates';
+import ReplyView from '../views/dashboard/pages/reply';
 import CalendarView from '../views/dashboard/patiplay/calendar';
 import CampaignsView from '../views/dashboard/patiplay/campaigns';
 import ChartsView from '../views/dashboard/patiplay/charts';
@@ -19,6 +20,7 @@ import CommunitiesView from '../views/dashboard/patiplay/communities';
 import InTheatersView from '../views/dashboard/patiplay/inTheaters';
 import ListsView from '../views/dashboard/patiplay/lists';
 import ListDetailView from '../views/dashboard/patiplay/lists/list_detail';
+import ListCommentsView from '../views/dashboard/patiplay/lists/list_detail/list_comments';
 import MyListsView from '../views/dashboard/patiplay/lists/mylists';
 import MyListDetailView from '../views/dashboard/patiplay/lists/mylists/mylist_detail';
 import MyListEditView from '../views/dashboard/patiplay/lists/mylists/mylist_edit';
@@ -59,7 +61,6 @@ import SignUpWebView from '../views/preregistration/SignUpWebView';
 import VerificationView from '../views/preregistration/VerificationView';
 import WelcomePatiView from '../views/preregistration/WelcomePatiView';
 import UpdateView from '../views/update';
-
 import HomeRoute from './home_route';
 import MissionRoute from './mymission_route';
 import PatiPlayRoute from './patiplay_route';
@@ -85,6 +86,7 @@ export const Routes = {
   MYLISTDETAIL: MyListDetailView,
   MYLISTEDIT: MyListEditView,
   LISTDETAIL: ListDetailView,
+  LISTCOMMENTS: ListCommentsView,
   MOVEMENTS: MovementsView,
   CAMPAIGNS: CampaignsView,
   CALENDAR: CalendarView,
@@ -131,6 +133,7 @@ export const Routes = {
   NEWPASSWORD: NewPasswordView,
   PASSWORDCHANGESUCCES: PasswordChangeSuccesView,
   SIGNUPWEBVİEW: SignUpWebView,
+  REPLY: ReplyView,
 };
 
 export type RootStackParamList = {
@@ -174,6 +177,7 @@ export type RootStackParamList = {
   MyListDetail: undefined;
   MyListEdit: undefined;
   ListDetail: undefined;
+  ListComments: undefined;
   Movements: undefined;
   Campaigns: undefined;
   Calendar: undefined;
@@ -201,6 +205,7 @@ export type RootStackParamList = {
   NewPassword: {uuid: string};
   PasswordChangeSucces: undefined;
   SignUpWebView: undefined;
+  Reply: undefined;
 
   // other routes...
 };

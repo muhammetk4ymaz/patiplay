@@ -3,6 +3,8 @@ import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Theme} from '../../../utils/theme';
 import CustomText from '../CustomText';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../../../navigation/routes';
 
 type Props = {
   children: React.ReactNode;
@@ -44,6 +46,7 @@ const styles = StyleSheet.create({
     top: -40,
     alignSelf: 'center',
     backgroundColor: 'black',
+    borderRadius: 20,
     paddingHorizontal: 8,
   },
   button: {
@@ -54,6 +57,7 @@ const styles = StyleSheet.create({
 
 export const TermAndPrivacyText = () => {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <View style={{bottom: insets.bottom}}>
       <TouchableOpacity

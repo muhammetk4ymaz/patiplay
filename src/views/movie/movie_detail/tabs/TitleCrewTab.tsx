@@ -1,27 +1,15 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {useSelector} from 'react-redux';
+import {FlatList, StyleSheet, View} from 'react-native';
 import CircularAvatar from '../../../../components/shared/CircularAvatar';
 import CustomText from '../../../../components/shared/CustomText';
+import LoadingWidget from '../../../../components/shared/LoadingWidget';
 import {ImageManager} from '../../../../constants/ImageManager';
-import {RootState} from '../../../../redux/store';
 import {calculateGridItemWidth} from '../../../../utils/calculateGridItemWidth';
 import {Theme} from '../../../../utils/theme';
-import axios from 'axios';
-import networkService from '../../../../helpers/networkService';
-import LoadingWidget from '../../../../components/shared/LoadingWidget';
 
 type Props = {
   crewData: any[];
 };
-
-const width = Dimensions.get('window').width;
 
 const TitleCrewTab = (props: Props) => {
   const [loading, setLoading] = React.useState(false);

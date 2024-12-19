@@ -79,7 +79,7 @@ function CustomTextAreaInput(props: CustomTextAreaInputProps) {
         placeholder={props.label && focus ? '' : props.placeholder}
         returnKeyType={props.returnKeyType ?? 'next'}
         placeholderTextColor={
-          props.placeHolderTextColor || Theme.colors.lightgray
+          props.placeHolderTextColor || 'rgba(255, 255, 255, 0.6)'
         }
         keyboardType={props.keyboardType}
         value={props.value}
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 30,
-    borderColor: Theme.colors.primary,
+    borderColor: 'rgb(75, 85, 99)',
     gap: 12,
   },
   label: {

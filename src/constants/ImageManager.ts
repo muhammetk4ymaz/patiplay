@@ -14,5 +14,6 @@ export class ImageManager {
     PATIHORIZONTALLOGO: require('../../assets/pati-logo-horizontal.png'),
     PATOHORIZONTALLOGOWHITE: require('../../assets/pati-logo-beyaz-full.png'),
     PATILOGOWHIE: require('../../assets/pati-brand-icon.png'),
+    WELCOMEPATIGIF: require('../../assets/Gifler.gif'),
   };
 }

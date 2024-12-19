@@ -1,59 +1,57 @@
+import React from 'react';
 import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
+  Dimensions,
   FlatList,
   Image,
-  Dimensions,
+  StyleSheet,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import React from 'react';
-import nowPlayMovies from '../../../../../models/now_play_movies';
-import {Theme} from '../../../../../utils/theme';
-import CustomText from '../../../../../components/shared/CustomText';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import TopMovie from '../../../../../models/top_movie';
-import index from '../../../../../navigation';
+import CustomText from '../../../../../components/shared/CustomText';
 import ProgressIndicator from '../../../../../components/shared/ProgressIndicator';
+import nowPlayMovies from '../../../../../models/now_play_movies';
+import TopMovie from '../../../../../models/top_movie';
+import {calculateGridItemWidth} from '../../../../../utils/calculateGridItemWidth';
+import {Theme} from '../../../../../utils/theme';
 
 const width = Dimensions.get('window').width;
 
-const myListsPosterWidth =
-  (width - 2 * Theme.paddings.viewHorizontalPadding - 24) / 2.5;
-const myListsPosterContainerWidth =
-  (width - 2 * Theme.paddings.viewHorizontalPadding) / 2;
+const myListsPosterWidth = calculateGridItemWidth(2.5);
+const myListsPosterContainerWidth = calculateGridItemWidth(2);
 
 const MyListsView = () => {
   return (
-    <FlatList
-      data={[
-        {
-          title: 'Top Sci-Fi Movies of All Time',
-          description:
-            'Explore new worlds and futuristic possibilities with our list of the best sci-fi movies. From space adventures and advanced technology to artificial intelligence and dystopian futures, these films push the boundaries of imagination and storytelling. Get ready to be transported to another universe!',
-          updatedAt: 'Mar 24',
-        },
-        {
-          title: 'Must-Watch Classic Movies',
-          updatedAt: 'Mar 23',
-        },
-      ]}
-      contentContainerStyle={{
-        gap: 12,
-        paddingHorizontal: Theme.paddings.viewHorizontalPadding,
-        paddingVertical: 12,
-      }}
-      renderItem={({item, index}) => (
-        <MyListsItem
-          list={nowPlayMovies}
-          title={item.title}
-          description={item.description}
-          updatedAt="Mar 24"
-        />
-      )}
-      keyExtractor={item => item.title}
-    />
+    <View style={{flex: 1, backgroundColor: 'black'}}>
+      <FlatList
+        data={[
+          {
+            title: 'Top Sci-Fi Movies of All Time',
+            description:
+              'Explore new worlds and futuristic possibilities with our list of the best sci-fi movies. From space adventures and advanced technology to artificial intelligence and dystopian futures, these films push the boundaries of imagination and storytelling. Get ready to be transported to another universe!',
+            updatedAt: 'Mar 24',
+          },
+          {
+            title: 'Must-Watch Classic Movies',
+            updatedAt: 'Mar 23',
+          },
+        ]}
+        contentContainerStyle={{
+          gap: 12,
+          paddingHorizontal: Theme.paddings.viewHorizontalPadding,
+          paddingVertical: 12,
+        }}
+        renderItem={({item, index}) => (
+          <MyListsItem
+            list={nowPlayMovies}
+            title={item.title}
+            description={item.description}
+            updatedAt="Mar 24"
+          />
+        )}
+        keyExtractor={item => item.title}
+      />
+    </View>
   );
 };
 

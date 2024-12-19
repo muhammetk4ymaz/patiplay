@@ -1,4 +1,4 @@
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Image, Platform, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import CustomText from '../../components/shared/CustomText';
 import {Theme} from '../../utils/theme';
@@ -12,6 +12,7 @@ import UpdateView from '../update';
 import axios from 'axios';
 import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
 import LoadingWidget from '../../components/shared/LoadingWidget';
+import {ImageManager} from '../../constants/ImageManager';
 
 type Props = {};
 
@@ -96,16 +97,19 @@ const SplashView = (props: Props) => {
     try {
       storageService.getItem(StorageKeys.ACCESS_TOKEN).then(token => {
         if (token) {
-          storageService.removeItem(StorageKeys.ACCESS_TOKEN);
-          // networkService.setToken(token);
-          // console.log('token', token);
-          // networkService.get('api/user/info/').then(async res => {
-          //   if (res.data) {
-          //     dispatch(setUser(res.data.data.email, res.data.data.uuid));
-          //     await delay(200);
-          //     dispatch(loginAsync());
-          //   }
-          // });
+          // storageService.removeItem(StorageKeys.ACCESS_TOKEN);
+          networkService.setToken(token);
+          console.log('token', token);
+          networkService.get('api/user/info/').then(async res => {
+            if (res.data) {
+              dispatch(setUser(res.data.data.email, res.data.data.uuid));
+              await delay(200);
+              dispatch(loginAsync());
+            }
+            setLoading(false);
+          });
+        } else {
+          setLoading(false);
         }
       });
     } catch (error) {
@@ -142,7 +146,6 @@ const SplashView = (props: Props) => {
       } else {
         setError('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
       }
-    } finally {
       setLoading(false);
     }
   };
@@ -152,7 +155,15 @@ const SplashView = (props: Props) => {
   }, []);
 
   if (loading || isCheckingUpdate) {
-    return <LoadingWidget />;
+    return (
+      <View
+        style={{flex: 1, justifyContent: 'center', backgroundColor: 'black'}}>
+        <Image
+          source={ImageManager.IMAGE_NAMES.PATIPLAYLOGO}
+          style={{height: 100, width: 100, alignSelf: 'center'}}
+        />
+      </View>
+    );
   } else if (error) {
     return (
       <View

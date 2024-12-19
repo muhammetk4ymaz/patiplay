@@ -86,7 +86,7 @@ const VideoOptionsComponent = () => {
         }
       />
 
-      <CustomButton
+      {/* <CustomButton
         onPress={() => {
           dispatch(setQualitySettingsVisible(true));
         }}
@@ -112,7 +112,7 @@ const VideoOptionsComponent = () => {
             )}
           </View>
         }
-      />
+      /> */}
     </View>
   );
 };

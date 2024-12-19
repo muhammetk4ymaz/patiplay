@@ -1,5 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {Theme} from '../../../utils/theme';
@@ -12,43 +18,43 @@ import InteractionSection from './components/InteractionSection';
 import LoadingWidget from '../../../components/shared/LoadingWidget';
 
 const MovieView = () => {
-  const [loading, setLoading] = useState(true);
-
   const interactionSectionVisible = useAppSelector(
     state => state.interaction.interactionSectionVisible,
   );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 300);
+    if (Platform.OS === 'android') {
+      StatusBar.setHidden(true);
+    }
+
+    return () => {
+      if (Platform.OS === 'android') {
+        StatusBar.setHidden(false);
+      }
+    };
   }, []);
 
-  if (loading) {
-    return <LoadingWidget />;
-  } else {
-    return (
-      <View style={{flex: 1}}>
-        <Drawer
-          drawerPosition="right"
-          drawerType="slide"
-          open={interactionSectionVisible}
-          onOpen={() => {
-            dispatch(setInteractionSectionVisible(true));
-          }}
-          onClose={() => {
-            dispatch(setInteractionSectionVisible(false));
-          }}
-          renderDrawerContent={() => {
-            return <InteractionSection />;
-          }}>
-          <VideoPlayer />
-        </Drawer>
-        <InteractionInputs />
-      </View>
-    );
-  }
+  return (
+    <View style={{flex: 1}}>
+      <Drawer
+        drawerPosition="right"
+        drawerType="slide"
+        open={interactionSectionVisible}
+        onOpen={() => {
+          dispatch(setInteractionSectionVisible(true));
+        }}
+        onClose={() => {
+          dispatch(setInteractionSectionVisible(false));
+        }}
+        renderDrawerContent={() => {
+          return <InteractionSection />;
+        }}>
+        <VideoPlayer />
+      </Drawer>
+      <InteractionInputs />
+    </View>
+  );
 };
 
 export default MovieView;

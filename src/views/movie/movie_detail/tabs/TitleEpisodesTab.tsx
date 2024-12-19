@@ -1,25 +1,12 @@
-import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import React from 'react';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../../../redux/store';
-import {Theme} from '../../../../utils/theme';
-import {useAppDispatch} from '../../../../redux/hooks';
-import {setEpisodes} from '../../../../redux/features/titledetail/titleDetailSlice';
-import nowPlayMovies from '../../../../models/now_play_movies';
-import TitleWithProgress from '../../../../components/shared/CustomComponents/TitleWithProgress';
-import topMovies from '../../../../models/topMovies';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import networkService from '../../../../helpers/networkService';
 import axios from 'axios';
+import React from 'react';
+import {Dimensions, FlatList, StyleSheet, View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import TitleWithProgress from '../../../../components/shared/CustomComponents/TitleWithProgress';
 import CustomText from '../../../../components/shared/CustomText';
 import LoadingWidget from '../../../../components/shared/LoadingWidget';
+import networkService from '../../../../helpers/networkService';
+import {Theme} from '../../../../utils/theme';
 
 type Props = {
   uuid: string;

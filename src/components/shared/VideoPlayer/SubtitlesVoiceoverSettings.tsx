@@ -10,6 +10,8 @@ import {
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import CustomText from '../CustomText';
 import CustomTextButton from '../Buttons/CustomTextButton';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useHeaderHeight} from '@react-navigation/elements';
 
 type Props = {};
 
@@ -38,15 +40,17 @@ const SubtitlesVoiceoverSettings = (props: Props) => {
 
   const [audio, setAudio] = React.useState<number>(audioTrack);
   const [subtitle, setSubtitle] = React.useState<number>(subtitleIndex);
+  const headerHeight = useHeaderHeight();
+  const insets = useSafeAreaInsets();
 
   return (
-    <View
+    <SafeAreaView
       style={{
         flex: 1,
         backgroundColor: Theme.colors.background,
         flexDirection: 'row',
-        paddingHorizontal: 24,
         paddingVertical: 20,
+        paddingHorizontal: Theme.paddings.viewHorizontalPadding,
       }}>
       <View style={{flex: 1}}>
         <CustomText
@@ -134,7 +138,7 @@ const SubtitlesVoiceoverSettings = (props: Props) => {
         style={{
           position: 'absolute',
           bottom: 20,
-          right: 20,
+          right: insets.bottom + Theme.paddings.viewHorizontalPadding,
           flexDirection: 'row',
           gap: 12,
         }}>
@@ -161,7 +165,7 @@ const SubtitlesVoiceoverSettings = (props: Props) => {
           backgroundColor={Theme.colors.primary}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

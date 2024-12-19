@@ -19,7 +19,7 @@ const SignUpWebView = (props: Props) => {
           if (
             navState.url === 'https://reactnative.dev/docs/environment-setup'
           ) {
-            navigation.navigate('Auth');
+            navigation.navigate('WelcomePati');
           }
         }}
       />

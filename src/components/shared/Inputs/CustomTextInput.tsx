@@ -41,11 +41,26 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
           props.error && {borderColor: Theme.colors.error},
         ]}>
         {props.label && (focus || props.value) && (
-          <View style={[styles.label]}>
+          <View
+            style={[
+              {
+                height: 20,
+              },
+              styles.label,
+            ]}>
+            <View
+              style={{
+                position: 'absolute',
+                backgroundColor: 'black',
+                height: '100%',
+                left: 0,
+
+                right: 0,
+              }}></View>
             <Text
               style={[
                 styles.labelText,
-                {color: focus || props.value ? 'white' : 'gray'},
+                {color: focus ? 'white' : 'gray'},
                 props.error && {color: Theme.colors.error},
               ]}>
               {props.label}
