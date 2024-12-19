@@ -45,6 +45,7 @@ const UnauthenticatedRoute = (props: Props) => {
         options={{
           animation: 'slide_from_bottom',
           headerShown: true,
+          headerTitleAlign: 'center',
           headerTitle: () => (
             <Image
               source={ImageManager.IMAGE_NAMES.PATIHORIZONTALLOGO}

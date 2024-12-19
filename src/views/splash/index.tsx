@@ -13,6 +13,7 @@ import axios from 'axios';
 import CustomTextButton from '../../components/shared/Buttons/CustomTextButton';
 import LoadingWidget from '../../components/shared/LoadingWidget';
 import {ImageManager} from '../../constants/ImageManager';
+import BootSplash from 'react-native-bootsplash';
 
 type Props = {};
 
@@ -26,69 +27,65 @@ const SplashView = (props: Props) => {
 
   const dispatch = useAppDispatch();
 
-  React.useEffect(() => {
-    const checkAppVersion = async () => {
-      const version = DeviceInfo.getVersion();
-      try {
-        const ANDROID_VERSION_URL = '';
+  const checkAppVersion = async () => {
+    const version = DeviceInfo.getVersion();
+    try {
+      const ANDROID_VERSION_URL = '';
 
-        const IOS_VERSION_URL = '';
+      const IOS_VERSION_URL = '';
 
-        const VERSION_URL = Platform.select({
-          ios: IOS_VERSION_URL,
-          android: ANDROID_VERSION_URL,
-        });
+      const VERSION_URL = Platform.select({
+        ios: IOS_VERSION_URL,
+        android: ANDROID_VERSION_URL,
+      });
 
-        if (VERSION_URL) {
-          networkService.get(VERSION_URL).then(async res => {
-            if (res.data) {
-              if (res.data.version !== version) {
-                setNeedUpdate(true);
-              }
+      if (VERSION_URL) {
+        networkService.get(VERSION_URL).then(async res => {
+          if (res.data) {
+            if (res.data.version !== version) {
+              setNeedUpdate(true);
             }
-          });
-        }
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          if (error.response) {
-            console.log(error.response.data);
-            console.log(error.response.status);
-
-            switch (error.response.status) {
-              case 400:
-                setError('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
-
-                break;
-              case 401:
-                setError(
-                  'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
-                );
-
-                break;
-              case 500:
-                setError('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
-
-                break;
-              default:
-                setError('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
-            }
-          } else if (error.request) {
-            setError(
-              'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
-            );
-          } else {
-            setError('Bir hata oluştu. Lütfen tekrar deneyin.');
           }
-        } else {
-          setError('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
-        }
-      } finally {
-        setIsCheckingUpdate(false);
+        });
       }
-    };
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
 
-    checkAppVersion();
-  }, []);
+          switch (error.response.status) {
+            case 400:
+              setError('Hatalı istek. Lütfen bilgilerinizi kontrol edin.');
+
+              break;
+            case 401:
+              setError(
+                'Yetkisiz giriş. Lütfen kullanıcı adınızı ve şifrenizi kontrol edin.',
+              );
+
+              break;
+            case 500:
+              setError('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+
+              break;
+            default:
+              setError('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+          }
+        } else if (error.request) {
+          setError(
+            'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+          );
+        } else {
+          setError('Bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } else {
+        setError('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+      }
+    } finally {
+      setIsCheckingUpdate(false);
+    }
+  };
 
   const checkAuth = async () => {
     if (!loading) {
@@ -103,13 +100,10 @@ const SplashView = (props: Props) => {
           networkService.get('api/user/info/').then(async res => {
             if (res.data) {
               dispatch(setUser(res.data.data.email, res.data.data.uuid));
-              await delay(200);
+
               dispatch(loginAsync());
             }
-            setLoading(false);
           });
-        } else {
-          setLoading(false);
         }
       });
     } catch (error) {
@@ -146,25 +140,26 @@ const SplashView = (props: Props) => {
       } else {
         setError('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
       }
+    } finally {
       setLoading(false);
     }
   };
 
   React.useEffect(() => {
-    checkAuth();
+    const init = async () => {
+      await checkAuth();
+      await checkAppVersion();
+    };
+
+    init().finally(async () => {
+      await BootSplash.hide({fade: true});
+      console.log('BootSplash has been hidden successfully');
+    });
   }, []);
 
-  if (loading || isCheckingUpdate) {
-    return (
-      <View
-        style={{flex: 1, justifyContent: 'center', backgroundColor: 'black'}}>
-        <Image
-          source={ImageManager.IMAGE_NAMES.PATIPLAYLOGO}
-          style={{height: 100, width: 100, alignSelf: 'center'}}
-        />
-      </View>
-    );
-  } else if (error) {
+  React.useEffect(() => {}, []);
+
+  if (error) {
     return (
       <View
         style={[
